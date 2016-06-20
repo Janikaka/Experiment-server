@@ -3,16 +3,15 @@ from sqlalchemy import (
     Index,
     Integer,
     Text,
+    ForeignKey
 )
 
 from .meta import Base
 
 
-class MyModel(Base):
-    __tablename__ = 'models'
+class DataItems(Base):
+    __tablename__ = 'dataitems'
     id = Column(Integer, primary_key=True)
-    name = Column(Text)
+    user = Column(Integer, ForeignKey('users.id'))
     value = Column(Integer)
 
-
-Index('my_index', MyModel.name, unique=True, mysql_length=255)
