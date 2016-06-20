@@ -1,0 +1,5 @@
+      [paste.app_factory]
+      main = experiment_server:main
+      [console_scripts]
+      initialize_Experiment-server_db = experiment_server.scripts.initializedb:main
+      
