@@ -1,0 +1,3 @@
+[run]
+source = experiment_server
+omit = experiment_server/test*
