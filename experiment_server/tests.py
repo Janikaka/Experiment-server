@@ -315,5 +315,63 @@ class Test_get_experiments_and_groups_in_which_user_participates(BaseTest):
         self.assertEqual(len(get_experimentgroups_in_which_user_participates(self.session, self.user)), 2)
         self.assertTrue(get_experimentgroups_in_which_user_participates(self.session, self.user) == [self.exp1group1, self.exp2group2])
 
+def get_experiments_in_which_user_does_not_participate(session, user):
+    experiments = []
+    for experiment in session.query(Experiments).all():
+        participate = False
+        for experimentgroup in experiment.experimentgroups:
+            if user in experimentgroup.users:
+                participate = True
+        if participate == False:
+            experiments.append(experiment)
+    return experiments
+
+def assign_user_to_experiment(experiment, user):
+    import random
+    experimentgroup = experiment.experimentgroups[random.randint(0, len(experiment.experimentgroups)-1)]
+    return experimentgroup
+
+class Test_get_experiments_in_which_user_does_not_participate_and_assign_user(BaseTest):
+
+    def setUp(self):
+        super(Test_get_experiments_in_which_user_does_not_participate_and_assign_user, self).setUp()
+        self.init_database()
+
+        self.user = Users(username='test user', password='test password')
+        self.session.add(self.user)
+        self.experiment1 = Experiments(name='first test experiment')
+        self.session.add(self.experiment1)
+        self.experiment2 = Experiments(name='second test experiment')
+        self.session.add(self.experiment2)
+
+        self.exp1group1 = ExperimentGroups(name='experiment 1 group A', experiment=self.experiment1)
+        self.exp1group1.users.append(self.user)
+        self.exp1group2 = ExperimentGroups(name='experiment 1 group B', experiment=self.experiment1)
+        self.session.add(self.exp1group1)
+        self.session.add(self.exp1group2)
+
+        self.exp2group1 = ExperimentGroups(name='experiment 2 group A', experiment=self.experiment2)
+        self.exp2group2 = ExperimentGroups(name='experiment 2 group B', experiment=self.experiment2)
+        self.session.add(self.exp2group1)
+        self.session.add(self.exp2group2)
+
+    def test_get_experiments(self):
+        self.assertEqual(len(get_experiments_in_which_user_does_not_participate(self.session, self.user)), 1)
+        self.assertTrue(get_experiments_in_which_user_does_not_participate(self.session, self.user) == [self.experiment2])
+
+    def test_assign_user_to_experiments(self):
+        experiments = get_experiments_in_which_user_does_not_participate(self.session, self.user)
+        experimentgroups = []
+
+        for experiment in experiments:
+            experimentgroup = assign_user_to_experiment(experiment, self.user)
+            experimentgroup.users.append(self.user)
+            experimentgroups.append(experimentgroup)
+
+        for experimentgroup in experimentgroups:
+            self.assertTrue(self.user in experimentgroup.users)
+
+
+        
 
         
