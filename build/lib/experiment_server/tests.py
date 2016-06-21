@@ -84,7 +84,6 @@ class TestUsers(BaseTest):
         self.assertEqual(user2.username, 'second user')
         self.assertEqual(user2.id, 2)
         self.assertEqual(len(self.session.query(Users).all()), 2)
-    
 
 class TestDataItems(BaseTest):
 
@@ -100,10 +99,13 @@ class TestDataItems(BaseTest):
         user2 = Users(username='second user', password='second password')
         self.session.add(user2)
 
-        dataItem1 = DataItems(user=user1, value=10)
-        dataItem2 = DataItems(user=user1, value=20)
-        dataItem3 = DataItems(user=user2, value=30)
-        dataItem4 = DataItems(user=user2, value=40)
+        usr1 = self.session.query(Users).filter_by(username='first user').one()
+        usr2 = self.session.query(Users).filter_by(username='second user').one()
+
+        dataItem1 = DataItems(user_id=usr1.id, user=usr1, value=10)
+        dataItem2 = DataItems(user_id=usr1.id, user=usr1, value=20)
+        dataItem3 = DataItems(user_id=usr2.id, user=usr2, value=30)
+        dataItem4 = DataItems(user_id=usr2.id, user=usr2, value=40)
 
         self.session.add(dataItem1)
         self.session.add(dataItem2)
@@ -118,30 +120,20 @@ class TestDataItems(BaseTest):
 
     def test_added_dataItems(self):
         from .models import DataItems
-        from .models import Users
 
         dataItem1 = self.session.query(DataItems).filter_by(id=1).one()
         dataItem2 = self.session.query(DataItems).filter_by(id=2).one()
         dataItem3 = self.session.query(DataItems).filter_by(id=3).one()
         dataItem4 = self.session.query(DataItems).filter_by(id=4).one()
 
-        user1 = self.session.query(Users).filter_by(id=1).one()
-        user2 = self.session.query(Users).filter_by(id=2).one()
-
-        self.assertEqual(dataItem1.user.id, 1);
-        self.assertEqual(dataItem2.user.id, 1);
-        self.assertEqual(dataItem3.user.id, 2);
+        self.assertEqual(dataItem1.user_id, 1);
+        self.assertEqual(dataItem2.user_id, 1);
+        self.assertEqual(dataItem3.user_id, 2);
         self.assertEqual(dataItem4.user_id, 2);
         self.assertEqual(dataItem1.value, 10);
         self.assertEqual(dataItem2.value, 20);
         self.assertEqual(dataItem3.value, 30);
         self.assertEqual(dataItem4.value, 40);
-        self.assertEqual(len(user1.dataitems), 2)
-        self.assertTrue(dataItem1 in user1.dataitems)
-        self.assertTrue(dataItem2 in user1.dataitems)
-        self.assertEqual(len(user2.dataitems), 2)
-        self.assertTrue(dataItem3 in user2.dataitems)
-        self.assertTrue(dataItem4 in user2.dataitems)
 
 class TestExperimentGroups(BaseTest):
 
@@ -157,10 +149,13 @@ class TestExperimentGroups(BaseTest):
         self.session.add(experiment1)
         self.session.add(experiment2)
 
-        experimentGroup1 = ExperimentGroups(experiment = experiment1, name='exp1groupA')
-        experimentGroup2 = ExperimentGroups(experiment = experiment1, name='exp1groupB')
-        experimentGroup3 = ExperimentGroups(experiment = experiment2, name='exp2groupA')
-        experimentGroup4 = ExperimentGroups(experiment = experiment2, name='exp2groupB')
+        experiment1 = self.session.query(Experiments).filter_by(name='first experiment').one()
+        experiment2 = self.session.query(Experiments).filter_by(name='second experiment').one()
+
+        experimentGroup1 = ExperimentGroups(experiment_id=experiment1.id, experiment = experiment1, name='exp1groupA')
+        experimentGroup2 = ExperimentGroups(experiment_id=experiment1.id, experiment = experiment1, name='exp1groupB')
+        experimentGroup3 = ExperimentGroups(experiment_id=experiment2.id, experiment = experiment2, name='exp2groupA')
+        experimentGroup4 = ExperimentGroups(experiment_id=experiment2.id, experiment = experiment2, name='exp2groupB')
 
         self.session.add(experimentGroup1)
         self.session.add(experimentGroup2)
@@ -189,65 +184,62 @@ class TestExperimentGroups(BaseTest):
         self.assertEqual(expGroup2.name, 'exp1groupB')
         self.assertEqual(expGroup3.name, 'exp2groupA')
         self.assertEqual(expGroup4.name, 'exp2groupB')
-
-class TestUsers_ExperimentGroups(BaseTest):
+"""
+class TestDataItems_Experiments(BaseTest):
 
     def setUp(self):
-        super(TestUsers_ExperimentGroups, self).setUp()
+        super(TestDataItems_Experiments, self).setUp()
         self.init_database()
 
-        from .models import ExperimentGroups
-        from .models import Users
-        from .models import Experiments
+        experiment1 = Experiments(name='first experiment')
+        experiment2 = Experiments(name='second experiment')
+        self.session.add(experiment1)
+        self.session.add(experiment2)
 
         user1 = Users(username='first user', password='first password')
         self.session.add(user1)
         user2 = Users(username='second user', password='second password')
         self.session.add(user2)
-        user3 = Users(username='third user', password='third password')
-        self.session.add(user3)
-        user4 = Users(username='fourth user', password='fourth password')
-        self.session.add(user4)
 
-        experiment1 = Experiments(name='first experiment')
-        self.session.add(experiment1)
+        dataItem1 = DataItems(user_id=user1.id, user=user1, value=10, experiments.append(experiment1))
+        dataItem2 = DataItems(user_id=user1.id, user=user1, value=20, experiments.append(experiment1))
+        dataItem3 = DataItems(user_id=user2.id, user=user2, value=30, experiments.append(experiment2))
+        dataItem4 = DataItems(user_id=user2.id, user=user2, value=40, experiments.append(experiment2))
+        self.session.add(dataItem1)
+        self.session.add(dataItem2)
+        self.session.add(dataItem3)
+        self.session.add(dataItem4)
+        
+"""
 
-        experimentGroup1 = ExperimentGroups(experiment = experiment1, name='exp1groupA')
-        experimentGroup2 = ExperimentGroups(experiment = experiment1, name='exp1groupB')
-        experimentGroup1.users.append(user1)
-        experimentGroup1.users.append(user2)
-        experimentGroup2.users.append(user3)
-        experimentGroup2.users.append(user4)
 
-        self.session.add(experimentGroup1)
-        self.session.add(experimentGroup2)
 
-    def test_add_Users_Experimentgroups(self):
-        from .models import ExperimentGroups
-        from .models import Users
 
-        user1 = self.session.query(Users).filter_by(id=1).one()
-        user2 = self.session.query(Users).filter_by(id=2).one()
-        user3 = self.session.query(Users).filter_by(id=3).one()
-        user4 = self.session.query(Users).filter_by(id=4).one()
 
-        expgroup1 = self.session.query(ExperimentGroups).filter_by(id=1).one()
-        expgroup2 = self.session.query(ExperimentGroups).filter_by(id=2).one()
+"""
+class TestMyViewFailureCondition(BaseTest):
 
-        self.assertEqual(len(user1.experimentgroups), 1)
-        self.assertEqual(len(user2.experimentgroups), 1)
-        self.assertEqual(len(user3.experimentgroups), 1)
-        self.assertEqual(len(user4.experimentgroups), 1)
+    def test_failing_view(self):
+        from .views.default import my_view
+        info = my_view(dummy_request(self.session))
+        self.assertEqual(info.status_int, 500)
 
-        self.assertEqual(len(expgroup1.users), 2)
-        self.assertEqual(len(expgroup2.users), 2)
+class TestMyViewSuccessCondition(BaseTest):
 
-        self.assertTrue(expgroup1 in user1.experimentgroups)
-        self.assertTrue(expgroup1 in user2.experimentgroups)
-        self.assertTrue(expgroup2 in user3.experimentgroups)
-        self.assertTrue(expgroup2 in user4.experimentgroups)
+    def setUp(self):
+        super(TestMyViewSuccessCondition, self).setUp()
+        self.init_database()
 
-        self.assertTrue(user1 in expgroup1.users)
-        self.assertTrue(user2 in expgroup1.users)
-        self.assertTrue(user3 in expgroup2.users)
-        self.assertTrue(user4 in expgroup2.users)
+        from .models import MyModel
+
+        model = MyModel(name='one', value=55)
+        self.session.add(model)
+
+    def test_passing_view(self):
+        from .views.default import my_view
+        from .models import MyModel
+        info = my_view(dummy_request(self.session))
+        self.assertEqual(info['one'].name, 'one')
+        self.assertEqual(info['project'], 'Experiment-server')
+        self.assertEqual(self.session.query(MyModel).filter_by(name='one').one().value, 55)
+"""

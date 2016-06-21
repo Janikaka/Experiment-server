@@ -15,3 +15,9 @@ class DataItems(Base):
     id = Column(Integer, primary_key=True)
     value = Column(Integer)
     user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship("Users", back_populates="dataitems")
+    experiments = relationship(
+        "Experiments",
+        secondary=dataitems_experiments,
+        back_populates="dataitems")
+

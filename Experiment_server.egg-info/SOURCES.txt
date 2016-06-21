@@ -4,6 +4,7 @@ README.txt
 development.ini
 production.ini
 pytest.ini
+setup.py
 Experiment_server.egg-info/PKG-INFO
 Experiment_server.egg-info/SOURCES.txt
 Experiment_server.egg-info/dependency_links.txt
@@ -15,8 +16,12 @@ experiment_server/__init__.py
 experiment_server/routes.py
 experiment_server/tests.py
 experiment_server/models/__init__.py
+experiment_server/models/dataItems.py
+experiment_server/models/dataitems_experiments.py
+experiment_server/models/experimentGroups.py
+experiment_server/models/experiments.py
 experiment_server/models/meta.py
-experiment_server/models/mymodel.py
+experiment_server/models/users.py
 experiment_server/scripts/__init__.py
 experiment_server/scripts/initializedb.py
 experiment_server/static/pyramid-16x16.png

@@ -2,7 +2,7 @@ from sqlalchemy import (
     Column,
     Index,
     Integer,
-    Text,
+    Text
 )
 
 from sqlalchemy.orm import relationship
@@ -14,10 +14,6 @@ class Experiments(Base):
     __tablename__ = 'experiments'
     id = Column(Integer, primary_key=True)
     name = Column(Text)
-    experimentgroups = relationship("ExperimentGroups", back_populates="experiment")
-    dataitems = relationship(
-        "DataItems",
-        secondary=dataitems_experiments,
-        back_populates="experiments")
+    experimentgroups = relationship("ExperimentGroups", backref="experiment")
 
 Index('experiments_index', Experiments.name, unique=True, mysql_length=255)
