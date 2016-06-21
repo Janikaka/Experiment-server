@@ -60,7 +60,6 @@ class TestExperiments(BaseTest):
         self.assertEqual(exp2.id, 2)
         self.assertEqual(len(self.session.query(Experiments).all()), 2)
 
-
 class TestUsers(BaseTest):
 
     def setUp(self):
@@ -131,7 +130,7 @@ class TestDataItems(BaseTest):
         self.assertEqual(dataItem1.user.id, 1);
         self.assertEqual(dataItem2.user.id, 1);
         self.assertEqual(dataItem3.user.id, 2);
-        self.assertEqual(dataItem4.user_id, 2);
+        self.assertEqual(dataItem4.user.id, 2);
         self.assertEqual(dataItem1.value, 10);
         self.assertEqual(dataItem2.value, 20);
         self.assertEqual(dataItem3.value, 30);
@@ -185,6 +184,12 @@ class TestExperimentGroups(BaseTest):
         self.assertEqual(expGroup2.experiment_id, 1)
         self.assertEqual(expGroup3.experiment_id, 2)
         self.assertEqual(expGroup4.experiment_id, 2)
+
+        self.assertEqual(expGroup1.experiment.name, 'first experiment')
+        self.assertEqual(expGroup2.experiment.name, 'first experiment')
+        self.assertEqual(expGroup3.experiment.name, 'second experiment')
+        self.assertEqual(expGroup4.experiment.name, 'second experiment')
+
         self.assertEqual(expGroup1.name, 'exp1groupA')
         self.assertEqual(expGroup2.name, 'exp1groupB')
         self.assertEqual(expGroup3.name, 'exp2groupA')
@@ -251,3 +256,7 @@ class TestUsers_ExperimentGroups(BaseTest):
         self.assertTrue(user2 in expgroup1.users)
         self.assertTrue(user3 in expgroup2.users)
         self.assertTrue(user4 in expgroup2.users)
+
+        self.assertEqual(user1.experimentgroups[0].experiment.id, 1)
+        self.assertEqual(user1.experimentgroups[1].experiment.id, 1)
+        
