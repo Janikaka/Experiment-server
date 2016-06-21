@@ -246,19 +246,18 @@ class TestUsers_ExperimentGroups(BaseTest):
 #---------------------------------------------------------------------------------
 
 def create_user_if_does_not_exists(session, user):
-
     if len(session.query(Users).all()) == 0:
             session.add(user)
 
-class Test_User_Experiment_server_communication(BaseTest):
+class Test_user_opens_app(BaseTest):
 
     def setUp(self):
-        super(Test_User_Experiment_server_communication, self).setUp()
+        super(Test_user_opens_app, self).setUp()
         self.init_database()
 
         self.user = Users(username='test user', password='test password')
 
-    def test_user_exists(self):
+    def test_user_does_not_exists(self):
 
         self.assertEqual(len(self.session.query(Users).all()), 0)
 
@@ -267,8 +266,54 @@ class Test_User_Experiment_server_communication(BaseTest):
         create_user_if_does_not_exists(self.session, self.user)
         self.assertEqual(len(self.session.query(Users).all()), 1)
 
+def get_experiments_in_which_user_participates(session, user):
+    experiments = []
+    for experiment in session.query(Experiments).all():
+        for experimentgroup in experiment.experimentgroups:
+            if user in experimentgroup.users:
+                experiments.append(experiment)
+    return experiments
 
+def get_experimentgroups_in_which_user_participates(session, user):
+    experimentgroups = []
+    for experiment in session.query(Experiments).all():
+        for experimentgroup in experiment.experimentgroups:
+            if user in experimentgroup.users:
+                experimentgroups.append(experimentgroup)
+    return experimentgroups
 
+class Test_get_experiments_and_groups_in_which_user_participates(BaseTest):
+
+    def setUp(self):
+        super(Test_get_experiments_and_groups_in_which_user_participates, self).setUp()
+        self.init_database()
+
+        self.user = Users(username='test user', password='test password')
+        self.session.add(self.user)
+        self.experiment1 = Experiments(name='first test experiment')
+        self.session.add(self.experiment1)
+        self.experiment2 = Experiments(name='second test experiment')
+        self.session.add(self.experiment2)
+
+        self.exp1group1 = ExperimentGroups(name='experiment 1 group A', experiment=self.experiment1)
+        self.exp1group1.users.append(self.user)
+        self.exp1group2 = ExperimentGroups(name='experiment 1 group B', experiment=self.experiment1)
+        self.session.add(self.exp1group1)
+        self.session.add(self.exp1group2)
+
+        self.exp2group1 = ExperimentGroups(name='experiment 2 group A', experiment=self.experiment2)
+        self.exp2group2 = ExperimentGroups(name='experiment 2 group B', experiment=self.experiment2)
+        self.exp2group2.users.append(self.user)
+        self.session.add(self.exp2group1)
+        self.session.add(self.exp2group2)
+
+    def test_get_experiments(self):
+        self.assertEqual(len(get_experiments_in_which_user_participates(self.session, self.user)), 2)
+        self.assertTrue(get_experiments_in_which_user_participates(self.session, self.user) == [self.experiment1, self.experiment2])
+
+    def test_get_experimentgroups(self):
+        self.assertEqual(len(get_experimentgroups_in_which_user_participates(self.session, self.user)), 2)
+        self.assertTrue(get_experimentgroups_in_which_user_participates(self.session, self.user) == [self.exp1group1, self.exp2group2])
 
 
         
