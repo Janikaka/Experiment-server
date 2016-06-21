@@ -14,7 +14,7 @@ dataitems_experiments = Table('dataitems_experiments', Base.metadata,
     Column('left_id', Integer, ForeignKey('dataitems.id')),
     Column('right_id', Integer, ForeignKey('experiments.id'))
 )
-
+"""
 class DataItems(Base):
     __tablename__ = 'dataitems'
     id = Column(Integer, primary_key=True)
@@ -37,5 +37,5 @@ class Experiments(Base):
         secondary=dataitems_experiments,
         back_populates="experiments")
 
-Index('experiments_index', Experiments.name, unique=True, mysql_length=255)
+Index('experiments_index', Experiments.name, unique=True, mysql_length=255)"""
 

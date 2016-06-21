@@ -184,14 +184,33 @@ class TestExperimentGroups(BaseTest):
         self.assertEqual(expGroup2.name, 'exp1groupB')
         self.assertEqual(expGroup3.name, 'exp2groupA')
         self.assertEqual(expGroup4.name, 'exp2groupB')
-
+"""
 class TestDataItems_Experiments(BaseTest):
 
     def setUp(self):
         super(TestDataItems_Experiments, self).setUp()
         self.init_database()
 
+        experiment1 = Experiments(name='first experiment')
+        experiment2 = Experiments(name='second experiment')
+        self.session.add(experiment1)
+        self.session.add(experiment2)
 
+        user1 = Users(username='first user', password='first password')
+        self.session.add(user1)
+        user2 = Users(username='second user', password='second password')
+        self.session.add(user2)
+
+        dataItem1 = DataItems(user_id=user1.id, user=user1, value=10, experiments.append(experiment1))
+        dataItem2 = DataItems(user_id=user1.id, user=user1, value=20, experiments.append(experiment1))
+        dataItem3 = DataItems(user_id=user2.id, user=user2, value=30, experiments.append(experiment2))
+        dataItem4 = DataItems(user_id=user2.id, user=user2, value=40, experiments.append(experiment2))
+        self.session.add(dataItem1)
+        self.session.add(dataItem2)
+        self.session.add(dataItem3)
+        self.session.add(dataItem4)
+        
+"""
 
 
 

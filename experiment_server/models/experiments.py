@@ -1,4 +1,4 @@
-"""from sqlalchemy import (
+from sqlalchemy import (
     Column,
     Index,
     Integer,
@@ -15,6 +15,9 @@ class Experiments(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Text)
     experimentgroups = relationship("ExperimentGroups", back_populates="experiment")
+    dataitems = relationship(
+        "DataItems",
+        secondary=dataitems_experiments,
+        back_populates="experiments")
 
 Index('experiments_index', Experiments.name, unique=True, mysql_length=255)
-"""

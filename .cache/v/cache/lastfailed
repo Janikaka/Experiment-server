@@ -1,1 +1,8 @@
-{}
+{
+  "experiment_server/tests.py::TestDataItems::test_addDataItems": true,
+  "experiment_server/tests.py::TestDataItems::test_added_dataItems": true,
+  "experiment_server/tests.py::TestExperimentGroups::test_add_experimentGroups": true,
+  "experiment_server/tests.py::TestExperimentGroups::test_added_experimentGroups": true,
+  "experiment_server/tests.py::TestExperiments::test_add_experiments": true,
+  "experiment_server/tests.py::TestUsers::test_add_users": true
+}

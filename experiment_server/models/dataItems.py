@@ -1,4 +1,4 @@
-"""from sqlalchemy import (
+from sqlalchemy import (
     Column,
     Index,
     Integer,
@@ -16,5 +16,8 @@ class DataItems(Base):
     value = Column(Integer)
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("Users", back_populates="dataitems")
+    experiments = relationship(
+        "Experiments",
+        secondary=dataitems_experiments,
+        back_populates="dataitems")
 
-"""
