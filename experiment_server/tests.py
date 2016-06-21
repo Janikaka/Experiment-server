@@ -102,10 +102,10 @@ class TestDataItems(BaseTest):
         usr1 = self.session.query(Users).filter_by(username='first user').one()
         usr2 = self.session.query(Users).filter_by(username='second user').one()
 
-        dataItem1 = DataItems(user=usr1.id, value=10)
-        dataItem2 = DataItems(user=usr1.id, value=20)
-        dataItem3 = DataItems(user=usr2.id, value=30)
-        dataItem4 = DataItems(user=usr2.id, value=40)
+        dataItem1 = DataItems(user_id=usr1.id, user=usr1, value=10)
+        dataItem2 = DataItems(user_id=usr1.id, user=usr1, value=20)
+        dataItem3 = DataItems(user_id=usr2.id, user=usr2, value=30)
+        dataItem4 = DataItems(user_id=usr2.id, user=usr2, value=40)
 
         self.session.add(dataItem1)
         self.session.add(dataItem2)
@@ -126,10 +126,10 @@ class TestDataItems(BaseTest):
         dataItem3 = self.session.query(DataItems).filter_by(id=3).one()
         dataItem4 = self.session.query(DataItems).filter_by(id=4).one()
 
-        self.assertEqual(dataItem1.user, 1);
-        self.assertEqual(dataItem2.user, 1);
-        self.assertEqual(dataItem3.user, 2);
-        self.assertEqual(dataItem4.user, 2);
+        self.assertEqual(dataItem1.user_id, 1);
+        self.assertEqual(dataItem2.user_id, 1);
+        self.assertEqual(dataItem3.user_id, 2);
+        self.assertEqual(dataItem4.user_id, 2);
         self.assertEqual(dataItem1.value, 10);
         self.assertEqual(dataItem2.value, 20);
         self.assertEqual(dataItem3.value, 30);
@@ -152,10 +152,10 @@ class TestExperimentGroups(BaseTest):
         experiment1 = self.session.query(Experiments).filter_by(name='first experiment').one()
         experiment2 = self.session.query(Experiments).filter_by(name='second experiment').one()
 
-        experimentGroup1 = ExperimentGroups(experiment=experiment1.id, name='exp1groupA')
-        experimentGroup2 = ExperimentGroups(experiment=experiment1.id, name='exp1groupB')
-        experimentGroup3 = ExperimentGroups(experiment=experiment2.id, name='exp2groupA')
-        experimentGroup4 = ExperimentGroups(experiment=experiment2.id, name='exp2groupB')
+        experimentGroup1 = ExperimentGroups(experiment_id=experiment1.id, experiment = experiment1, name='exp1groupA')
+        experimentGroup2 = ExperimentGroups(experiment_id=experiment1.id, experiment = experiment1, name='exp1groupB')
+        experimentGroup3 = ExperimentGroups(experiment_id=experiment2.id, experiment = experiment2, name='exp2groupA')
+        experimentGroup4 = ExperimentGroups(experiment_id=experiment2.id, experiment = experiment2, name='exp2groupB')
 
         self.session.add(experimentGroup1)
         self.session.add(experimentGroup2)
@@ -176,20 +176,20 @@ class TestExperimentGroups(BaseTest):
         expGroup3 = self.session.query(ExperimentGroups).filter_by(id=3).one()
         expGroup4 = self.session.query(ExperimentGroups).filter_by(id=4).one()
 
-        self.assertEqual(expGroup1.experiment, 1)
-        self.assertEqual(expGroup2.experiment, 1)
-        self.assertEqual(expGroup3.experiment, 2)
-        self.assertEqual(expGroup4.experiment, 2)
+        self.assertEqual(expGroup1.experiment_id, 1)
+        self.assertEqual(expGroup2.experiment_id, 1)
+        self.assertEqual(expGroup3.experiment_id, 2)
+        self.assertEqual(expGroup4.experiment_id, 2)
         self.assertEqual(expGroup1.name, 'exp1groupA')
         self.assertEqual(expGroup2.name, 'exp1groupB')
         self.assertEqual(expGroup3.name, 'exp2groupA')
         self.assertEqual(expGroup4.name, 'exp2groupB')
 
+class TestDataItems_Experiments(BaseTest):
 
-
-
-
-
+    def setUp(self):
+        super(TestDataItems_Experiments, self).setUp()
+        self.init_database()
 
 
 

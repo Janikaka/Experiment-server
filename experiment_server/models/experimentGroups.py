@@ -8,9 +8,11 @@ from sqlalchemy import (
 
 from .meta import Base
 
+from sqlalchemy.orm import relationship
 
 class ExperimentGroups(Base):
     __tablename__ = 'experimentgroups'
     id = Column(Integer, primary_key=True)
-    experiment = Column(Integer, ForeignKey('experiments.id'))
     name = Column(Text)
+    experiment_id = Column(Integer, ForeignKey('experiments.id'))
+    experiment = relationship("Experiments", back_populates="experimentgroups")

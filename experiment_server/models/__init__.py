@@ -5,9 +5,11 @@ import zope.sqlalchemy
 
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
-from .experiments import Experiments
+#from .experiments import Experiments
 from .users import Users
-from .dataItems import DataItems
+#from .dataItems import DataItems
+
+from .dataitems_experiments import (Experiments, DataItems)
 from .experimentGroups import ExperimentGroups
 
 
