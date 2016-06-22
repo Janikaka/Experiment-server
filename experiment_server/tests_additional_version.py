@@ -12,6 +12,29 @@ from .models import (
 def dummy_request(dbsession):
     return testing.DummyRequest(dbsession=dbsession)
 
+def create_Experiment(session, name, experimentgroups):
+    experiment = Experiments(name=name)
+    if experimentgroups != None:
+        for experimentgroup in experimentgroups:
+            experiment.experimentgroups.append(experimentgroup)
+    session.add(experiment)
+    return experiment
+
+def create_ExperimentGroup(session, name, experiment, users):
+    experimentGroup = ExperimentGroups(name=name)
+    if experiment != None:
+        experiment.experimentgroups.append(experimentGroup)
+    if users != None:
+        for user in users:
+            experimentGroup.users.append(user)
+    session.add(experimentGroup)
+    return experimentGroup
+
+def create_User(session, username, password):
+    user = Users(username=username, password=password)
+    session.add(user)
+    return user
+
 class BaseTest(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp(settings={
@@ -48,23 +71,9 @@ class TestExperiments(BaseTest):
         super(TestExperiments, self).setUp()
         self.init_database()
 
-        experiment1 = Experiments(name='first experiment')
-        self.session.add(experiment1)
-        experiment2 = Experiments(name='second experiment')
-        self.session.add(experiment2)
-
-        experimentgroup = ExperimentGroups(name='experiment group A')
-
-        user1 = Users(username='first user', password='first password')
-        self.session.add(user1)
-        user2 = Users(username='second user', password='second password')
-        self.session.add(user2)
-
-        experimentgroup.users.append(user1)
-        experimentgroup.users.append(user2)
-
-        self.session.add(experimentgroup)
-        experiment1.experimentgroups.append(experimentgroup)
+        experimentGroup = create_ExperimentGroup(self.session, 'expgroupA', None, None)
+        create_Experiment(self.session, 'first experiment', [experimentGroup])
+        create_Experiment(self.session, 'second experiment', None)
 
     def test_add_experiments(self):
 
@@ -81,9 +90,7 @@ class TestExperiments(BaseTest):
     def test_data_from_added_experiments(self):
         exp1 = self.session.query(Experiments).filter_by(name='first experiment').one()
         exp2 = self.session.query(Experiments).filter_by(name='second experiment').one()
-        expgroup = self.session.query(ExperimentGroups).filter_by(name='experiment group A').one()
-        user1 = self.session.query(Users).filter_by(username='first user').one()
-        user2 = self.session.query(Users).filter_by(username='second user').one()
+        expgroup = self.session.query(ExperimentGroups).filter_by(name='expgroupA').one()
         
         self.assertEqual(exp1.experimentgroups, [expgroup])
         self.assertEqual(exp1.experimentgroups[0].experiment, exp1)
@@ -95,22 +102,12 @@ class TestExperimentGroups(BaseTest):
         super(TestExperimentGroups, self).setUp()
         self.init_database()
 
-        experiment = Experiments(name='first experiment')
-        self.session.add(experiment)
+        experiment = create_Experiment(self.session, 'first experiment', None)
+        user1 = create_User(self.session, 'first user', 'first password')
+        user2 = create_User(self.session, 'second user', 'second password')
+        create_ExperimentGroup(self.session, 'expgroupA', experiment, [user1])
+        create_ExperimentGroup(self.session, 'expgroupB', experiment, [user2])
 
-        experimentGroup1 = ExperimentGroups(experiment = experiment, name='expgroupA')
-        experimentGroup2 = ExperimentGroups(experiment = experiment, name='expgroupB')
-
-        user1 = Users(username='first user', password='first password')
-        self.session.add(user1)
-        user2 = Users(username='second user', password='second password')
-        self.session.add(user2)
-
-        experimentGroup1.users.append(user1)
-        experimentGroup2.users.append(user2)
-
-        self.session.add(experimentGroup1)
-        self.session.add(experimentGroup2)
 
 
     def test_add_experimentGroups(self):
