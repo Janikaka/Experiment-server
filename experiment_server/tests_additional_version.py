@@ -35,6 +35,13 @@ def create_User(session, username, password):
     session.add(user)
     return user
 
+def create_DataItem(session, value, user):
+    dataItem = DataItems(value=value)
+    if user != None:
+        dataItem.user = user
+    session.add(dataItem)
+    return dataItem
+
 class BaseTest(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp(settings={
@@ -130,7 +137,7 @@ class TestExperimentGroups(BaseTest):
         self.assertEqual(expGroup2.experiment, experiment)
         self.assertEqual(expGroup1.users, [user1])
         self.assertEqual(expGroup2.users, [user2])
-    
+
 
 class TestUsers(BaseTest):
 
@@ -138,27 +145,16 @@ class TestUsers(BaseTest):
         super(TestUsers, self).setUp()
         self.init_database()
 
-        user1 = Users(username='first user', password='first password')
-        self.session.add(user1)
-        user2 = Users(username='second user', password='second password')
-        self.session.add(user2)
+        user1 = create_User(self.session, 'first user', 'first password')
+        user2 = create_User(self.session, 'second user', 'second password')
 
-        dataItem1 = DataItems(value=10)
-        dataItem2 = DataItems(value=20)
-        self.session.add(dataItem1)
-        self.session.add(dataItem2)
+        dataItem1 = create_DataItem(self.session, 10, user1)
+        dataItem2 = create_DataItem(self.session, 20, user2)
 
-        experiment = Experiments(name='first experiment')
-        self.session.add(experiment)
-        experimentGroup1 = ExperimentGroups(experiment = experiment, name='expgroupA')
-        experimentGroup2 = ExperimentGroups(experiment = experiment, name='expgroupB')
-        self.session.add(experimentGroup1)
-        self.session.add(experimentGroup2)
+        experiment = create_Experiment(self.session, 'first experiment', None)
+        experimentGroup1 = create_ExperimentGroup(self.session, 'expgroupA', experiment, [user1])
+        experimentGroup2 = create_ExperimentGroup(self.session, 'expgroupB', experiment, [user2])
 
-        user1.dataitems.append(dataItem1)
-        user2.dataitems.append(dataItem2)
-        user1.experimentgroups.append(experimentGroup1)
-        user2.experimentgroups.append(experimentGroup2)
 
     def test_add_users(self):
         user1 = self.session.query(Users).filter_by(username='first user').one()
@@ -190,20 +186,14 @@ class TestDataItems(BaseTest):
         super(TestDataItems, self).setUp()
         self.init_database()
 
-        user1 = Users(username='first user', password='first password')
-        self.session.add(user1)
-        user2 = Users(username='second user', password='second password')
-        self.session.add(user2)
+        user1 = create_User(self.session, 'first user', 'first password')
+        user2 = create_User(self.session, 'second user', 'second password')
 
-        dataItem1 = DataItems(value=10)
-        dataItem2 = DataItems(value=20)
-        self.session.add(dataItem1)
-        self.session.add(dataItem2)
-
-        user1.dataitems.append(dataItem1)
-        user2.dataitems.append(dataItem2)
+        dataItem1 = create_DataItem(self.session, 10, user1)
+        dataItem2 = create_DataItem(self.session, 20, user2)
 
     def test_add_DataItems(self):
+        
         dataItem1 = self.session.query(DataItems).filter_by(id=1).one()
         dataItem2 = self.session.query(DataItems).filter_by(id=2).one()
 
