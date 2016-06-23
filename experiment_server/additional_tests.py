@@ -1,4 +1,5 @@
 import unittest
+import pytest
 import transaction
 
 from pyramid import testing
@@ -12,14 +13,16 @@ from .models import (
 def dummy_request(dbsession):
     return testing.DummyRequest(dbsession=dbsession)
 
-
-def create_Experiment(session, name, experimentgroups):
-    experiment = Experiments(name=name)
-    if experimentgroups != None:
-        for experimentgroup in experimentgroups:
-            experiment.experimentgroups.append(experimentgroup)
-    session.add(experiment)
-    return experiment
+@pytest.fixture(scope="module")
+def create_Experiment(request):
+    def create(session, name, experimentgroups):
+        experiment = Experiments(name=name)
+        if experimentgroups != None:
+            for experimentgroup in experimentgroups:
+                experiment.experimentgroups.append(experimentgroup)
+            session.add(experiment)
+        return experiment
+    return create
 
 def create_ExperimentGroup(session, name, experiment, users):
     experimentGroup = ExperimentGroups(name=name)
