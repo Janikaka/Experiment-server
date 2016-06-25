@@ -33,9 +33,10 @@ class Experiments:
 		self.DB.deleteExperiment(self.request.matchdict['id'])
 
 	#7 List all users for specific experiment
-	@view_config(route_name='users_for_experiment', request_method="GET")
+	@view_config(route_name='users_for_experiment', request_method="GET", renderer='../templates/users_in_experiment.jinja2')
 	def users_for_experiment_GET(self):
-		return None
+		experiment = self.DB.getExperiment(self.request.matchdict['id'])
+		return {'users': self.DB.getUsersInExperiment(experiment), 'experiment': experiment}
 
 	#11 Show experiment data
 	@view_config(route_name='experiment_data', request_method="GET")

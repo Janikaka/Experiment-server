@@ -40,13 +40,12 @@ class BaseTest(unittest.TestCase):
 
     def init_databaseData(self):
         self.DBInterface = DatabaseInterface(self.dbsession)
-        self.DBInterface.createExperiment({'name': 'First experiment', 'experimentgroupNames':['group A', 'group B']})
-        self.DBInterface.createExperiment({'name': 'Second experiment', 'experimentgroupNames':['group C', 'group D']})
-        self.DBInterface.createUser({'username': 'First user', 'password': 'First password'})
-        self.DBInterface.createUser({'username': 'Second user', 'password': 'Second password'})
-        self.DBInterface.createUser({'username': 'Third user', 'password': 'Third password'})
-        self.DBInterface.createUser({'username': 'Fourth user', 'password': 'Fourth password'})
-
+        experiment1 = self.DBInterface.createExperiment({'name': 'First experiment', 'experimentgroupNames':['group A', 'group B']})
+        experiment2 = self.DBInterface.createExperiment({'name': 'Second experiment', 'experimentgroupNames':['group C', 'group D']})
+        user1 = self.DBInterface.createUser({'username': 'First user', 'password': 'First password', 'experimentgroups': [experiment1.experimentgroups[0]]})
+        user2 = self.DBInterface.createUser({'username': 'Second user', 'password': 'Second password', 'experimentgroups': [experiment1.experimentgroups[1]]})
+        user3 = self.DBInterface.createUser({'username': 'Third user', 'password': 'Third password', 'experimentgroups': [experiment2.experimentgroups[0]]})
+        user4 = self.DBInterface.createUser({'username': 'Fourth user', 'password': 'Fourth password', 'experimentgroups': [experiment2.experimentgroups[1]]})
 
     def tearDown(self):
         from .models.meta import Base
@@ -99,7 +98,29 @@ class TestDatabaseInterface(BaseTest):
         for i in range(len(usersFromDB)):
             assert usersFromDB[i].username == users[i]['username']
             assert usersFromDB[i].password == users[i]['password']
-    
+
+    def test_getUsersInExperiment(self):
+        users1 = self.DBInterface.getUsersInExperiment(self.dbsession.query(Experiments).filter_by(id=1).one())
+        users2 = self.DBInterface.getUsersInExperiment(self.dbsession.query(Experiments).filter_by(id=2).one())
+        assert len(users1) == 2
+        assert len(users2) == 2
+        assert users1[0].id == 1 and users1[1].id == 2 
+        assert users2[0].id == 3 and users2[1].id == 4 
+
+    def test_getExperimentsForUser(self):
+        experiments1 = self.DBInterface.getExperimentsForUser(self.dbsession.query(Users).filter_by(id=1).one())['experiments']
+        experiments2 = self.DBInterface.getExperimentsForUser(self.dbsession.query(Users).filter_by(id=2).one())['experiments']
+        experiments3 = self.DBInterface.getExperimentsForUser(self.dbsession.query(Users).filter_by(id=3).one())['experiments']
+        experiments4 = self.DBInterface.getExperimentsForUser(self.dbsession.query(Users).filter_by(id=4).one())['experiments']
+        
+        assert len(experiments1) == 1
+        assert len(experiments2) == 1
+        assert len(experiments3) == 1
+        assert len(experiments4) == 1
+        assert experiments1[0].id == 1
+        assert experiments2[0].id == 1
+        assert experiments3[0].id == 2
+        assert experiments4[0].id == 2
 
 
 

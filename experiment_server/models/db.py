@@ -18,6 +18,7 @@ class DatabaseInterface:
 			self.dbsession.add(experimentgroup)
 			experiment.experimentgroups.append(experimentgroup)
 		self.dbsession.add(experiment)
+		return experiment
 
 	def getAllExperiments(self):
 		return self.dbsession.query(Experiments).all()
@@ -29,14 +30,51 @@ class DatabaseInterface:
 		experiment = self.dbsession.query(Experiments).filter_by(id=id).one()
 		self.dbsession.delete(experiment)
 
+	def getUsersInExperiment(self, experiment):
+		experimentgroups = self.dbsession.query(Experiments).filter_by(id=experiment.id).one().experimentgroups
+		users = []
+		for experimentgroup in experimentgroups:
+			users.extend(experimentgroup.users)
+		return users
+
+
 #---------------------------------------------------------------------------------
 #                                      Users                                      
 #---------------------------------------------------------------------------------
 	def createUser(self, data):
 		username = data['username']
 		password = data['password']
-		user = Users(username=username, password=password)
+		if data['experimentgroups'] != None:
+			user = Users(username=username, password=password, experimentgroups=data['experimentgroups'])
+		else:
+			user = Users(username=username, password=password)
 		self.dbsession.add(user)
+		return user
+
+	def getUser(self, id):
+		return self.dbsession.query(Users).filter_by(id=id).one()
 
 	def getAllUsers(self):
 		return self.dbsession.query(Users).all()
+
+	def getExperimentsForUser(self, user):
+		experimentgroups = self.dbsession.query(Users).filter_by(id=user.id).one().experimentgroups
+		experiments = []
+		for experimentgroup in experimentgroups:
+			experiments.append(experimentgroup.experiment)
+		return {'user': user, 'experiments': experiments}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

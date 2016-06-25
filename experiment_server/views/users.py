@@ -21,9 +21,10 @@ class Users:
 		return {'users': self.DB.getAllUsers()}
 
 	#8 List all experiments for specific user 
-	@view_config(route_name='experiments_for_user', request_method="GET")
+	@view_config(route_name='experiments_for_user', request_method="GET", renderer='../templates/experiments_for_user.jinja2')
 	def experiments_for_user_GET(self):
-		return None
+		user = self.DB.getUser(self.request.matchdict['id'])
+		return self.DB.getExperimentsForUser(user)
 
 	#9 Save experiment data
 	@view_config(route_name='events', request_method="POST")
