@@ -6,7 +6,7 @@ from ..models import DatabaseInterface
 class Experiments:
 	def __init__(self, request):
 		self.request = request
-		self.DB = DatabaseInterface(self.request)
+		self.DB = DatabaseInterface(self.request.dbsession)
 
 	#1 Create new experiment
 	@view_config(route_name='experiments', request_method="POST")
@@ -14,8 +14,7 @@ class Experiments:
 		data = self.request.json_body
 		name = data["name"]
 		experimentgroups = data["experimentgroups"]
-		self.DB.addExperiment(name, experimentgroups)
-		return None
+		self.DB.createExperiment({'name': name, 'experimentgroupNames': experimentgroups})
 
 	#2 List all experiments
 	@view_config(route_name='experiments', request_method="GET", renderer='../templates/all_experiments.jinja2')
@@ -31,7 +30,7 @@ class Experiments:
 	#4 Delete experiment
 	@view_config(route_name='experiment', request_method="DELETE")
 	def experiment_DELETE(self):
-		return None
+		self.DB.deleteExperiment(self.request.matchdict['id'])
 
 	#7 List all users for specific experiment
 	@view_config(route_name='users_for_experiment', request_method="GET")

@@ -44,7 +44,36 @@ def main(argv=sys.argv):
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
 
-        #experimentsModel = Experiments(name='myFirstExperiment')
-        #dbsession.add(experimentsModel)
-        #userModel = Users(username='user', password='password')
-        #dbsession.add(userModel)
+        user1 = Users(username='First user', password='First password')
+        user2 = Users(username='Second user', password='Second password')
+        
+        dataitem1 = DataItems(value=10)
+        dataitem2 = DataItems(value=20)
+
+        user1.dataitems.append(dataitem1)
+        user2.dataitems.append(dataitem2)
+
+        experiment1 = Experiments(name='First experiment')
+
+        experimentgroup1 = ExperimentGroups(name='group A', users=[user1])
+        experimentgroup2 = ExperimentGroups(name='group B', users=[user2])
+
+        experiment1.experimentgroups.append(experimentgroup1)
+        experiment1.experimentgroups.append(experimentgroup2)
+
+        dbsession.add(dataitem1)
+        dbsession.add(dataitem2)
+        dbsession.add(user1)
+        dbsession.add(user2)
+        dbsession.add(experimentgroup1)
+        dbsession.add(experimentgroup2)
+        dbsession.add(experiment1)
+
+
+
+
+
+
+
+
+

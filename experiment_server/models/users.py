@@ -19,7 +19,8 @@ class Users(Base):
     experimentgroups = relationship(
     	"ExperimentGroups",
     	secondary=Users_Experimentgroups,
-    	back_populates="users"
+    	back_populates="users",
+        cascade="delete"
     )
 
 Index('users_index', Users.username, unique=True, mysql_length=255)
