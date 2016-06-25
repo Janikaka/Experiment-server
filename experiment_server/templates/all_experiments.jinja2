@@ -2,16 +2,10 @@
 
 {% block content %}
 <div class="content">
-	<h1>All experiments:</h1>
+	<h1>All experiments:</h1><br>
 	<ul>
 	{% for experiment in experiments %}
-		<li class="font-bold">Experiment name: <p>{{ experiment.name }}</p>
-			Experiment groups:
-			<ul>
-			{% for experimentgroup in experiment.experimentgroups %}
-				<li><p>{{ experimentgroup.name }}</p></li>
-			{% endfor %}
-			</ul>
+		<li class="font-bold"><a href=/experiments/{{ experiment.id }}/metadata>{{ experiment.name }}</a>
 		</li>
 		<br>
 	{% endfor %}
@@ -23,4 +17,14 @@
 
 {# <h1><span class="font-semi-bold">Pyramid</span> <span class="smaller">Alchemy scaffold</span></h1>
   <p class="lead">Welcome to <span class="font-normal">{{one}}</span>, an&nbsp;application generated&nbsp;by<br>the <span class="font-normal">Pyramid Web Framework 1.7</span>.</p>
-} #}
+}
+
+Experiment groups:
+			<ul>
+			{% for experimentgroup in experiment.experimentgroups %}
+				<li><p>{{ experimentgroup.name }}</p></li>
+			{% endfor %}
+			</ul>
+
+
+ #}

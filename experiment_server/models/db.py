@@ -15,3 +15,6 @@ class DatabaseInterface:
 
 	def getAllExperiments(self):
 		return self.dbsession.query(Experiments).all()
+
+	def getExperiment(self, id):
+		return self.dbsession.query(Experiments).filter_by(id=id).one()

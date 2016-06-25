@@ -20,17 +20,13 @@ class Experiments:
 	#2 List all experiments
 	@view_config(route_name='experiments', request_method="GET", renderer='../templates/all_experiments.jinja2')
 	def experiments_GET(self):
-		allExperiments = self.DB.getAllExperiments()
-		experiments = []
-		for experiment in allExperiments:
-			name = experiment.name
-			experiments.append({'name':name, 'experimentgroups':experiment.experimentgroups})
-		return {'experiments':experiments}
+		return {'experiments':self.DB.getAllExperiments()}
 
 	#3 Show specific experiment metadata
-	@view_config(route_name='experiment_metadata', request_method="GET")
+	@view_config(route_name='experiment_metadata', request_method="GET", renderer='../templates/experiment_metadata.jinja2')
 	def experiment_metadata_GET(self):
-		return None
+		experiment = self.DB.getExperiment(self.request.matchdict['id'])
+		return {'name': experiment.name, 'id': experiment.id, 'experimentgroups': experiment.experimentgroups}
 
 	#4 Delete experiment
 	@view_config(route_name='experiment', request_method="DELETE")
