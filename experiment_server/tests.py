@@ -345,3 +345,21 @@ class Test_get_experiments_in_which_user_does_not_participate_and_assign_user(Ba
 
         for experimentgroup in experimentgroups:
             self.assertTrue(self.user in experimentgroup.users)
+
+#---------------------------------------------------------------------------------
+#                               DatabaseInterface
+#---------------------------------------------------------------------------------
+"""
+from .models import DatabaseInterface
+
+class TestExperiments(BaseTest):
+
+    def setUp(self):
+        super(TestExperiments, self).setUp()
+        self.init_database()
+
+    def test_add_Experiment(self):
+"""
+
+
+

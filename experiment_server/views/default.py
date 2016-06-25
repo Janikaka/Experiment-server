@@ -7,15 +7,9 @@ from sqlalchemy.exc import DBAPIError
 
 @view_config(route_name='home', renderer='../templates/mytemplate.jinja2')
 def my_view(request):
-    try:
-        query = request.dbsession.query(MyModel)
-        one = query.filter(MyModel.name == 'one').first()
-    except DBAPIError:
-        return Response(db_err_msg, content_type='text/plain', status=500)
-    return {'one': one, 'project': 'Experiment-server'}
+    return {'one': 'This is', 'project': 'Experiment-server'} 
 
-
-db_err_msg = """\
+"""
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
 
@@ -30,3 +24,25 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
