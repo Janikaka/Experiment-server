@@ -23,18 +23,21 @@ class Users:
 	#8 List all experiments for specific user 
 	@view_config(route_name='experiments_for_user', request_method="GET", renderer='../templates/experiments_for_user.jinja2')
 	def experiments_for_user_GET(self):
-		user = self.DB.getUser(self.request.matchdict['id'])
-		return self.DB.getExperimentsForUser(user)
+		id = self.request.matchdict['id']
+		return {'user': self.DB.getUser(id), 'experiments': self.DB.getExperimentsForUser(id)}
 
 	#9 Save experiment data
 	@view_config(route_name='events', request_method="POST")
 	def events_POST(self):
-		return None
+		json = self.request.json_body
+		value = json['value']
+		id = None
+		self.DB.createDataitem({'user': self.DB.getUser(id), 'value': value})
 
 	#10 Delete user
 	@view_config(route_name='user', request_method="DELETE")
 	def user_DELETE(self):
-		return None
+		self.DB.deleteUser(self.request.matchdict['id'])
 	
 
 

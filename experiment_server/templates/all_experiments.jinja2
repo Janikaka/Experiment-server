@@ -5,7 +5,9 @@
 	<h1>All experiments:</h1><br>
 	<ul>
 	{% for experiment in experiments %}
-		<li class="font-bold"><a href=/experiments/{{ experiment.id }}/metadata>{{ experiment.name }}</a>
+		<li class="font-bold">{{ experiment.name }}<br>
+		<a href=/experiments/{{ experiment.id }}/metadata>Show details</a><br>
+		<a href=/experiments/{{ experiment.id }}/users>Show users</a><br>
 		</li>
 		<br>
 	{% endfor %}

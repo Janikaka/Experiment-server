@@ -15,12 +15,11 @@ class Users(Base):
     id = Column(Integer, primary_key=True)
     username = Column(Text)
     password = Column(Text)
-    dataitems = relationship("DataItems", backref="user")
+    dataitems = relationship("DataItems", backref="user", cascade="delete")
     experimentgroups = relationship(
     	"ExperimentGroups",
     	secondary=Users_Experimentgroups,
-    	back_populates="users",
-        cascade="delete"
+    	back_populates="users"
     )
 
 Index('users_index', Users.username, unique=True, mysql_length=255)

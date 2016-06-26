@@ -8,7 +8,7 @@ class Experiments:
 		self.request = request
 		self.DB = DatabaseInterface(self.request.dbsession)
 
-	#1 Create new experiment
+	#1 Create new experiment MAKE A FORM (new_experiment.jinja2)
 	@view_config(route_name='experiments', request_method="POST")
 	def experiments_POST(self):
 		data = self.request.json_body
@@ -20,6 +20,7 @@ class Experiments:
 	@view_config(route_name='experiments', request_method="GET", renderer='../templates/all_experiments.jinja2')
 	def experiments_GET(self):
 		return {'experiments':self.DB.getAllExperiments()}
+
 
 	#3 Show specific experiment metadata
 	@view_config(route_name='experiment_metadata', request_method="GET", renderer='../templates/experiment_metadata.jinja2')
@@ -35,15 +36,12 @@ class Experiments:
 	#7 List all users for specific experiment
 	@view_config(route_name='users_for_experiment', request_method="GET", renderer='../templates/users_in_experiment.jinja2')
 	def users_for_experiment_GET(self):
-		experiment = self.DB.getExperiment(self.request.matchdict['id'])
-		return {'users': self.DB.getUsersInExperiment(experiment), 'experiment': experiment}
+		return {'users': self.DB.getUsersInExperiment(self.request.matchdict['id']), 'experiment': self.DB.getExperiment(self.request.matchdict['id'])}
 
 	#11 Show experiment data
 	@view_config(route_name='experiment_data', request_method="GET")
 	def experiment_data_GET(self):
 		return None
-
-
 
 
 

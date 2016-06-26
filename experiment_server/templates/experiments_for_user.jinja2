@@ -2,15 +2,17 @@
 
 {% block content %}
 <div class="content">
-	<h1>All experiments user {{ user.username }} participates:</h1><br>
+	<h1>All experiments <i>{{ user.username }}</i> participates:</h1><br>
 	<ul>
 	{% for experiment in experiments %}
-		<li class="font-bold">ID: {{experiment.id}} </li>
-		<li class="font-bold"><a href="/experiments/{{experiment.id}}/metadata">{{ experiment.name }}</a>
+		<li class="font-bold">
+		<a href="/experiments/{{experiment.id}}/metadata">{{ experiment.name }}</a>
 		</li>
 		<br>
 	{% endfor %}
 	</ul>
+	<br>
+	<input type="button" value="Back" onclick="window.history.back()"/>
 </div>
 {% endblock content %}
 

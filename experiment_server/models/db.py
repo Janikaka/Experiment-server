@@ -1,6 +1,7 @@
 from .experimentGroups import ExperimentGroups
 from .experiments import Experiments
 from .users import Users
+from .dataItems import DataItems
 
 class DatabaseInterface:
 	def __init__(self, dbsession):
@@ -30,8 +31,8 @@ class DatabaseInterface:
 		experiment = self.dbsession.query(Experiments).filter_by(id=id).one()
 		self.dbsession.delete(experiment)
 
-	def getUsersInExperiment(self, experiment):
-		experimentgroups = self.dbsession.query(Experiments).filter_by(id=experiment.id).one().experimentgroups
+	def getUsersInExperiment(self, id):
+		experimentgroups = self.dbsession.query(Experiments).filter_by(id=id).one().experimentgroups
 		users = []
 		for experimentgroup in experimentgroups:
 			users.extend(experimentgroup.users)
@@ -57,20 +58,28 @@ class DatabaseInterface:
 	def getAllUsers(self):
 		return self.dbsession.query(Users).all()
 
-	def getExperimentsForUser(self, user):
-		experimentgroups = self.dbsession.query(Users).filter_by(id=user.id).one().experimentgroups
+	def getExperimentsForUser(self, id):
+		experimentgroups = self.dbsession.query(Users).filter_by(id=id).one().experimentgroups
 		experiments = []
 		for experimentgroup in experimentgroups:
 			experiments.append(experimentgroup.experiment)
-		return {'user': user, 'experiments': experiments}
+		return experiments
 
+	def deleteUser(self, id):
+		user = self.dbsession.query(Users).filter_by(id=id).one()
+		self.dbsession.delete(user)
 
-
-
-
-
-
-
+#---------------------------------------------------------------------------------
+#                                    Dataitems                                     
+#---------------------------------------------------------------------------------
+	
+	def createDataitem(self, data):
+		userId = data['user']
+		value = data['value']
+		user = self.getUser(userId)
+		dataitem = DataItems(value=value, user=user)
+		self.dbsession.add(dataitem)
+		return dataitem
 
 
 

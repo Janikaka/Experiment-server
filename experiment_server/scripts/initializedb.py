@@ -54,6 +54,7 @@ def main(argv=sys.argv):
         user2.dataitems.append(dataitem2)
 
         experiment1 = Experiments(name='First experiment')
+        experiment2 = Experiments(name='Second experiment')
 
         experimentgroup1 = ExperimentGroups(name='group A', users=[user1])
         experimentgroup2 = ExperimentGroups(name='group B', users=[user2])
@@ -68,6 +69,7 @@ def main(argv=sys.argv):
         dbsession.add(experimentgroup1)
         dbsession.add(experimentgroup2)
         dbsession.add(experiment1)
+        dbsession.add(experiment2)
 
 
 

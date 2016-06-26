@@ -31,8 +31,6 @@ class BaseTest(unittest.TestCase):
         session_factory = get_session_factory(self.engine)
         self.dbsession = get_tm_session(session_factory, transaction.manager)
 
-
-
     def init_database(self):
         from .models.meta import Base
 
@@ -46,6 +44,10 @@ class BaseTest(unittest.TestCase):
         user2 = self.DBInterface.createUser({'username': 'Second user', 'password': 'Second password', 'experimentgroups': [experiment1.experimentgroups[1]]})
         user3 = self.DBInterface.createUser({'username': 'Third user', 'password': 'Third password', 'experimentgroups': [experiment2.experimentgroups[0]]})
         user4 = self.DBInterface.createUser({'username': 'Fourth user', 'password': 'Fourth password', 'experimentgroups': [experiment2.experimentgroups[1]]})
+        self.DBInterface.createDataitem({'user': 1, 'value': 10})
+        self.DBInterface.createDataitem({'user': 2, 'value': 20})
+        self.DBInterface.createDataitem({'user': 3, 'value': 30})
+        self.DBInterface.createDataitem({'user': 4, 'value': 40})
 
     def tearDown(self):
         from .models.meta import Base
@@ -100,27 +102,62 @@ class TestDatabaseInterface(BaseTest):
             assert usersFromDB[i].password == users[i]['password']
 
     def test_getUsersInExperiment(self):
-        users1 = self.DBInterface.getUsersInExperiment(self.dbsession.query(Experiments).filter_by(id=1).one())
-        users2 = self.DBInterface.getUsersInExperiment(self.dbsession.query(Experiments).filter_by(id=2).one())
-        assert len(users1) == 2
-        assert len(users2) == 2
-        assert users1[0].id == 1 and users1[1].id == 2 
-        assert users2[0].id == 3 and users2[1].id == 4 
+        users1 = self.DBInterface.getUsersInExperiment(1)
+        users2 = self.DBInterface.getUsersInExperiment(2)
+        users1FromDB = [self.dbsession.query(Users).filter_by(id=1).one(), self.dbsession.query(Users).filter_by(id=2).one()]
+        users2FromDB = [self.dbsession.query(Users).filter_by(id=3).one(), self.dbsession.query(Users).filter_by(id=4).one()]
+
+        assert users1 == users1FromDB
+        assert users2 == users2FromDB
 
     def test_getExperimentsForUser(self):
-        experiments1 = self.DBInterface.getExperimentsForUser(self.dbsession.query(Users).filter_by(id=1).one())['experiments']
-        experiments2 = self.DBInterface.getExperimentsForUser(self.dbsession.query(Users).filter_by(id=2).one())['experiments']
-        experiments3 = self.DBInterface.getExperimentsForUser(self.dbsession.query(Users).filter_by(id=3).one())['experiments']
-        experiments4 = self.DBInterface.getExperimentsForUser(self.dbsession.query(Users).filter_by(id=4).one())['experiments']
+        experiments1 = self.DBInterface.getExperimentsForUser(1)
+        experiments2 = self.DBInterface.getExperimentsForUser(2)
+        experiments3 = self.DBInterface.getExperimentsForUser(3)
+        experiments4 = self.DBInterface.getExperimentsForUser(4)
         
-        assert len(experiments1) == 1
-        assert len(experiments2) == 1
-        assert len(experiments3) == 1
-        assert len(experiments4) == 1
-        assert experiments1[0].id == 1
-        assert experiments2[0].id == 1
-        assert experiments3[0].id == 2
-        assert experiments4[0].id == 2
+        experiment1 = self.dbsession.query(Experiments).filter_by(id=1).one()
+        experiment2 = self.dbsession.query(Experiments).filter_by(id=2).one()
+
+        assert experiments1 == [experiment1]
+        assert experiments2 == [experiment1]
+        assert experiments3 == [experiment2]
+        assert experiments4 == [experiment2]
+
+
+    def test_createDataitem(self):
+        dataitem1 = self.dbsession.query(DataItems).filter_by(id=1).one()
+        dataitem2 = self.dbsession.query(DataItems).filter_by(id=2).one()
+        dataitem3 = self.dbsession.query(DataItems).filter_by(id=3).one()
+        dataitem4 = self.dbsession.query(DataItems).filter_by(id=4).one()
+        user1 = self.dbsession.query(Users).filter_by(id=1).one()
+        user2 = self.dbsession.query(Users).filter_by(id=2).one()
+        user3 = self.dbsession.query(Users).filter_by(id=3).one()
+        user4 = self.dbsession.query(Users).filter_by(id=4).one()
+
+        assert len(self.dbsession.query(DataItems).all()) == 4
+        assert dataitem1.value == 10 and dataitem1.user == user1 and dataitem1.id == 1
+        assert dataitem2.value == 20 and dataitem2.user == user2 and dataitem2.id == 2
+        assert dataitem3.value == 30 and dataitem3.user == user3 and dataitem3.id == 3
+        assert dataitem4.value == 40 and dataitem4.user == user4 and dataitem4.id == 4
+
+    def test_deleteUser(self):
+        self.DBInterface.deleteUser(1)
+        self.DBInterface.deleteUser(3)
+
+        usersFromDB = self.dbsession.query(Users).all()
+        dataitemsFromDB = self.dbsession.query(DataItems).all()
+        experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
+
+        users = [self.dbsession.query(Users).filter_by(id=2).one(), self.dbsession.query(Users).filter_by(id=4).one()]
+        dataitems = [self.dbsession.query(DataItems).filter_by(id=2).one(), self.dbsession.query(DataItems).filter_by(id=4).one()]
+
+        assert usersFromDB == users
+        assert dataitemsFromDB == dataitems
+        assert len(experimentgroupsFromDB) == 4
+
+
+
 
 
 

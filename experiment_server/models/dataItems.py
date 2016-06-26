@@ -14,4 +14,5 @@ class DataItems(Base):
     __tablename__ = 'dataitems'
     id = Column(Integer, primary_key=True)
     value = Column(Integer)
+    #type = Column(Text)
     user_id = Column(Integer, ForeignKey('users.id'))

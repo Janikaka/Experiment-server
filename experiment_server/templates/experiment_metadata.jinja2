@@ -2,18 +2,20 @@
 
 {% block content %}
 <div class="content">
-	<h1>Experiment {{name}}</h1><br>
+	<h1>Experiment <i>{{name}}</i></h1><br>
 	<p><b>ID: </b>{{id}}</p>
-	<b>Experiment groups: </b>
+	<table><tr><td style="width:70%;"><b>Experiment groups: </b></td><td><button>Delete experiment</button></td></tr></table>
 	<ul>
 	{% for experimentgroup in experimentgroups %}
-		<li class="font-bold">{{ experimentgroup.name }}
+		<li>{{ experimentgroup.name }}
 		</li>
 	{% endfor %}
 	{#
 	Here the rest of the meta data
 	#}
 	</ul>
+	<br>
+	<input type="button" value="Back" onclick="window.history.back()"/>
 </div>
 {% endblock content %}
 
