@@ -22,6 +22,8 @@ class Experiments:
 		group1 = self.request.params['group1']
 		group2 = self.request.params['group2']
 		experimentgroups = [group1, group2]
+		#!!!! new_eperiment.jinja2 ei vielä lähetä JSONia !!!!
+
 		#data = self.request.json_body
 		#experimentgroups = data["experimentgroups"]
 		#name = data["name"]
@@ -34,12 +36,13 @@ class Experiments:
 	def experiments_GET(self):
 		return {'experiments':self.DB.getAllExperiments()}
 
-
 	#3 Show specific experiment metadata
 	@view_config(route_name='experiment_metadata', request_method="GET", renderer='../templates/experiment_metadata.jinja2')
 	def experiment_metadata_GET(self):
 		experiment = self.DB.getExperiment(self.request.matchdict['id'])
-		return {'name': experiment.name, 'id': experiment.id, 'experimentgroups': experiment.experimentgroups}
+		def deleteExperiment():
+			self.DB.deleteExperiment(self.request.matchdict['id'])
+		return {'name': experiment.name, 'id': experiment.id, 'experimentgroups': experiment.experimentgroups, 'deleteExperiment': deleteExperiment()}
 
 	#4 Delete experiment
 	@view_config(route_name='experiment', request_method="DELETE")
