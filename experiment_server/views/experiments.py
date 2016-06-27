@@ -40,9 +40,7 @@ class Experiments:
 	@view_config(route_name='experiment_metadata', request_method="GET", renderer='../templates/experiment_metadata.jinja2')
 	def experiment_metadata_GET(self):
 		experiment = self.DB.getExperiment(self.request.matchdict['id'])
-		def deleteExperiment():
-			self.DB.deleteExperiment(self.request.matchdict['id'])
-		return {'name': experiment.name, 'id': experiment.id, 'experimentgroups': experiment.experimentgroups, 'deleteExperiment': deleteExperiment()}
+		return {'name': experiment.name, 'id': experiment.id, 'experimentgroups': experiment.experimentgroups}
 
 	#4 Delete experiment
 	@view_config(route_name='experiment', request_method="DELETE")
