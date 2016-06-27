@@ -31,13 +31,15 @@ class Users:
 	def events_POST(self):
 		json = self.request.json_body
 		value = json['value']
-		id = None
+		id = self.request.headers['id']
 		self.DB.createDataitem({'user': self.DB.getUser(id), 'value': value})
+
+#curl -H "Content-Type: application/json" -H "id: 1" -X POST -d '{"value":"5"}' http://0.0.0.0:6543/events
+
 
 	#10 Delete user
 	@view_config(route_name='user', request_method="DELETE")
 	def user_DELETE(self):
-		print("DELETEEEEEEE")
 		self.DB.deleteUser(self.request.matchdict['id'])
 	
 

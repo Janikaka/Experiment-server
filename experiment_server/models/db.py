@@ -74,16 +74,11 @@ class DatabaseInterface:
 #---------------------------------------------------------------------------------
 	
 	def createDataitem(self, data):
-		userId = data['user']
+		user = data['user']
 		value = data['value']
-		user = self.getUser(userId)
 		dataitem = DataItems(value=value, user=user)
 		self.dbsession.add(dataitem)
 		return dataitem
-
-
-
-
 
 
 
