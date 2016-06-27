@@ -8,6 +8,7 @@ def main(global_config, **settings):
     config.include('pyramid_jinja2')
     config.include('.models')
     config.include('.routes')
+    config.add_route('experiments_form', '/experiments/new')
     config.add_route('experiments', '/experiments')
     config.add_route('experiment_metadata', '/experiments/{id}/metadata')
     config.add_route('experiment', '/experiments/{id}')

@@ -1,6 +1,8 @@
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
 from ..models import DatabaseInterface
+from pyramid.httpexceptions import HTTPFound
+
 
 @view_defaults(renderer='json')
 class Experiments:
@@ -8,13 +10,24 @@ class Experiments:
 		self.request = request
 		self.DB = DatabaseInterface(self.request.dbsession)
 
+	@view_config(route_name='experiments_form', renderer='../templates/new_experiment.jinja2')
+	def experiments_FORM(self):
+		return {'url': '/experiments'}
+
 	#1 Create new experiment MAKE A FORM (new_experiment.jinja2)
 	@view_config(route_name='experiments', request_method="POST")
 	def experiments_POST(self):
-		data = self.request.json_body
-		name = data["name"]
-		experimentgroups = data["experimentgroups"]
+		
+		name = self.request.params['name']
+		group1 = self.request.params['group1']
+		group2 = self.request.params['group2']
+		experimentgroups = [group1, group2]
+		#data = self.request.json_body
+		#experimentgroups = data["experimentgroups"]
+		#name = data["name"]
+		
 		self.DB.createExperiment({'name': name, 'experimentgroupNames': experimentgroups})
+		return HTTPFound(location='/experiments')
 
 	#2 List all experiments
 	@view_config(route_name='experiments', request_method="GET", renderer='../templates/all_experiments.jinja2')

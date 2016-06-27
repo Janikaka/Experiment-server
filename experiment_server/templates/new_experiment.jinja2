@@ -1,0 +1,22 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<form action="{{ url }}" method=post>
+    <dl>
+      <dt>Name:
+      <dd><input type=text name=name>
+      <dt>Group1:
+      <dd><input type=text name=group1>
+      <dt>Group2:
+      <dd><input type=text name=group2>
+      <dd><input type=submit value=Login>
+    </dl>
+</form>
+
+{% endblock content %}
+
+
+
+
+
+
