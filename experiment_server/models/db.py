@@ -38,10 +38,16 @@ class DatabaseInterface:
 			users.extend(experimentgroup.users)
 		return users
 
+	def getExperimentgroups(self, id):
+		return self.dbsession.query(ExperimentGroups).filter_by(experiment_id = id)
+
+	def getUsersInExperimentgroup(self, experimentgroupID):
+		return self.dbsession.query(ExperimentGroups).filter_by(id=experimentgroupID).one().users
 
 #---------------------------------------------------------------------------------
 #                                      Users                                      
 #---------------------------------------------------------------------------------
+
 	def createUser(self, data):
 		username = data['username']
 		password = data['password']
@@ -68,6 +74,9 @@ class DatabaseInterface:
 	def deleteUser(self, id):
 		user = self.dbsession.query(Users).filter_by(id=id).one()
 		self.dbsession.delete(user)
+
+	def getDataitemsForUser(self, id):
+		return self.dbsession.query(DataItems).filter_by(user_id=id)
 
 #---------------------------------------------------------------------------------
 #                                    Dataitems                                     

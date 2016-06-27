@@ -55,7 +55,22 @@ class Experiments:
 	#11 Show experiment data
 	@view_config(route_name='experiment_data', request_method="GET")
 	def experiment_data_GET(self):
-		return None
+		experimentId = self.request.matchdict['id']
+		experimentgroups = self.DB.getExperimentgroups(experimentId)
+		dataInGroups = {'experimentgroups': []}
+		for experimentgroup in experimentgroups:
+			users = self.DB.getUsersInExperimentgroup(experimentgroup.id)
+			usersData = []
+			for user in users:
+				userData = {'user':user.id, 'dataValues': []}
+				dataitems = self.DB.getDataitemsForUser(user.id)
+				for dataitem in dataitems:
+					userData['dataValues'].append(dataitem.value)
+				usersData.append(userData)
+			expgroup = {'experimentgroup': {'id': experimentgroup.id, 'name': experimentgroup.name}, 'users': usersData}
+			dataInGroups['experimentgroups'].append(expgroup)
+
+		return {'dataInGroups': dataInGroups}
 
 
 
