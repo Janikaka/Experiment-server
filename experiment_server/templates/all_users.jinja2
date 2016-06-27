@@ -1,11 +1,29 @@
 {% extends "layout.jinja2" %}
 
 {% block content %}
+{% block javascript %}
+    <script type="text/javascript">
+    //TÄMÄ ON VAIN PURKKAA
+        function deleteUser(id) {
+        	console.log("id:" + id);
+        	var xmlhttp = new XMLHttpRequest();
+			var url = "/users/" + id;
+			xmlhttp.onreadystatechange = function() {
+    			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+    			}
+			};
+			xmlhttp.open("DELETE", url, true);
+			xmlhttp.send();
+        }
+    </script>
+{% endblock %}
+
 <div class="content">
 	<h1>All users:</h1><br>
 	<ul>
 	{% for user in users %}
-		<li class="font-bold">{{ user.username }}<br>
+		<li class="font-bold">
+		<table><tr><td style="width:70%;"><b>{{ user.username }}</b></td><td><button onclick="deleteUser({{user.id}}); window.location='/users'">Delete user</button></td></tr></table>
 		<a href="">Show user</a><br>
 		<a href="/users/{{user.id}}/experiments">Show experiments</a><br>
 		</li>

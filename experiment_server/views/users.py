@@ -37,6 +37,7 @@ class Users:
 	#10 Delete user
 	@view_config(route_name='user', request_method="DELETE")
 	def user_DELETE(self):
+		print("DELETEEEEEEE")
 		self.DB.deleteUser(self.request.matchdict['id'])
 	
 
