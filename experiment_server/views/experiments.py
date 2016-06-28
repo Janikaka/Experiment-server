@@ -49,7 +49,7 @@ class Experiments:
 	#4 Delete experiment
 	@view_config(route_name='experiment', request_method="DELETE")
 	def experiment_DELETE(self):
-		print("TAAALLLÄÄÄÄÄÄASDA")
+		#Browser need to refresh after deleting
 		self.DB.deleteExperiment(self.request.matchdict['id'])
 
 	#7 List all users for specific experiment
