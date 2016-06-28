@@ -21,7 +21,7 @@ class Experiments:
 		name = self.request.params['name']
 		group1 = self.request.params['group1']
 		group2 = self.request.params['group2']
-		experimentgroups = [group1, group2]
+		experimentgroupNames = [group1, group2]
 		#!!!! new_eperiment.jinja2 ei vielä lähetä dataa JSON-muodossa !!!!
 		#Näin alkuun tukee vain kahta groupsia
 
@@ -29,8 +29,10 @@ class Experiments:
 		#data = self.request.json_body
 		#experimentgroups = data["experimentgroups"]
 		#name = data["name"]
-		
-		self.DB.createExperiment({'name': name, 'experimentgroupNames': experimentgroups})
+		experimentgroups = []
+		for experimentgroupName in experimentgroupNames:
+			experimentgroups.append(self.DB.createExperimentgroup({'name': experimentgroupName}))
+		self.DB.createExperiment({'name': name, 'experimentgroups': experimentgroups})
 		return HTTPFound(location='/experiments')
 
 	#2 List all experiments
@@ -47,6 +49,7 @@ class Experiments:
 	#4 Delete experiment
 	@view_config(route_name='experiment', request_method="DELETE")
 	def experiment_DELETE(self):
+		print("TAAALLLÄÄÄÄÄÄASDA")
 		self.DB.deleteExperiment(self.request.matchdict['id'])
 
 	#7 List all users for specific experiment

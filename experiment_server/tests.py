@@ -38,8 +38,12 @@ class BaseTest(unittest.TestCase):
 
     def init_databaseData(self):
         self.DBInterface = DatabaseInterface(self.dbsession)
-        experiment1 = self.DBInterface.createExperiment({'name': 'First experiment', 'experimentgroupNames':['group A', 'group B']})
-        experiment2 = self.DBInterface.createExperiment({'name': 'Second experiment', 'experimentgroupNames':['group C', 'group D']})
+        experimentgroups = []
+        experimentgroupNames = ['group A', 'group B', 'group C', 'group D']
+        for name in experimentgroupNames:
+            experimentgroups.append(self.DBInterface.createExperimentgroup({'name': name}))
+        experiment1 = self.DBInterface.createExperiment({'name': 'First experiment', 'experimentgroups':[experimentgroups[0], experimentgroups[1]]})
+        experiment2 = self.DBInterface.createExperiment({'name': 'Second experiment', 'experimentgroups':[experimentgroups[2], experimentgroups[3]]})
         user1 = self.DBInterface.createUser({'username': 'First user', 'password': 'First password', 'experimentgroups': [experiment1.experimentgroups[0]]})
         user2 = self.DBInterface.createUser({'username': 'Second user', 'password': 'Second password', 'experimentgroups': [experiment1.experimentgroups[1]]})
         user3 = self.DBInterface.createUser({'username': 'Third user', 'password': 'Third password', 'experimentgroups': [experiment2.experimentgroups[0]]})

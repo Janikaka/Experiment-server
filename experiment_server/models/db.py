@@ -13,10 +13,10 @@ class DatabaseInterface:
 #---------------------------------------------------------------------------------
 	def createExperiment(self, data): #CHECK
 		name = data['name']
-		experimentgroupNames = data['experimentgroupNames']
+		experimentgroups = data['experimentgroups']
 		experiment = Experiments(name=name)
-		for experimentgroupName in experimentgroupNames:
-			experiment.experimentgroups.append(self.createExperimentgroup({'name': experimentgroupName}))
+		for experimentgroup in experimentgroups:
+			experiment.experimentgroups.append(experimentgroup)
 		self.dbsession.add(experiment)
 		return experiment
 
@@ -28,6 +28,7 @@ class DatabaseInterface:
 
 	def deleteExperiment(self, id): #CHECK
 	#Deletes also experimentgroups in experiment
+		print("TÄÄLLLÄÄÄ DELETEEE EXPERIMENT")
 		experiment = self.dbsession.query(Experiments).filter_by(id=id).one()
 		experimentgroups = experiment.experimentgroups
 		for experimentgroup in experimentgroups:
@@ -45,16 +46,16 @@ class DatabaseInterface:
 #                                 ExperimentGroups                                
 #---------------------------------------------------------------------------------
 
-	def deleteExperimentgroup(self, id): #CHECK
-		experimentgroup = self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
-		self.deleteExperimentgroupInUsers(id)
-		self.dbsession.delete(experimentgroup)
-
-	def createExperimentgroup(self, data):
+	def createExperimentgroup(self, data): #OK
 		name = data['name']
 		experimentgroup = ExperimentGroups(name=name)
 		self.dbsession.add(experimentgroup)
 		return experimentgroup
+
+	def deleteExperimentgroup(self, id): #CHECK
+		experimentgroup = self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
+		self.deleteExperimentgroupInUsers(id)
+		self.dbsession.delete(experimentgroup)
 
 	def deleteExperimentgroupInUsers(self, experimentgroupId): #OK
 		experimentgroup = self.getExperimentgroup(experimentgroupId)
