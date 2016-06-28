@@ -15,10 +15,8 @@ class DatabaseInterface:
 		name = data['name']
 		experimentgroupNames = data['experimentgroupNames']
 		experiment = Experiments(name=name)
-		for experimentgroup in experimentgroupNames:
-			experimentgroup = ExperimentGroups(name=experimentgroup)
-			self.dbsession.add(experimentgroup)
-			experiment.experimentgroups.append(experimentgroup)
+		for experimentgroupName in experimentgroupNames:
+			experiment.experimentgroups.append(self.createExperimentgroup({'name': experimentgroupName}))
 		self.dbsession.add(experiment)
 		return experiment
 
@@ -51,6 +49,12 @@ class DatabaseInterface:
 		experimentgroup = self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
 		self.deleteExperimentgroupInUsers(id)
 		self.dbsession.delete(experimentgroup)
+
+	def createExperimentgroup(self, data):
+		name = data['name']
+		experimentgroup = ExperimentGroups(name=name)
+		self.dbsession.add(experimentgroup)
+		return experimentgroup
 
 	def deleteExperimentgroupInUsers(self, experimentgroupId): #OK
 		experimentgroup = self.getExperimentgroup(experimentgroupId)
