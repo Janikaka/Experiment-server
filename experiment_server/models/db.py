@@ -27,9 +27,13 @@ class DatabaseInterface:
 	def getExperiment(self, id):
 		return self.dbsession.query(Experiments).filter_by(id=id).one()
 
-	def deleteExperiment(self, id):
+	def deleteExperiment(self, id): #CHECK
 		experiment = self.dbsession.query(Experiments).filter_by(id=id).one()
+		experimentgroups = experiment.experimentgroups
+		for experimentgroup in experimentgroups:
+			self.deleteExperimentgroupInUsers(experimentgroup.id)
 		self.dbsession.delete(experiment)
+
 
 	def getUsersInExperiment(self, id):
 		experimentgroups = self.dbsession.query(Experiments).filter_by(id=id).one().experimentgroups
@@ -52,18 +56,25 @@ class DatabaseInterface:
 		experimentgroup = self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
 		self.dbsession.delete(experimentgroup)
 
+	def deleteExperimentgroupInUsers(self, id):
+		experimentgroup = self.getExperimentgroup(id)
+		for user in experimentgroup.users:
+				user.experimentgroups.remove(experimentgroup)
 
+	def getExperimentgroup(self, id):
+		return self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
 #---------------------------------------------------------------------------------
 #                                      Users                                      
 #---------------------------------------------------------------------------------
 
-	def createUser(self, data):
-		username = data['username']
-		password = data['password']
-		if data['experimentgroups'] != None:
-			user = Users(username=username, password=password, experimentgroups=data['experimentgroups'])
-		else:
-			user = Users(username=username, password=password)
+	def createUser(self, data): #CHECK
+		keys = ['username', 'password', 'experimentgroups', 'dataitems']
+		for key in keys:
+			try:
+				data[key]
+			except KeyError:
+				data[key] = []
+		user = Users(username=data['username'], password=data['password'], experimentgroups=data['experimentgroups'], dataitems=data['dataitems'])
 		self.dbsession.add(user)
 		return user
 

@@ -44,7 +44,7 @@ class BaseTest(unittest.TestCase):
         user2 = self.DBInterface.createUser({'username': 'Second user', 'password': 'Second password', 'experimentgroups': [experiment1.experimentgroups[1]]})
         user3 = self.DBInterface.createUser({'username': 'Third user', 'password': 'Third password', 'experimentgroups': [experiment2.experimentgroups[0]]})
         user4 = self.DBInterface.createUser({'username': 'Fourth user', 'password': 'Fourth password', 'experimentgroups': [experiment2.experimentgroups[1]]})
-        user5 = self.DBInterface.createUser({'username': 'Fifth user', 'password': 'Fifth password', 'experimentgroups': None})
+        user5 = self.DBInterface.createUser({'username': 'Fifth user', 'password': 'Fifth password'})
         self.DBInterface.createDataitem({'user': 1, 'value': 10})
         self.DBInterface.createDataitem({'user': 2, 'value': 20})
         self.DBInterface.createDataitem({'user': 3, 'value': 30})
@@ -94,8 +94,6 @@ class TestDatabaseInterface(BaseTest):
             assert experimentgroupsFromDB[i].users == experimentgroups[i]['users']
 
     def test_deleteExperiment(self):
-        #Työn alla vielä tutkia miten experimentgroupsit poistuu kun poistetaan experiment
-
         self.DBInterface.deleteExperiment(1) #Delete experiment 'First experiment'
         experimentsFromDB = self.dbsession.query(Experiments).all()
         assert len(experimentsFromDB) == 1
@@ -106,22 +104,36 @@ class TestDatabaseInterface(BaseTest):
             assert experimentgroupsFromDB[i].name == names[i]
         user1 = self.dbsession.query(Users).filter_by(id=1).one()
         user2 = self.dbsession.query(Users).filter_by(id=2).one()
-        expr = self.DBInterface.getExperimentsForUser(1)
-        #assert expr[0].name == 'group A'
-        #assert user1.experimentgroups == []
-        #assert user2.experimentgroups == []
+        assert user1.experimentgroups == []
+        assert user2.experimentgroups == []
         
     def test_createUser(self):
         usersFromDB = self.dbsession.query(Users).all()
         users = [
-        {'username': 'First user', 'password': 'First password'},
-        {'username': 'Second user', 'password': 'Second password'},
-        {'username': 'Third user', 'password': 'Third password'},
-        {'username': 'Fourth user', 'password': 'Fourth password'},
-        {'username': 'Fifth user', 'password': 'Fifth password'}]
+        {'username': 'First user', 'password': 'First password', 
+        'experimentgroups': [self.dbsession.query(ExperimentGroups).filter_by(name='group A').one()], 
+        'dataitems': [self.dbsession.query(DataItems).filter_by(value=10).one()]},
+
+        {'username': 'Second user', 'password': 'Second password',
+        'experimentgroups': [self.dbsession.query(ExperimentGroups).filter_by(name='group B').one()], 
+        'dataitems': [self.dbsession.query(DataItems).filter_by(value=20).one()]},
+
+        {'username': 'Third user', 'password': 'Third password',
+        'experimentgroups': [self.dbsession.query(ExperimentGroups).filter_by(name='group C').one()], 
+        'dataitems': [self.dbsession.query(DataItems).filter_by(value=30).one()]},
+
+        {'username': 'Fourth user', 'password': 'Fourth password', 
+        'experimentgroups': [self.dbsession.query(ExperimentGroups).filter_by(name='group D').one()], 
+        'dataitems': [self.dbsession.query(DataItems).filter_by(value=40).one()]},
+
+        {'username': 'Fifth user', 'password': 'Fifth password',
+        'experimentgroups': [], 
+        'dataitems': []}]
         for i in range(len(usersFromDB)):
             assert usersFromDB[i].username == users[i]['username']
             assert usersFromDB[i].password == users[i]['password']
+            assert usersFromDB[i].experimentgroups == users[i]['experimentgroups']
+            assert usersFromDB[i].dataitems == users[i]['dataitems']
 
     def test_getUsersInExperiment(self):
         users1 = self.DBInterface.getUsersInExperiment(1)

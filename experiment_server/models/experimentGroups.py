@@ -20,7 +20,6 @@ class ExperimentGroups(Base):
         "Users",
         secondary=Users_Experimentgroups,
         back_populates="experimentgroups"
-        #cascade="delete" #Users_Experimentgroups pitäisi poistaa, mutta tämä poistaa myös userit
     )
 
 
