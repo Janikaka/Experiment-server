@@ -2,6 +2,7 @@ from .experimentGroups import ExperimentGroups
 from .experiments import Experiments
 from .users import Users
 from .dataItems import DataItems
+from .configurations import Configurations
 
 class DatabaseInterface:
 	def __init__(self, dbsession):
@@ -34,7 +35,6 @@ class DatabaseInterface:
 		for experimentgroup in experimentgroups:
 			self.deleteExperimentgroupInUsers(experimentgroup.id)
 		self.dbsession.delete(experiment)
-
 
 	def getUsersInExperiment(self, id): #CHECK
 		experimentgroups = self.dbsession.query(Experiments).filter_by(id=id).one().experimentgroups
@@ -109,6 +109,8 @@ class DatabaseInterface:
 		else:
 			return user
 
+	#TODO getConfigurationForUser
+
 #---------------------------------------------------------------------------------
 #                                    Dataitems                                     
 #---------------------------------------------------------------------------------
@@ -119,6 +121,33 @@ class DatabaseInterface:
 		dataitem = DataItems(value=value, user=self.getUser(userId))
 		self.dbsession.add(dataitem)
 		return dataitem
+
+	#TODO deleteDataitem
+
+#---------------------------------------------------------------------------------
+#                                 Configurations                                  
+#---------------------------------------------------------------------------------
+
+	def createConfiguration(self, data):
+		key = data['key']
+		value = data['value']
+		experimentgroup = data['experimentgroup']
+		configuration = Configurations(key=key, value=value, experimentgroup=experimentgroup)
+		self.dbsession.add(configuration)
+		return configuration
+
+	#TODO deleteConfiguration
+
+	#TODO getUsersInConfiguration?
+
+
+
+
+
+
+
+
+
 
 
 
