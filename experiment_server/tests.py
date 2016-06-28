@@ -7,7 +7,8 @@ from .models import (
     Users,
     ExperimentGroups,
     DataItems,
-    DatabaseInterface
+    DatabaseInterface,
+    Configurations
     )
 
 def dummy_request(dbsession):
@@ -53,6 +54,14 @@ class BaseTest(unittest.TestCase):
         self.DBInterface.createDataitem({'user': 2, 'value': 20})
         self.DBInterface.createDataitem({'user': 3, 'value': 30})
         self.DBInterface.createDataitem({'user': 4, 'value': 40})
+        configurations = [{'key': 'key1', 'value': 1, 'experimentgroup': experimentgroups[0]},
+        {'key': 'key2', 'value': 2, 'experimentgroup': experimentgroups[1]},
+        {'key': 'key3', 'value': 3, 'experimentgroup': experimentgroups[2]}, 
+        {'key': 'key4', 'value': 4, 'experimentgroup': experimentgroups[3]}]
+        self.DBInterface.createConfiguration(configurations[0])
+        self.DBInterface.createConfiguration(configurations[1])
+        self.DBInterface.createConfiguration(configurations[2])
+        self.DBInterface.createConfiguration(configurations[3])
 
     def tearDown(self):
         from .models.meta import Base
@@ -66,36 +75,57 @@ class BaseTest(unittest.TestCase):
 #                               DatabaseInterface
 #---------------------------------------------------------------------------------
 
-from .models import DatabaseInterface
-
 class TestDatabaseInterface(BaseTest):
-
+#TODO: structure this
     def setUp(self):
         super(TestDatabaseInterface, self).setUp()
         self.init_database()
         self.init_databaseData()
 
+    def test_createExperimentgroup(self):
+        experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
+        users = [
+        self.dbsession.query(Users).filter_by(id=1).one(),
+        self.dbsession.query(Users).filter_by(id=2).one(),
+        self.dbsession.query(Users).filter_by(id=3).one(),
+        self.dbsession.query(Users).filter_by(id=4).one()]
+
+        confs = [
+        self.dbsession.query(Configurations).filter_by(id=1).one(),
+        self.dbsession.query(Configurations).filter_by(id=2).one(),
+        self.dbsession.query(Configurations).filter_by(id=3).one(),
+        self.dbsession.query(Configurations).filter_by(id=4).one()]
+
+        experiments = [
+        self.dbsession.query(Experiments).filter_by(id=1).one(),
+        self.dbsession.query(Experiments).filter_by(id=2).one()]
+
+        experimentgroups = [
+        {'name':'group A', 'experiment':experiments[0], 'users': [users[0]], 'configuration': confs[0]},
+        {'name':'group B', 'experiment':experiments[0], 'users': [users[1]], 'configuration': confs[1]},
+        {'name':'group C', 'experiment':experiments[1], 'users': [users[2]], 'configuration': confs[2]},
+        {'name':'group D', 'experiment':experiments[1], 'users': [users[3]], 'configuration': confs[3]}]
+
+        for i in range(len(experimentgroupsFromDB)):
+            assert experimentgroupsFromDB[i].name == experimentgroups[i]['name']
+            assert experimentgroupsFromDB[i].experiment == experimentgroups[i]['experiment']
+            assert experimentgroupsFromDB[i].users == experimentgroups[i]['users']
+            assert experimentgroupsFromDB[i].configuration == experimentgroups[i]['configuration']
+
+
     def test_createExperiment(self):
         experimentsFromDB = self.dbsession.query(Experiments).all()
-        experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
+        
         experiments = [
         {'name':'First experiment', 'experimentgroups':['group A', 'group B']},
         {'name':'Second experiment', 'experimentgroups':['group C', 'group D']}]
-        experimentgroups = [
-        {'name':'group A', 'experiment':experiments[0], 'users': [self.dbsession.query(Users).filter_by(id=1).one()]},
-        {'name':'group B', 'experiment':experiments[0], 'users': [self.dbsession.query(Users).filter_by(id=2).one()]},
-        {'name':'group C', 'experiment':experiments[1], 'users': [self.dbsession.query(Users).filter_by(id=3).one()]}, 
-        {'name':'group D', 'experiment':experiments[1], 'users': [self.dbsession.query(Users).filter_by(id=4).one()]}]
 
         for i in range(len(experimentsFromDB)):
             assert experimentsFromDB[i].name == experiments[i]['name']
             for j in range(len(experimentsFromDB[i].experimentgroups)):
                 assert experimentsFromDB[i].experimentgroups[j].name == experiments[i]['experimentgroups'][j]
 
-        for i in range(len(experimentgroupsFromDB)):
-            assert experimentgroupsFromDB[i].name == experimentgroups[i]['name']
-            assert experimentgroupsFromDB[i].experiment.name == experimentgroups[i]['experiment']['name']
-            assert experimentgroupsFromDB[i].users == experimentgroups[i]['users']
+        
 
     def test_createUser(self):
         usersFromDB = self.dbsession.query(Users).all()
@@ -138,6 +168,23 @@ class TestDatabaseInterface(BaseTest):
         for i in range(len(dataitemsFromDB)):
             for key in dataitems[i]:
                 assert getattr(dataitemsFromDB[i], key) == dataitems[i][key]
+
+    def test_createConfiguration(self):
+        confsFromDB = self.dbsession.query(Configurations).all()
+        expgroup1 = self.dbsession.query(ExperimentGroups).filter_by(id=1).one()
+        expgroup2 = self.dbsession.query(ExperimentGroups).filter_by(id=2).one()
+        expgroup3 = self.dbsession.query(ExperimentGroups).filter_by(id=3).one()
+        expgroup4 = self.dbsession.query(ExperimentGroups).filter_by(id=4).one()
+        confs = [
+        {'id': 1, 'key': 'key1', 'value': 1, 'experimentgroup': expgroup1},
+        {'id': 2, 'key': 'key2', 'value': 2, 'experimentgroup': expgroup2},
+        {'id': 3, 'key': 'key3', 'value': 3, 'experimentgroup': expgroup3},
+        {'id': 4, 'key': 'key4', 'value': 4, 'experimentgroup': expgroup4}]
+
+        for i in range(len(confsFromDB)):
+            for keyy in confs[i]:
+                assert getattr(confsFromDB[i], keyy) == confs[i][keyy]
+
 
     def test_deleteExperiment(self):
         self.DBInterface.deleteExperiment(1) #Delete experiment 'First experiment'
@@ -220,9 +267,6 @@ class TestDatabaseInterface(BaseTest):
         assert experiments3 == [experiment2]
         assert experiments4 == [experiment2]
         assert experiments5 == []
-
-
-    
 
     
 

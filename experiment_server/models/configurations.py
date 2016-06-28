@@ -16,3 +16,4 @@ class Configurations(Base):
 	key = Column(Text)
 	value = Column(Integer)
 	experimentgroup_id = Column(Integer, ForeignKey('experimentgroups.id'))
+	#experimentgroup = relationship("Experimentgroups", backref="experimentgroup", cascade="delete")

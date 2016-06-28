@@ -15,10 +15,8 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import Experiments
-from ..models import Users
-from ..models import DataItems
-from ..models import ExperimentGroups
+from ..models import (Experiments, Users, DataItems, ExperimentGroups, Configurations)
+
 
 
 def usage(argv):
@@ -62,6 +60,10 @@ def main(argv=sys.argv):
         experiment1.experimentgroups.append(experimentgroup1)
         experiment1.experimentgroups.append(experimentgroup2)
 
+        conf1 = Configurations(key='confkey1', value=1, experimentgroup=experimentgroup1)
+        conf2 = Configurations(key='confkey2', value=2, experimentgroup=experimentgroup2)
+
+
         dbsession.add(dataitem1)
         dbsession.add(dataitem2)
         dbsession.add(user1)
@@ -70,7 +72,8 @@ def main(argv=sys.argv):
         dbsession.add(experimentgroup2)
         dbsession.add(experiment1)
         dbsession.add(experiment2)
-
+        dbsession.add(conf1)
+        dbsession.add(conf2)
 
 
 

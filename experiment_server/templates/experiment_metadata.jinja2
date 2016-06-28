@@ -13,8 +13,6 @@
 			};
 			xmlhttp.open("DELETE", url, true);
 			xmlhttp.send();
-
-			//
         }
     </script>
 {% endblock %}
@@ -24,8 +22,11 @@
 	<table><tr><td style="width:70%;"><b>Experiment groups: </b></td><td><a href="/experiments"><button onclick="deleteExperiment({{id}});">Delete experiment</button></a></td></tr></table>
 	<ul>
 	{% for experimentgroup in experimentgroups %}
-		<li>{{ experimentgroup.name }}
+		<li><b>Name: </b>{{ experimentgroup.name }}<br>
+			<b>Configurations: </b>
+			Key: {{ experimentgroup.configuration.key }}, Value: {{ experimentgroup.configuration.value }}
 		</li>
+		
 	{% endfor %}
 	{#
 	Here the rest of the meta data

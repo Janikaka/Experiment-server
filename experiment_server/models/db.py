@@ -28,7 +28,6 @@ class DatabaseInterface:
 
 	def deleteExperiment(self, id): #CHECK
 	#Deletes also experimentgroups in experiment
-		print("TÄÄLLLÄÄÄ DELETEEE EXPERIMENT")
 		experiment = self.dbsession.query(Experiments).filter_by(id=id).one()
 		experimentgroups = experiment.experimentgroups
 		for experimentgroup in experimentgroups:
@@ -68,8 +67,11 @@ class DatabaseInterface:
 	def getExperimentgroups(self, id): #OK
 		return self.dbsession.query(ExperimentGroups).filter_by(experiment_id = id)
 
-	def getUsersInExperimentgroup(self, experimentgroupID): #OK
-		return self.dbsession.query(ExperimentGroups).filter_by(id=experimentgroupID).one().users
+	def getUsersInExperimentgroup(self, experimentgroupId): #OK
+		return self.dbsession.query(ExperimentGroups).filter_by(id=experimentgroupId).one().users
+
+	def getConfForExperimentgroup(self, experimentgroupId):
+		return self.dbsession.query(ExperimentGroups).filter_by(id=experimentgroupId).one().configuration
 
 #---------------------------------------------------------------------------------
 #                                      Users                                      
