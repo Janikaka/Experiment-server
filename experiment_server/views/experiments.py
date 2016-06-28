@@ -22,7 +22,7 @@ class Experiments:
 		group1 = self.request.params['group1']
 		group2 = self.request.params['group2']
 		experimentgroups = [group1, group2]
-		#!!!! new_eperiment.jinja2 ei vielä lähetä JSONia !!!!
+		#!!!! new_eperiment.jinja2 ei vielä lähetä dataa JSON-muodossa !!!!
 
 		#data = self.request.json_body
 		#experimentgroups = data["experimentgroups"]

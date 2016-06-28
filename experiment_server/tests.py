@@ -93,20 +93,6 @@ class TestDatabaseInterface(BaseTest):
             assert experimentgroupsFromDB[i].experiment.name == experimentgroups[i]['experiment']['name']
             assert experimentgroupsFromDB[i].users == experimentgroups[i]['users']
 
-    def test_deleteExperiment(self):
-        self.DBInterface.deleteExperiment(1) #Delete experiment 'First experiment'
-        experimentsFromDB = self.dbsession.query(Experiments).all()
-        assert len(experimentsFromDB) == 1
-        assert experimentsFromDB[0].id == 2
-        experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
-        names = ['group C', 'group D']
-        for i in range(len(experimentgroupsFromDB)):
-            assert experimentgroupsFromDB[i].name == names[i]
-        user1 = self.dbsession.query(Users).filter_by(id=1).one()
-        user2 = self.dbsession.query(Users).filter_by(id=2).one()
-        assert user1.experimentgroups == []
-        assert user2.experimentgroups == []
-        
     def test_createUser(self):
         usersFromDB = self.dbsession.query(Users).all()
         users = [
@@ -132,6 +118,75 @@ class TestDatabaseInterface(BaseTest):
         for i in range(len(usersFromDB)):
             for key in users[i]:
                 assert getattr(usersFromDB[i], key) == users[i][key]
+
+    def test_createDataitem(self):
+        dataitemsFromDB = self.dbsession.query(DataItems).all()
+        user1 = self.dbsession.query(Users).filter_by(id=1).one()
+        user2 = self.dbsession.query(Users).filter_by(id=2).one()
+        user3 = self.dbsession.query(Users).filter_by(id=3).one()
+        user4 = self.dbsession.query(Users).filter_by(id=4).one()
+        dataitems = [
+        {'id':1, 'value': 10, 'user': user1},
+        {'id':2, 'value': 20, 'user': user2},
+        {'id':3, 'value': 30, 'user': user3},
+        {'id':4, 'value': 40, 'user': user4}]
+
+        for i in range(len(dataitemsFromDB)):
+            for key in dataitems[i]:
+                assert getattr(dataitemsFromDB[i], key) == dataitems[i][key]
+
+    def test_deleteExperiment(self):
+        self.DBInterface.deleteExperiment(1) #Delete experiment 'First experiment'
+        experimentsFromDB = self.dbsession.query(Experiments).all()
+        assert len(experimentsFromDB) == 1
+        assert experimentsFromDB[0].id == 2
+        experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
+        names = ['group C', 'group D']
+        for i in range(len(experimentgroupsFromDB)):
+            assert experimentgroupsFromDB[i].name == names[i]
+        user1 = self.dbsession.query(Users).filter_by(id=1).one()
+        user2 = self.dbsession.query(Users).filter_by(id=2).one()
+        assert user1.experimentgroups == []
+        assert user2.experimentgroups == []
+        
+    def test_deleteUser(self):
+        self.DBInterface.deleteUser(1)
+        self.DBInterface.deleteUser(3)
+
+        usersFromDB = self.dbsession.query(Users).all()
+        dataitemsFromDB = self.dbsession.query(DataItems).all()
+        experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
+
+        user2 = self.dbsession.query(Users).filter_by(id=2).one()
+        user4 = self.dbsession.query(Users).filter_by(id=4).one()
+        user5 = self.dbsession.query(Users).filter_by(id=5).one()
+
+        dataitem2 = self.dbsession.query(DataItems).filter_by(id=2).one()
+        dataitem4 = self.dbsession.query(DataItems).filter_by(id=4).one()
+
+        users = [user2, user4, user5]
+        dataitems = [dataitem2, dataitem4]
+
+        assert usersFromDB == users
+        assert dataitemsFromDB == dataitems
+        assert len(experimentgroupsFromDB) == 4
+
+    def test_deleteExperimentgroup(self):
+        self.DBInterface.deleteExperimentgroup(1) #group A
+        self.DBInterface.deleteExperimentgroup(4) #group D
+
+        experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
+
+        expgroup2 = self.dbsession.query(ExperimentGroups).filter_by(id=2).one()
+        expgroup3 = self.dbsession.query(ExperimentGroups).filter_by(id=3).one()
+        experimentgroups = [expgroup2, expgroup3]
+
+        user1 = self.dbsession.query(Users).filter_by(id=1).one()
+        user4 = self.dbsession.query(Users).filter_by(id=4).one()
+
+        assert experimentgroupsFromDB == experimentgroups
+        assert user1.experimentgroups == []
+        assert user4.experimentgroups == []
 
     def test_getUsersInExperiment(self):
         users1 = self.DBInterface.getUsersInExperiment(1)
@@ -163,44 +218,13 @@ class TestDatabaseInterface(BaseTest):
         assert experiments5 == []
 
 
-    def test_createDataitem(self):
-        dataitemsFromDB = self.dbsession.query(DataItems).all()
-        user1 = self.dbsession.query(Users).filter_by(id=1).one()
-        user2 = self.dbsession.query(Users).filter_by(id=2).one()
-        user3 = self.dbsession.query(Users).filter_by(id=3).one()
-        user4 = self.dbsession.query(Users).filter_by(id=4).one()
-        dataitems = [
-        {'id':1, 'value': 10, 'user': user1},
-        {'id':2, 'value': 20, 'user': user2},
-        {'id':3, 'value': 30, 'user': user3},
-        {'id':4, 'value': 40, 'user': user4}]
+    
 
-        for i in range(len(dataitemsFromDB)):
-            for key in dataitems[i]:
-                assert getattr(dataitemsFromDB[i], key) == dataitems[i][key]
+    
 
-    def test_deleteUser(self):
-        self.DBInterface.deleteUser(1)
-        self.DBInterface.deleteUser(3)
+    
 
-        usersFromDB = self.dbsession.query(Users).all()
-        dataitemsFromDB = self.dbsession.query(DataItems).all()
-        experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
 
-        users = [self.dbsession.query(Users).filter_by(id=2).one(), self.dbsession.query(Users).filter_by(id=4).one(), self.dbsession.query(Users).filter_by(id=5).one()]
-        dataitems = [self.dbsession.query(DataItems).filter_by(id=2).one(), self.dbsession.query(DataItems).filter_by(id=4).one()]
-
-        assert usersFromDB == users
-        assert dataitemsFromDB == dataitems
-        assert len(experimentgroupsFromDB) == 4
-"""
-    def test_deleteExperimentgroup(self):
-        self.DBInterface.deleteExperimentgroup(1) #group A
-        self.DBInterface.deleteExperimentgroup(4) #group D
-
-        experimentgroups = self.dbsession.query(ExperimentGroups).all()
-
-"""
 
 
 

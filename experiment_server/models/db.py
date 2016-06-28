@@ -43,27 +43,29 @@ class DatabaseInterface:
 			users.extend(experimentgroup.users)
 		return users
 
+#---------------------------------------------------------------------------------
+#                                 ExperimentGroups                                
+#---------------------------------------------------------------------------------
+
+	def deleteExperimentgroup(self, id): #CHECK
+		experimentgroup = self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
+		self.deleteExperimentgroupInUsers(id)
+		self.dbsession.delete(experimentgroup)
+
+	def deleteExperimentgroupInUsers(self, experimentgroupId): #OK
+		experimentgroup = self.getExperimentgroup(experimentgroupId)
+		for user in experimentgroup.users:
+				user.experimentgroups.remove(experimentgroup)
+
+	def getExperimentgroup(self, id): #OK
+		return self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
+
 	def getExperimentgroups(self, id): #OK
 		return self.dbsession.query(ExperimentGroups).filter_by(experiment_id = id)
 
 	def getUsersInExperimentgroup(self, experimentgroupID): #OK
 		return self.dbsession.query(ExperimentGroups).filter_by(id=experimentgroupID).one().users
 
-#---------------------------------------------------------------------------------
-#                                 ExperimentGroups                                
-#---------------------------------------------------------------------------------
-
-	def deleteExperimentgroup(self, id):
-		experimentgroup = self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
-		self.dbsession.delete(experimentgroup)
-
-	def deleteExperimentgroupInUsers(self, id):
-		experimentgroup = self.getExperimentgroup(id)
-		for user in experimentgroup.users:
-				user.experimentgroups.remove(experimentgroup)
-
-	def getExperimentgroup(self, id):
-		return self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
 #---------------------------------------------------------------------------------
 #                                      Users                                      
 #---------------------------------------------------------------------------------
@@ -79,10 +81,10 @@ class DatabaseInterface:
 		self.dbsession.add(user)
 		return user
 
-	def getUser(self, id):
+	def getUser(self, id): #OK
 		return self.dbsession.query(Users).filter_by(id=id).one()
 
-	def getAllUsers(self):
+	def getAllUsers(self): #OK
 		return self.dbsession.query(Users).all()
 
 	def getExperimentsForUser(self, id): #CHECK
@@ -97,8 +99,15 @@ class DatabaseInterface:
 		user = self.dbsession.query(Users).filter_by(id=id).one()
 		self.dbsession.delete(user)
 
-	def getDataitemsForUser(self, id):
+	def getDataitemsForUser(self, id): #OK
 		return self.dbsession.query(DataItems).filter_by(user_id=id)
+
+	def checkUser(self, data): #OK
+		user = self.dbsession.query(Users).filter_by(username=username).one()
+		if user == []:
+			return self.createUser(data)
+		else:
+			return user
 
 #---------------------------------------------------------------------------------
 #                                    Dataitems                                     

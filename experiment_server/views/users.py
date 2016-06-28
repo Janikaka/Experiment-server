@@ -10,10 +10,15 @@ class Users:
 		self.DB = DatabaseInterface(self.request.dbsession)
 
 	#5 List configurations for specific user
+	#Also adds the user to the DB if it doesn't exist
 	@view_config(route_name='configurations', request_method="GET")
 	def configurations_GET(self):
 		json = self.request.json_body
-		#TODO   DOES THIS ADD THE USER TO DB IF METHOD IS CALLED THE FIRST TIME?
+		username = self.request.headers['username']
+		password = self.request.headers['password']
+		userData = {'username': username, 'password': password}
+		user = self.DB.checkUser(userData)
+		#TODO get conf for user
 
 	#6 List all users
 	@view_config(route_name='users', request_method="GET", renderer='../templates/all_users.jinja2')
@@ -35,7 +40,6 @@ class Users:
 		self.DB.createDataitem({'user': id, 'value': value})
 
 #curl -H "Content-Type: application/json" -H "id: 1" -X POST -d '{"value":"5"}' http://0.0.0.0:6543/events
-
 
 	#10 Delete user
 	@view_config(route_name='user', request_method="DELETE")
