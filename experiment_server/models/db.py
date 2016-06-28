@@ -45,6 +45,15 @@ class DatabaseInterface:
 		return self.dbsession.query(ExperimentGroups).filter_by(id=experimentgroupID).one().users
 
 #---------------------------------------------------------------------------------
+#                                 ExperimentGroups                                
+#---------------------------------------------------------------------------------
+
+	def deleteExperimentgroup(self, id):
+		experimentgroup = self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
+		self.dbsession.delete(experimentgroup)
+
+
+#---------------------------------------------------------------------------------
 #                                      Users                                      
 #---------------------------------------------------------------------------------
 

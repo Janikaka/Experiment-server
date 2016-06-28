@@ -10,6 +10,6 @@ from sqlalchemy import (
 from .meta import Base
 
 Users_Experimentgroups = Table('users_experimentgroups', Base.metadata,
-    Column('user_id', Integer, ForeignKey('users.id')),
-    Column('experimentgroup_id', Integer, ForeignKey('experimentgroups.id'))
+    Column('left_id', Integer, ForeignKey('users.id')),
+    Column('right_id', Integer, ForeignKey('experimentgroups.id'))
 )

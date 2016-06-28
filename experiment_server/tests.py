@@ -73,15 +73,29 @@ class TestDatabaseInterface(BaseTest):
 
     def test_createExperiment(self):
         experimentsFromDB = self.dbsession.query(Experiments).all()
+        experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
         experiments = [
         {'name':'First experiment', 'experimentgroups':['group A', 'group B']},
         {'name':'Second experiment', 'experimentgroups':['group C', 'group D']}]
+        experimentgroups = [
+        {'name':'group A', 'experiment':experiments[0], 'users': [self.dbsession.query(Users).filter_by(id=1).one()]},
+        {'name':'group B', 'experiment':experiments[0], 'users': [self.dbsession.query(Users).filter_by(id=2).one()]},
+        {'name':'group C', 'experiment':experiments[1], 'users': [self.dbsession.query(Users).filter_by(id=3).one()]}, 
+        {'name':'group D', 'experiment':experiments[1], 'users': [self.dbsession.query(Users).filter_by(id=4).one()]}]
+
         for i in range(len(experimentsFromDB)):
             assert experimentsFromDB[i].name == experiments[i]['name']
             for j in range(len(experimentsFromDB[i].experimentgroups)):
                 assert experimentsFromDB[i].experimentgroups[j].name == experiments[i]['experimentgroups'][j]
 
+        for i in range(len(experimentgroupsFromDB)):
+            assert experimentgroupsFromDB[i].name == experimentgroups[i]['name']
+            assert experimentgroupsFromDB[i].experiment.name == experimentgroups[i]['experiment']['name']
+            assert experimentgroupsFromDB[i].users == experimentgroups[i]['users']
+
     def test_deleteExperiment(self):
+        #Työn alla vielä tutkia miten experimentgroupsit poistuu kun poistetaan experiment
+
         self.DBInterface.deleteExperiment(1) #Delete experiment 'First experiment'
         experimentsFromDB = self.dbsession.query(Experiments).all()
         assert len(experimentsFromDB) == 1
@@ -90,6 +104,12 @@ class TestDatabaseInterface(BaseTest):
         names = ['group C', 'group D']
         for i in range(len(experimentgroupsFromDB)):
             assert experimentgroupsFromDB[i].name == names[i]
+        user1 = self.dbsession.query(Users).filter_by(id=1).one()
+        user2 = self.dbsession.query(Users).filter_by(id=2).one()
+        expr = self.DBInterface.getExperimentsForUser(1)
+        #assert expr[0].name == 'group A'
+        #assert user1.experimentgroups == []
+        #assert user2.experimentgroups == []
         
     def test_createUser(self):
         usersFromDB = self.dbsession.query(Users).all()
@@ -157,10 +177,11 @@ class TestDatabaseInterface(BaseTest):
         assert usersFromDB == users
         assert dataitemsFromDB == dataitems
         assert len(experimentgroupsFromDB) == 4
+"""
+    def test_deleteExperimentgroup(self):
+        self.DBInterface.deleteExperimentgroup()
 
 
-
-
-
+"""
 
 
