@@ -44,6 +44,7 @@ class BaseTest(unittest.TestCase):
         user2 = self.DBInterface.createUser({'username': 'Second user', 'password': 'Second password', 'experimentgroups': [experiment1.experimentgroups[1]]})
         user3 = self.DBInterface.createUser({'username': 'Third user', 'password': 'Third password', 'experimentgroups': [experiment2.experimentgroups[0]]})
         user4 = self.DBInterface.createUser({'username': 'Fourth user', 'password': 'Fourth password', 'experimentgroups': [experiment2.experimentgroups[1]]})
+        user5 = self.DBInterface.createUser({'username': 'Fifth user', 'password': 'Fifth password', 'experimentgroups': None})
         self.DBInterface.createDataitem({'user': 1, 'value': 10})
         self.DBInterface.createDataitem({'user': 2, 'value': 20})
         self.DBInterface.createDataitem({'user': 3, 'value': 30})
@@ -96,7 +97,8 @@ class TestDatabaseInterface(BaseTest):
         {'username': 'First user', 'password': 'First password'},
         {'username': 'Second user', 'password': 'Second password'},
         {'username': 'Third user', 'password': 'Third password'},
-        {'username': 'Fourth user', 'password': 'Fourth password'}]
+        {'username': 'Fourth user', 'password': 'Fourth password'},
+        {'username': 'Fifth user', 'password': 'Fifth password'}]
         for i in range(len(usersFromDB)):
             assert usersFromDB[i].username == users[i]['username']
             assert usersFromDB[i].password == users[i]['password']
@@ -149,7 +151,7 @@ class TestDatabaseInterface(BaseTest):
         dataitemsFromDB = self.dbsession.query(DataItems).all()
         experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
 
-        users = [self.dbsession.query(Users).filter_by(id=2).one(), self.dbsession.query(Users).filter_by(id=4).one()]
+        users = [self.dbsession.query(Users).filter_by(id=2).one(), self.dbsession.query(Users).filter_by(id=4).one(), self.dbsession.query(Users).filter_by(id=5).one()]
         dataitems = [self.dbsession.query(DataItems).filter_by(id=2).one(), self.dbsession.query(DataItems).filter_by(id=4).one()]
 
         assert usersFromDB == users

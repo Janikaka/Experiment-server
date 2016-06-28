@@ -10,7 +10,7 @@ class DatabaseInterface:
 #---------------------------------------------------------------------------------
 #                                   Experiments                                   
 #---------------------------------------------------------------------------------
-	def createExperiment(self, data):
+	def createExperiment(self, data): #CHECK
 		name = data['name']
 		experimentgroupNames = data['experimentgroupNames']
 		experiment = Experiments(name=name)
@@ -83,9 +83,9 @@ class DatabaseInterface:
 #---------------------------------------------------------------------------------
 	
 	def createDataitem(self, data):
-		user = data['user']
+		userId = data['user']
 		value = data['value']
-		dataitem = DataItems(value=value, user=user)
+		dataitem = DataItems(value=value, user=self.getUser(userId))
 		self.dbsession.add(dataitem)
 		return dataitem
 

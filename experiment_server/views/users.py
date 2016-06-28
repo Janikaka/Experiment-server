@@ -32,7 +32,7 @@ class Users:
 		json = self.request.json_body
 		value = json['value']
 		id = self.request.headers['id']
-		self.DB.createDataitem({'user': self.DB.getUser(id), 'value': value})
+		self.DB.createDataitem({'user': id, 'value': value})
 
 #curl -H "Content-Type: application/json" -H "id: 1" -X POST -d '{"value":"5"}' http://0.0.0.0:6543/events
 

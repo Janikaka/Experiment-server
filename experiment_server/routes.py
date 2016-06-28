@@ -1,3 +1,16 @@
 def includeme(config):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
+    config.add_route('hello', '/hello/{param}')
+
+    config.add_route('experiments_form', '/experiments/new')
+    config.add_route('experiments', '/experiments')
+    config.add_route('experiment_metadata', '/experiments/{id}/metadata')
+    config.add_route('experiment', '/experiments/{id}')
+    config.add_route('configurations', '/configurations')
+    config.add_route('users', '/users')
+    config.add_route('users_for_experiment', '/experiments/{id}/users')
+    config.add_route('experiments_for_user', '/users/{id}/experiments')
+    config.add_route('events', '/events')
+    config.add_route('user', '/users/{id}')
+    config.add_route('experiment_data', '/experiments/{id}/data')
