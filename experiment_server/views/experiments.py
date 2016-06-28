@@ -14,7 +14,7 @@ class Experiments:
 	def experiments_FORM(self):
 		return {'url': '/experiments'}
 
-	#1 Create new experiment MAKE A FORM (new_experiment.jinja2)
+	#1 Create new experiment
 	@view_config(route_name='experiments', request_method="POST")
 	def experiments_POST(self):
 		
@@ -23,7 +23,9 @@ class Experiments:
 		group2 = self.request.params['group2']
 		experimentgroups = [group1, group2]
 		#!!!! new_eperiment.jinja2 ei vielä lähetä dataa JSON-muodossa !!!!
+		#Näin alkuun tukee vain kahta groupsia
 
+		
 		#data = self.request.json_body
 		#experimentgroups = data["experimentgroups"]
 		#name = data["name"]
