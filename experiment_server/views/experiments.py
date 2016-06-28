@@ -17,21 +17,27 @@ class Experiments:
 	#1 Create new experiment
 	@view_config(route_name='experiments', request_method="POST")
 	def experiments_POST(self):
-		
+		#!!!! new_eperiment.jinja2 ei vielä lähetä dataa JSON-muodossa !!!!
+		#Näin alkuun tukee vain kahta groupsia
+		#data = self.request.json_body
+		#experimentgroups = data["experimentgroups"]
+		#name = data["name"]
+
+		#Tämä on vain pikaratkaisu:
 		name = self.request.params['name']
 		group1 = self.request.params['group1']
 		group2 = self.request.params['group2']
 		experimentgroupNames = [group1, group2]
-		#!!!! new_eperiment.jinja2 ei vielä lähetä dataa JSON-muodossa !!!!
-		#Näin alkuun tukee vain kahta groupsia
-
-		
-		#data = self.request.json_body
-		#experimentgroups = data["experimentgroups"]
-		#name = data["name"]
+		group1Conf = {'key': self.request.params['group1key'], 'value': self.request.params['group1value']}
+		group2Conf = {'key': self.request.params['group2key'], 'value': self.request.params['group2value']}
+		confs = [group1Conf, group2Conf]
 		experimentgroups = []
-		for experimentgroupName in experimentgroupNames:
-			experimentgroups.append(self.DB.createExperimentgroup({'name': experimentgroupName}))
+		for i in range(len(experimentgroupNames)):
+			expgroup = self.DB.createExperimentgroup({'name': experimentgroupNames[i]})
+			experimentgroups.append(expgroup)
+			conf = confs[i]
+			conf['experimentgroup'] = expgroup
+			self.DB.createConfiguration(conf)
 		self.DB.createExperiment({'name': name, 'experimentgroups': experimentgroups})
 		return HTTPFound(location='/experiments')
 
