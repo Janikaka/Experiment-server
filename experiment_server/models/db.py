@@ -21,13 +21,14 @@ class DatabaseInterface:
 		self.dbsession.add(experiment)
 		return experiment
 
-	def getAllExperiments(self):
+	def getAllExperiments(self): #OK
 		return self.dbsession.query(Experiments).all()
 
-	def getExperiment(self, id):
+	def getExperiment(self, id): #OK
 		return self.dbsession.query(Experiments).filter_by(id=id).one()
 
 	def deleteExperiment(self, id): #CHECK
+	#Deletes also experimentgroups in experiment
 		experiment = self.dbsession.query(Experiments).filter_by(id=id).one()
 		experimentgroups = experiment.experimentgroups
 		for experimentgroup in experimentgroups:
@@ -42,10 +43,10 @@ class DatabaseInterface:
 			users.extend(experimentgroup.users)
 		return users
 
-	def getExperimentgroups(self, id):
+	def getExperimentgroups(self, id): #OK
 		return self.dbsession.query(ExperimentGroups).filter_by(experiment_id = id)
 
-	def getUsersInExperimentgroup(self, experimentgroupID):
+	def getUsersInExperimentgroup(self, experimentgroupID): #OK
 		return self.dbsession.query(ExperimentGroups).filter_by(id=experimentgroupID).one().users
 
 #---------------------------------------------------------------------------------
@@ -84,14 +85,15 @@ class DatabaseInterface:
 	def getAllUsers(self):
 		return self.dbsession.query(Users).all()
 
-	def getExperimentsForUser(self, id):
+	def getExperimentsForUser(self, id): #CHECK
 		experimentgroups = self.dbsession.query(Users).filter_by(id=id).one().experimentgroups
 		experiments = []
 		for experimentgroup in experimentgroups:
 			experiments.append(experimentgroup.experiment)
 		return experiments
 
-	def deleteUser(self, id):
+	def deleteUser(self, id): #CHECK
+	#Deletes also dataitems in user
 		user = self.dbsession.query(Users).filter_by(id=id).one()
 		self.dbsession.delete(user)
 
@@ -102,7 +104,7 @@ class DatabaseInterface:
 #                                    Dataitems                                     
 #---------------------------------------------------------------------------------
 	
-	def createDataitem(self, data):
+	def createDataitem(self, data): #CHECK
 		userId = data['user']
 		value = data['value']
 		dataitem = DataItems(value=value, user=self.getUser(userId))
