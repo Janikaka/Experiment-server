@@ -16,6 +16,7 @@ class ExperimentGroups(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Text)
     experiment_id = Column(Integer, ForeignKey('experiments.id'))
+    configurations = relationship("Configurations", backref="experimentgroup", cascade="delete")
     users = relationship(
         "Users",
         secondary=Users_Experimentgroups,

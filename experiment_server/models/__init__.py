@@ -10,6 +10,7 @@ from .users import Users
 from .dataItems import DataItems
 from .experimentGroups import ExperimentGroups
 from .db import DatabaseInterface
+from .configurations import Configurations
 
 
 # run configure_mappers after defining all of the models to ensure
