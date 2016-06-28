@@ -35,7 +35,7 @@ class DatabaseInterface:
 		self.dbsession.delete(experiment)
 
 
-	def getUsersInExperiment(self, id):
+	def getUsersInExperiment(self, id): #CHECK
 		experimentgroups = self.dbsession.query(Experiments).filter_by(id=id).one().experimentgroups
 		users = []
 		for experimentgroup in experimentgroups:
