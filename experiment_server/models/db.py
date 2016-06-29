@@ -70,7 +70,7 @@ class DatabaseInterface:
 	def getUsersInExperimentgroup(self, experimentgroupId): #OK
 		return self.dbsession.query(ExperimentGroups).filter_by(id=experimentgroupId).one().users
 
-	def getConfForExperimentgroup(self, experimentgroupId):
+	def getConfForExperimentgroup(self, experimentgroupId): #OK
 		return self.dbsession.query(ExperimentGroups).filter_by(id=experimentgroupId).one().configuration
 
 #---------------------------------------------------------------------------------
@@ -95,11 +95,14 @@ class DatabaseInterface:
 		return self.dbsession.query(Users).all()
 
 	def getExperimentsForUser(self, id): #CHECK
-		experimentgroups = self.dbsession.query(Users).filter_by(id=id).one().experimentgroups
+		experimentgroups = self.getExperimentgroupsForUser(id)
 		experiments = []
 		for experimentgroup in experimentgroups:
 			experiments.append(experimentgroup.experiment)
 		return experiments
+
+	def getExperimentgroupsForUser(self, id):
+		return self.dbsession.query(Users).filter_by(id=id).one().experimentgroups
 
 	def deleteUser(self, id): #CHECK
 	#Deletes also dataitems in user
@@ -116,7 +119,12 @@ class DatabaseInterface:
 		else:
 			return user
 
-	#TODO getConfigurationForUser
+	def getConfigurationForUser(self, id): #CHECK
+		expgroups = self.getExperimentgroupsForUser(id)
+		confs = []
+		for expgroup in expgroups:
+			confs.append(expgroup.configuration)
+		return confs
 
 #---------------------------------------------------------------------------------
 #                                    Dataitems                                     
@@ -135,7 +143,7 @@ class DatabaseInterface:
 #                                 Configurations                                  
 #---------------------------------------------------------------------------------
 
-	def createConfiguration(self, data):
+	def createConfiguration(self, data): #CHECK
 		key = data['key']
 		value = data['value']
 		experimentgroup = data['experimentgroup']

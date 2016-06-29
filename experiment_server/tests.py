@@ -48,7 +48,7 @@ class BaseTest(unittest.TestCase):
         user1 = self.DBInterface.createUser({'username': 'First user', 'password': 'First password', 'experimentgroups': [experiment1.experimentgroups[0]]})
         user2 = self.DBInterface.createUser({'username': 'Second user', 'password': 'Second password', 'experimentgroups': [experiment1.experimentgroups[1]]})
         user3 = self.DBInterface.createUser({'username': 'Third user', 'password': 'Third password', 'experimentgroups': [experiment2.experimentgroups[0]]})
-        user4 = self.DBInterface.createUser({'username': 'Fourth user', 'password': 'Fourth password', 'experimentgroups': [experiment2.experimentgroups[1]]})
+        user4 = self.DBInterface.createUser({'username': 'Fourth user', 'password': 'Fourth password', 'experimentgroups': [experiment2.experimentgroups[1], experiment1.experimentgroups[1]]})
         user5 = self.DBInterface.createUser({'username': 'Fifth user', 'password': 'Fifth password'})
         self.DBInterface.createDataitem({'user': 1, 'value': 10})
         self.DBInterface.createDataitem({'user': 2, 'value': 20})
@@ -102,7 +102,7 @@ class TestDatabaseInterface(BaseTest):
 
         experimentgroups = [
         {'name':'group A', 'experiment':experiments[0], 'users': [users[0]], 'configuration': confs[0]},
-        {'name':'group B', 'experiment':experiments[0], 'users': [users[1]], 'configuration': confs[1]},
+        {'name':'group B', 'experiment':experiments[0], 'users': [users[1], users[3]], 'configuration': confs[1]},
         {'name':'group C', 'experiment':experiments[1], 'users': [users[2]], 'configuration': confs[2]},
         {'name':'group D', 'experiment':experiments[1], 'users': [users[3]], 'configuration': confs[3]}]
 
@@ -129,22 +129,34 @@ class TestDatabaseInterface(BaseTest):
 
     def test_createUser(self):
         usersFromDB = self.dbsession.query(Users).all()
+        expgroups = [
+        self.dbsession.query(ExperimentGroups).filter_by(name='group A').one(),
+        self.dbsession.query(ExperimentGroups).filter_by(name='group B').one(),
+        self.dbsession.query(ExperimentGroups).filter_by(name='group C').one(),
+        self.dbsession.query(ExperimentGroups).filter_by(name='group D').one()
+        ]
+        dataitems = [
+        self.dbsession.query(DataItems).filter_by(value=10).one(),
+        self.dbsession.query(DataItems).filter_by(value=20).one(),
+        self.dbsession.query(DataItems).filter_by(value=30).one(),
+        self.dbsession.query(DataItems).filter_by(value=40).one()
+        ]
         users = [
         {'username': 'First user', 'password': 'First password', 
-        'experimentgroups': [self.dbsession.query(ExperimentGroups).filter_by(name='group A').one()], 
-        'dataitems': [self.dbsession.query(DataItems).filter_by(value=10).one()]},
+        'experimentgroups': [expgroups[0]], 
+        'dataitems': [dataitems[0]]},
 
         {'username': 'Second user', 'password': 'Second password',
-        'experimentgroups': [self.dbsession.query(ExperimentGroups).filter_by(name='group B').one()], 
-        'dataitems': [self.dbsession.query(DataItems).filter_by(value=20).one()]},
+        'experimentgroups': [expgroups[1]], 
+        'dataitems': [dataitems[1]]},
 
         {'username': 'Third user', 'password': 'Third password',
-        'experimentgroups': [self.dbsession.query(ExperimentGroups).filter_by(name='group C').one()], 
-        'dataitems': [self.dbsession.query(DataItems).filter_by(value=30).one()]},
+        'experimentgroups': [expgroups[2]], 
+        'dataitems': [dataitems[2]]},
 
         {'username': 'Fourth user', 'password': 'Fourth password', 
-        'experimentgroups': [self.dbsession.query(ExperimentGroups).filter_by(name='group D').one()], 
-        'dataitems': [self.dbsession.query(DataItems).filter_by(value=40).one()]},
+        'experimentgroups': [expgroups[3], expgroups[1]], 
+        'dataitems': [dataitems[3]]},
 
         {'username': 'Fifth user', 'password': 'Fifth password',
         'experimentgroups': [], 
@@ -224,20 +236,20 @@ class TestDatabaseInterface(BaseTest):
 
     def test_deleteExperimentgroup(self):
         self.DBInterface.deleteExperimentgroup(1) #group A
-        self.DBInterface.deleteExperimentgroup(4) #group D
+        self.DBInterface.deleteExperimentgroup(3) #group C
 
         experimentgroupsFromDB = self.dbsession.query(ExperimentGroups).all()
 
         expgroup2 = self.dbsession.query(ExperimentGroups).filter_by(id=2).one()
-        expgroup3 = self.dbsession.query(ExperimentGroups).filter_by(id=3).one()
-        experimentgroups = [expgroup2, expgroup3]
+        expgroup4 = self.dbsession.query(ExperimentGroups).filter_by(id=4).one()
+        experimentgroups = [expgroup2, expgroup4]
 
         user1 = self.dbsession.query(Users).filter_by(id=1).one()
-        user4 = self.dbsession.query(Users).filter_by(id=4).one()
+        user3 = self.dbsession.query(Users).filter_by(id=3).one()
 
         assert experimentgroupsFromDB == experimentgroups
         assert user1.experimentgroups == []
-        assert user4.experimentgroups == []
+        assert user3.experimentgroups == []
 
     def test_getUsersInExperiment(self):
         users1 = self.DBInterface.getUsersInExperiment(1)
@@ -246,7 +258,7 @@ class TestDatabaseInterface(BaseTest):
         user2 = self.dbsession.query(Users).filter_by(id=2).one()
         user3 = self.dbsession.query(Users).filter_by(id=3).one()
         user4 = self.dbsession.query(Users).filter_by(id=4).one()
-        users1FromDB = [user1, user2]
+        users1FromDB = [user1, user2, user4]
         users2FromDB = [user3, user4]
 
         assert users1 == users1FromDB
@@ -265,10 +277,23 @@ class TestDatabaseInterface(BaseTest):
         assert experiments1 == [experiment1]
         assert experiments2 == [experiment1]
         assert experiments3 == [experiment2]
-        assert experiments4 == [experiment2]
+        assert experiments4 == [experiment2, experiment1]
         assert experiments5 == []
 
-    
+    def test_getConfigurationForUser(self):
+        confs = self.dbsession.query(Configurations).all()
+
+        user1Confs = self.DBInterface.getConfigurationForUser(1)
+        user2Confs = self.DBInterface.getConfigurationForUser(2)
+        user3Confs = self.DBInterface.getConfigurationForUser(3)
+        user4Confs = self.DBInterface.getConfigurationForUser(4)
+        user5Confs = self.DBInterface.getConfigurationForUser(5)
+        usersConfs = [user1Confs, user2Confs, user3Confs, user4Confs, user5Confs]
+
+        userConfsToCompare = [[confs[0]], [confs[1]], [confs[2]], [confs[3], confs[1]], []]
+
+        for i in range(len(usersConfs)):
+            assert usersConfs[i] == userConfsToCompare[i]
 
     
 
