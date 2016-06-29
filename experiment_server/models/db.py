@@ -121,7 +121,7 @@ class DatabaseInterface:
 		if user == []:
 			return self.createUser(data)
 		else:
-			return user
+			return user[0]
 
 	def getConfigurationForUser(self, id): #CHECK
 		expgroups = self.getExperimentgroupsForUser(id)
@@ -134,7 +134,6 @@ class DatabaseInterface:
 		userId = data['user']
 		experimentId = data['experiment']
 		#TODO Do this better:
-		print("experimentId: %d" %(experimentId))
 		experimentgroups = self.getExperimentgroups(experimentId)
 		experimentgroup = experimentgroups[random.randint(0, len(experimentgroups)-1)]
 		self.dbsession.query(Users).filter_by(id=userId).one().experimentgroups.append(experimentgroup)

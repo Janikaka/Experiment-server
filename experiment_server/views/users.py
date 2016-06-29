@@ -19,10 +19,11 @@ class Users:
 		userData = {'username': username, 'password': password}
 		user = self.DB.checkUser(userData)
 		self.DB.assignUserToExperiments(user.id)
-
-		return {'conf':self.DB.getConfigurationForUser(user.id)}
-		#TODO get conf for use
-
+		confs = self.DB.getConfigurationForUser(user.id)
+		configurations = []
+		for conf in confs:
+			configurations.append({'key':conf.key, 'value':conf.value})
+		return {'configurations': configurations}
 
 	#6 List all users
 	@view_config(route_name='users', request_method="GET", renderer='../templates/all_users.jinja2')
