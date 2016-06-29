@@ -10,15 +10,19 @@ class Users:
 		self.DB = DatabaseInterface(self.request.dbsession)
 
 	#5 List configurations for specific user
-	#Also adds the user to the DB if it doesn't exist
 	@view_config(route_name='configurations', request_method="GET")
 	def configurations_GET(self):
+	#Also adds the user to the DB if it doesn't exist
 		json = self.request.json_body
 		username = self.request.headers['username']
 		password = self.request.headers['password']
 		userData = {'username': username, 'password': password}
 		user = self.DB.checkUser(userData)
-		#TODO get conf for user
+		self.DB.assignUserToExperiments(user.id)
+
+		return {'conf':self.DB.getConfigurationForUser(user.id)}
+		#TODO get conf for use
+
 
 	#6 List all users
 	@view_config(route_name='users', request_method="GET", renderer='../templates/all_users.jinja2')
@@ -29,7 +33,7 @@ class Users:
 	@view_config(route_name='experiments_for_user', request_method="GET", renderer='../templates/experiments_for_user.jinja2')
 	def experiments_for_user_GET(self):
 		id = self.request.matchdict['id']
-		return {'user': self.DB.getUser(id), 'experiments': self.DB.getExperimentsForUser(id)}
+		return {'user': self.DB.getUser(id), 'experiments': self.DB.getExperimentsUserParticipates(id)}
 
 	#9 Save experiment data
 	@view_config(route_name='events', request_method="POST")

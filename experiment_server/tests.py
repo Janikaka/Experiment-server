@@ -264,12 +264,12 @@ class TestDatabaseInterface(BaseTest):
         assert users1 == users1FromDB
         assert users2 == users2FromDB
 
-    def test_getExperimentsForUser(self):
-        experiments1 = self.DBInterface.getExperimentsForUser(1)
-        experiments2 = self.DBInterface.getExperimentsForUser(2)
-        experiments3 = self.DBInterface.getExperimentsForUser(3)
-        experiments4 = self.DBInterface.getExperimentsForUser(4)
-        experiments5 = self.DBInterface.getExperimentsForUser(5)
+    def test_getExperimentsUserParticipates(self):
+        experiments1 = self.DBInterface.getExperimentsUserParticipates(1)
+        experiments2 = self.DBInterface.getExperimentsUserParticipates(2)
+        experiments3 = self.DBInterface.getExperimentsUserParticipates(3)
+        experiments4 = self.DBInterface.getExperimentsUserParticipates(4)
+        experiments5 = self.DBInterface.getExperimentsUserParticipates(5)
         
         experiment1 = self.dbsession.query(Experiments).filter_by(id=1).one()
         experiment2 = self.dbsession.query(Experiments).filter_by(id=2).one()
@@ -294,6 +294,14 @@ class TestDatabaseInterface(BaseTest):
 
         for i in range(len(usersConfs)):
             assert usersConfs[i] == userConfsToCompare[i]
+
+    def test_assignUserToExperiments(self):
+        #TODO
+        assert 1==1
+
+    def test_assignUserToExperiment(self):
+        #TODO
+        assert 1==1
 
     
 

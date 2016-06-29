@@ -3,6 +3,7 @@ from .experiments import Experiments
 from .users import Users
 from .dataItems import DataItems
 from .configurations import Configurations
+import random
 
 class DatabaseInterface:
 	def __init__(self, dbsession):
@@ -41,6 +42,9 @@ class DatabaseInterface:
 			users.extend(experimentgroup.users)
 		return users
 
+
+
+
 #---------------------------------------------------------------------------------
 #                                 ExperimentGroups                                
 #---------------------------------------------------------------------------------
@@ -65,7 +69,7 @@ class DatabaseInterface:
 		return self.dbsession.query(ExperimentGroups).filter_by(id=id).one()
 
 	def getExperimentgroups(self, id): #OK
-		return self.dbsession.query(ExperimentGroups).filter_by(experiment_id = id)
+		return self.dbsession.query(ExperimentGroups).filter_by(experiment_id = id).all()
 
 	def getUsersInExperimentgroup(self, experimentgroupId): #OK
 		return self.dbsession.query(ExperimentGroups).filter_by(id=experimentgroupId).one().users
@@ -86,7 +90,7 @@ class DatabaseInterface:
 				data[key] = []
 		user = Users(username=data['username'], password=data['password'], experimentgroups=data['experimentgroups'], dataitems=data['dataitems'])
 		self.dbsession.add(user)
-		return user
+		return self.dbsession.query(Users).filter_by(username=data['username']).one()
 
 	def getUser(self, id): #OK
 		return self.dbsession.query(Users).filter_by(id=id).one()
@@ -94,7 +98,7 @@ class DatabaseInterface:
 	def getAllUsers(self): #OK
 		return self.dbsession.query(Users).all()
 
-	def getExperimentsForUser(self, id): #CHECK
+	def getExperimentsUserParticipates(self, id): #CHECK
 		experimentgroups = self.getExperimentgroupsForUser(id)
 		experiments = []
 		for experimentgroup in experimentgroups:
@@ -113,7 +117,7 @@ class DatabaseInterface:
 		return self.dbsession.query(DataItems).filter_by(user_id=id)
 
 	def checkUser(self, data): #OK
-		user = self.dbsession.query(Users).filter_by(username=username).one()
+		user = self.dbsession.query(Users).filter_by(username=data['username'], password=data['password']).all()
 		if user == []:
 			return self.createUser(data)
 		else:
@@ -125,6 +129,25 @@ class DatabaseInterface:
 		for expgroup in expgroups:
 			confs.append(expgroup.configuration)
 		return confs
+
+	def assignUserToExperiment(self, data):
+		userId = data['user']
+		experimentId = data['experiment']
+		#TODO Do this better:
+		print("experimentId: %d" %(experimentId))
+		experimentgroups = self.getExperimentgroups(experimentId)
+		experimentgroup = experimentgroups[random.randint(0, len(experimentgroups)-1)]
+		self.dbsession.query(Users).filter_by(id=userId).one().experimentgroups.append(experimentgroup)
+
+	def assignUserToExperiments(self, id):
+		allExperiments = self.getAllExperiments()
+		experimentsUserParticipates = self.getExperimentsUserParticipates(id)
+		experimentsUserDoesNotParticipate = []
+		for experiment in allExperiments:
+			if experiment not in experimentsUserParticipates:
+				experimentsUserDoesNotParticipate.append(experiment)
+		for experiment in experimentsUserDoesNotParticipate:
+			self.assignUserToExperiment({'user':id, 'experiment':experiment.id})
 
 #---------------------------------------------------------------------------------
 #                                    Dataitems                                     
