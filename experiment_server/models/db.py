@@ -95,6 +95,9 @@ class DatabaseInterface:
 	def getUser(self, id): #OK
 		return self.dbsession.query(Users).filter_by(id=id).one()
 
+	def getUserByUsername(self, username):
+		return self.dbsession.query(Users).filter_by(username=username).one()
+
 	def getAllUsers(self): #OK
 		return self.dbsession.query(Users).all()
 
@@ -133,7 +136,7 @@ class DatabaseInterface:
 	def assignUserToExperiment(self, data):
 		userId = data['user']
 		experimentId = data['experiment']
-		#TODO Do this better:
+		#TODO Do this better?
 		experimentgroups = self.getExperimentgroups(experimentId)
 		experimentgroup = experimentgroups[random.randint(0, len(experimentgroups)-1)]
 		self.dbsession.query(Users).filter_by(id=userId).one().experimentgroups.append(experimentgroup)

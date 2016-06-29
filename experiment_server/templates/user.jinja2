@@ -1,0 +1,28 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<div class="content">
+	<h1>User <i>{{ user.username }}</i></h1><br>
+	<p><b>ID: </b>{{ user.id }}</p><br><br>
+	<b>Dataitems:</b>
+	<ul>
+	{% for dataitem in dataitems %}
+		<li>value: {{ dataitem.value }}
+	{% endfor %}
+	</ul>
+	<b>Experiments:</b>
+	<ul>
+	{% for experimentgroup in experimentgroups %}
+		<li >
+		<a class="font-bold" href="/experiments/{{experimentgroup.experiment.id}}/metadata">{{ experimentgroup.experiment.name }}</a>
+		</li>
+		<li">
+		<b>Experimentgroup: </b><p>{{experimentgroup.name}}</p>
+		</li>
+		<br>
+	{% endfor %}
+	</ul>
+	<br>
+	<input type="button" value="Back" onclick="window.history.back()"/>
+</div>
+{% endblock content %}

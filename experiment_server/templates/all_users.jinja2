@@ -23,7 +23,7 @@
 	{% for user in users %}
 		<li class="font-bold">
 		<table><tr><td style="width:70%;"><b>{{ user.username }}</b></td><td><a href="/users"><button onclick="deleteUser({{user.id}});">Delete user</button></a></td></tr></table>
-		<a href="">Show user</a><br>
+		<a href="/users/{{user.id}}">Show user</a><br>
 		<a href="/users/{{user.id}}/experiments">Show experiments</a><br>
 		</li>
 		<br>

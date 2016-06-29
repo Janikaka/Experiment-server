@@ -41,8 +41,9 @@ class Users:
 	def events_POST(self):
 		json = self.request.json_body
 		value = json['value']
-		id = self.request.headers['id']
-		self.DB.createDataitem({'user': id, 'value': value})
+		username = self.request.headers['username']
+		user = self.DB.getUserByUsername(username)
+		self.DB.createDataitem({'user': user.id, 'value': value})
 
 #curl -H "Content-Type: application/json" -H "id: 1" -X POST -d '{"value":"5"}' http://0.0.0.0:6543/events
 
@@ -51,6 +52,14 @@ class Users:
 	def user_DELETE(self):
 		#Browser need to refresh after deleting
 		self.DB.deleteUser(self.request.matchdict['id'])
+
+	@view_config(route_name='user', request_method="GET", renderer='../templates/user.jinja2')
+	def user_GET(self):
+		userId = self.request.matchdict['id']
+		user = self.DB.getUser(userId)
+		dataitems = self.DB.getDataitemsForUser(userId)
+		experimentgroups = self.DB.getExperimentgroupsForUser(userId)
+		return {'user':user, 'dataitems': dataitems, 'experimentgroups': experimentgroups}
 	
 
 

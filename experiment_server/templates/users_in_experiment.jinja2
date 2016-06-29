@@ -6,7 +6,7 @@
 	<ul>
 	{% for user in users %}
 		<li class="font-bold">
-		<a>{{ user.username }}</a><br>
+		<a href='/users/{{user.id}}'>{{ user.username }}</a><br>
 		</li>
 		<br>
 	{% endfor %}
