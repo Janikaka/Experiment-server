@@ -1,12 +1,4 @@
-forms README
-==================
+Experiment-server
+=================
 
-Getting Started
----------------
-
-- cd <directory containing this file>
-
-- $VENV/bin/pip install -e .
-
-- $VENV/bin/pserve development.ini
-
+A simple REST API server for providing runtime configurations for applications and receiving usage-related event data.

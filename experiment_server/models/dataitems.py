@@ -9,10 +9,9 @@ from sqlalchemy import (
 from .meta import Base
 from sqlalchemy.orm import relationship
 
-
-class DataItems(Base):
+class DataItem(Base):
     __tablename__ = 'dataitems'
     id = Column(Integer, primary_key=True)
-    value = Column(Integer)
-    key = Column(Text)
     user_id = Column(Integer, ForeignKey('users.id'))
+    key = Column(Text)
+    value = Column(Integer)

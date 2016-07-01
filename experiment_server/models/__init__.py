@@ -5,28 +5,24 @@ import zope.sqlalchemy
 
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
-from .experiments import Experiments
-from .users import Users
-from .dataItems import DataItems
-from .experimentGroups import ExperimentGroups
+from .experiments import Experiment
+from .users import User
+from .dataitems import DataItem
+from .experimentgroups import ExperimentGroup
 from .db import DatabaseInterface
-from .configurations import Configurations
-
+from .configurations import Configuration
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
 configure_mappers()
 
-
 def get_engine(settings, prefix='sqlalchemy.'):
     return engine_from_config(settings, prefix)
-
 
 def get_session_factory(engine):
     factory = sessionmaker()
     factory.configure(bind=engine)
     return factory
-
 
 def get_tm_session(session_factory, transaction_manager):
     """
@@ -53,7 +49,6 @@ def get_tm_session(session_factory, transaction_manager):
     zope.sqlalchemy.register(
         dbsession, transaction_manager=transaction_manager)
     return dbsession
-
 
 def includeme(config):
     """

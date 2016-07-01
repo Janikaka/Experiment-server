@@ -7,25 +7,16 @@ from sqlalchemy import (
 )
 
 from .meta import Base
-
 from sqlalchemy.orm import relationship
-from .users_experimentgroups import Users_Experimentgroups
+from .users_experimentgroups import users_experimentgroups
 
-class ExperimentGroups(Base):
+class ExperimentGroup(Base):
     __tablename__ = 'experimentgroups'
     id = Column(Integer, primary_key=True)
     name = Column(Text)
     experiment_id = Column(Integer, ForeignKey('experiments.id'))
-    configuration = relationship("Configurations", uselist=False, backref="experimentgroup", cascade="delete")
-    users = relationship(
-        "Users",
-        secondary=Users_Experimentgroups,
+    configurations = relationship("Configuration", backref="experimentgroup")
+    users = relationship("User",
+        secondary=users_experimentgroups,
         back_populates="experimentgroups"
     )
-
-
-
-
-
-
-

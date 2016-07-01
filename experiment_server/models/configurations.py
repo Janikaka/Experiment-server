@@ -7,13 +7,12 @@ from sqlalchemy import (
 )
 
 from .meta import Base
-
 from sqlalchemy.orm import relationship
 
-class Configurations(Base):
+class Configuration(Base):
 	__tablename__ = 'configurations'
 	id = Column(Integer, primary_key=True)
+	experimentgroup_id = Column(Integer, ForeignKey('experimentgroups.id'))
 	key = Column(Text)
 	value = Column(Integer)
-	experimentgroup_id = Column(Integer, ForeignKey('experimentgroups.id'))
-	#experimentgroup = relationship("Experimentgroups", backref="experimentgroup", cascade="delete")
+

@@ -15,16 +15,13 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import (Experiments, Users, DataItems, ExperimentGroups, Configurations)
-
-
+from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration)
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
     print('usage: %s <config_uri> [var=value]\n'
           '(example: "%s development.ini")' % (cmd, cmd))
     sys.exit(1)
-
 
 def main(argv=sys.argv):
     if len(argv) < 2:
@@ -42,27 +39,26 @@ def main(argv=sys.argv):
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
 
-        user1 = Users(username='First user', password='First password')
-        user2 = Users(username='Second user')
+        user1 = User(username='First user')
+        user2 = User(username='Second user')
         
-        dataitem1 = DataItems(value=10)
-        dataitem2 = DataItems(value=20)
+        dataitem1 = DataItem(value=10)
+        dataitem2 = DataItem(value=20)
 
         user1.dataitems.append(dataitem1)
         user2.dataitems.append(dataitem2)
 
-        experiment1 = Experiments(name='First experiment')
+        experiment1 = Experiment(name='First experiment')
 
 
-        experimentgroup1 = ExperimentGroups(name='group A', users=[user1])
-        experimentgroup2 = ExperimentGroups(name='group B', users=[user2])
+        experimentgroup1 = ExperimentGroup(name='group A', users=[user1])
+        experimentgroup2 = ExperimentGroup(name='group B', users=[user2])
 
         experiment1.experimentgroups.append(experimentgroup1)
         experiment1.experimentgroups.append(experimentgroup2)
 
-        conf1 = Configurations(key='confkey1', value=1, experimentgroup=experimentgroup1)
-        conf2 = Configurations(key='confkey2', value=2, experimentgroup=experimentgroup2)
-
+        conf1 = Configuration(key='confkey1', value=1, experimentgroup=experimentgroup1)
+        conf2 = Configuration(key='confkey2', value=2, experimentgroup=experimentgroup2)
 
         dbsession.add(dataitem1)
         dbsession.add(dataitem2)
@@ -73,11 +69,3 @@ def main(argv=sys.argv):
         dbsession.add(experiment1)
         dbsession.add(conf1)
         dbsession.add(conf2)
-
-
-
-
-
-
-
-
