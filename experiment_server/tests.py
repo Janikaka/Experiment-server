@@ -70,7 +70,6 @@ class BaseTest(unittest.TestCase):
         transaction.abort()
         Base.metadata.drop_all(self.engine)
 
-
 #---------------------------------------------------------------------------------
 #                               DatabaseInterface
 #---------------------------------------------------------------------------------
@@ -112,7 +111,6 @@ class TestDatabaseInterface(BaseTest):
             assert experimentgroupsFromDB[i].users == experimentgroups[i]['users']
             assert experimentgroupsFromDB[i].configuration == experimentgroups[i]['configuration']
 
-
     def test_createExperiment(self):
         experimentsFromDB = self.dbsession.query(Experiments).all()
         
@@ -123,9 +121,7 @@ class TestDatabaseInterface(BaseTest):
         for i in range(len(experimentsFromDB)):
             assert experimentsFromDB[i].name == experiments[i]['name']
             for j in range(len(experimentsFromDB[i].experimentgroups)):
-                assert experimentsFromDB[i].experimentgroups[j].name == experiments[i]['experimentgroups'][j]
-
-        
+                assert experimentsFromDB[i].experimentgroups[j].name == experiments[i]['experimentgroups'][j]        
 
     def test_createUser(self):
         usersFromDB = self.dbsession.query(Users).all()
@@ -196,7 +192,6 @@ class TestDatabaseInterface(BaseTest):
         for i in range(len(confsFromDB)):
             for keyy in confs[i]:
                 assert getattr(confsFromDB[i], keyy) == confs[i][keyy]
-
 
     def test_deleteExperiment(self):
         self.DBInterface.deleteExperiment(1) #Delete experiment 'First experiment'
@@ -302,11 +297,3 @@ class TestDatabaseInterface(BaseTest):
     def test_assignUserToExperiment(self):
         #TODO
         assert 1==1
-
-    
-
-
-
-
-
-
