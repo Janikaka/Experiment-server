@@ -5,12 +5,12 @@ import zope.sqlalchemy
 
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
-from .experiments import Experiments
-from .users import Users
-from .dataItems import DataItems
-from .experimentGroups import ExperimentGroups
+from .experiments import Experiment
+from .users import User
+from .dataitems import DataItem
+from .experimentgroups import ExperimentGroup
 from .db import DatabaseInterface
-from .configurations import Configurations
+from .configurations import Configuration
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
