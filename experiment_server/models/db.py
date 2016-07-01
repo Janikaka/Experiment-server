@@ -87,7 +87,10 @@ class DatabaseInterface:
 			try:
 				data[key]
 			except KeyError:
-				data[key] = []
+				if key == 'password':
+					data[key] = ''
+				else:
+					data[key] = []
 		user = Users(username=data['username'], password=data['password'], experimentgroups=data['experimentgroups'], dataitems=data['dataitems'])
 		self.dbsession.add(user)
 		return self.dbsession.query(Users).filter_by(username=data['username']).one()
@@ -119,10 +122,10 @@ class DatabaseInterface:
 	def getDataitemsForUser(self, id): #OK
 		return self.dbsession.query(DataItems).filter_by(user_id=id)
 
-	def checkUser(self, data): #OK
-		user = self.dbsession.query(Users).filter_by(username=data['username'], password=data['password']).all()
+	def checkUser(self, username): #OK
+		user = self.dbsession.query(Users).filter_by(username=username).all()
 		if user == []:
-			return self.createUser(data)
+			return self.createUser({'username':username})
 		else:
 			return user[0]
 
@@ -158,7 +161,8 @@ class DatabaseInterface:
 	def createDataitem(self, data): #CHECK
 		userId = data['user']
 		value = data['value']
-		dataitem = DataItems(value=value, user=self.getUser(userId))
+		key = data['key']
+		dataitem = DataItems(value=value, key=key, user=self.getUser(userId))
 		self.dbsession.add(dataitem)
 		return dataitem
 

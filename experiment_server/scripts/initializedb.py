@@ -43,7 +43,7 @@ def main(argv=sys.argv):
         dbsession = get_tm_session(session_factory, transaction.manager)
 
         user1 = Users(username='First user', password='First password')
-        user2 = Users(username='Second user', password='Second password')
+        user2 = Users(username='Second user')
         
         dataitem1 = DataItems(value=10)
         dataitem2 = DataItems(value=20)
