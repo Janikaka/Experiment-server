@@ -116,10 +116,10 @@ class DatabaseInterface:
 	def getDataitemsForUser(self, id): #OK
 		return self.dbsession.query(DataItem).filter_by(user_id=id)
 
-	def checkUser(self, data): #OK
-		user = self.dbsession.query(User).filter_by(username=data['username'], password=data['password']).all()
+	def checkUser(self, username): #OK
+		user = self.dbsession.query(Users).filter_by(username=username).all()
 		if user == []:
-			return self.createUser(data)
+			return self.createUser({'username':username})
 		else:
 			return user[0]
 
@@ -156,7 +156,8 @@ class DatabaseInterface:
 	def createDataitem(self, data): #CHECK
 		userId = data['user']
 		value = data['value']
-		dataitem = DataItem(value=value, user=self.getUser(userId))
+		key = data['key']
+		dataitem = DataItem(value=value, key=key, user=self.getUser(userId))
 		self.dbsession.add(dataitem)
 		return dataitem
 

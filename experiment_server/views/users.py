@@ -15,9 +15,8 @@ class Users:
 	#Also adds the user to the DB if it doesn't exist
 		json = self.request.json_body
 		username = self.request.headers['username']
-		password = self.request.headers['password']
-		userData = {'username': username, 'password': password}
-		user = self.DB.checkUser(userData)
+		#userData = {'username': username, 'password': password}
+		user = self.DB.checkUser(username)
 		self.DB.assignUserToExperiments(user.id)
 		confs = self.DB.getConfigurationForUser(user.id)
 		configurations = []
@@ -41,9 +40,10 @@ class Users:
 	def events_POST(self):
 		json = self.request.json_body
 		value = json['value']
+		key = json['key']
 		username = self.request.headers['username']
 		user = self.DB.getUserByUsername(username)
-		self.DB.createDataitem({'user': user.id, 'value': value})
+		self.DB.createDataitem({'user': user.id, 'value': value, 'key':key})
 
 #curl -H "Content-Type: application/json" -H "id: 1" -X POST -d '{"value":"5"}' http://0.0.0.0:6543/events
 
