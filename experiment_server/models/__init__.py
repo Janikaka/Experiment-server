@@ -12,21 +12,17 @@ from .experimentGroups import ExperimentGroups
 from .db import DatabaseInterface
 from .configurations import Configurations
 
-
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
 configure_mappers()
 
-
 def get_engine(settings, prefix='sqlalchemy.'):
     return engine_from_config(settings, prefix)
-
 
 def get_session_factory(engine):
     factory = sessionmaker()
     factory.configure(bind=engine)
     return factory
-
 
 def get_tm_session(session_factory, transaction_manager):
     """
@@ -53,7 +49,6 @@ def get_tm_session(session_factory, transaction_manager):
     zope.sqlalchemy.register(
         dbsession, transaction_manager=transaction_manager)
     return dbsession
-
 
 def includeme(config):
     """
