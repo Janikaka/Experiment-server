@@ -50,10 +50,10 @@ class BaseTest(unittest.TestCase):
         user3 = self.DBInterface.createUser({'username': 'Third user', 'experimentgroups': [experiment2.experimentgroups[0]]})
         user4 = self.DBInterface.createUser({'username': 'Fourth user', 'experimentgroups': [experiment2.experimentgroups[1], experiment1.experimentgroups[1]]})
         user5 = self.DBInterface.createUser({'username': 'Fifth user'})
-        self.DBInterface.createDataitem({'user': 1, 'value': 10})
-        self.DBInterface.createDataitem({'user': 2, 'value': 20})
-        self.DBInterface.createDataitem({'user': 3, 'value': 30})
-        self.DBInterface.createDataitem({'user': 4, 'value': 40})
+        self.DBInterface.createDataitem({'user': 1, 'key': 'dummy', 'value': 10})
+        self.DBInterface.createDataitem({'user': 2, 'key': 'dummy', 'value': 20})
+        self.DBInterface.createDataitem({'user': 3, 'key': 'dummy', 'value': 30})
+        self.DBInterface.createDataitem({'user': 4, 'key': 'dummy', 'value': 40})
         configurations = [{'key': 'key1', 'value': 1, 'experimentgroup': experimentgroups[0]},
         {'key': 'key2', 'value': 2, 'experimentgroup': experimentgroups[1]},
         {'key': 'key3', 'value': 3, 'experimentgroup': experimentgroups[2]}, 
