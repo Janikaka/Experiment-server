@@ -12,12 +12,10 @@ from .models import (
 def dummy_request(dbsession):
     return testing.DummyRequest(dbsession=dbsession)
 
-
 def create_Experiment(session, name, experimentgroups):
     experiment = Experiments(name=name)
-    if experimentgroups != None:
-        for experimentgroup in experimentgroups:
-            experiment.experimentgroups.append(experimentgroup)
+    for experimentgroup in experimentgroups:
+        experiment.experimentgroups.append(experimentgroup)
     session.add(experiment)
     return experiment
 
@@ -25,9 +23,8 @@ def create_ExperimentGroup(session, name, experiment, users):
     experimentGroup = ExperimentGroups(name=name)
     if experiment != None:
         experiment.experimentgroups.append(experimentGroup)
-    if users != None:
-        for user in users:
-            experimentGroup.users.append(user)
+    for user in users:
+        experimentGroup.users.append(user)
     session.add(experimentGroup)
     return experimentGroup
 
@@ -74,7 +71,6 @@ class BaseTest(unittest.TestCase):
         Base.metadata.drop_all(self.engine)
 
 class TestExperiments(BaseTest):
-
     def setUp(self):
         super(TestExperiments, self).setUp()
         self.init_database()
@@ -84,7 +80,6 @@ class TestExperiments(BaseTest):
         create_Experiment(self.session, 'second experiment', None)
 
     def test_add_experiments(self):
-
         exp1 = self.session.query(Experiments).filter_by(name='first experiment').one()
         exp2 = self.session.query(Experiments).filter_by(name='second experiment').one()
 
@@ -93,7 +88,6 @@ class TestExperiments(BaseTest):
         self.assertEqual(exp2.name, 'second experiment')
         self.assertEqual(exp2.id, 2)
         self.assertEqual(len(self.session.query(Experiments).all()), 2)
-        
 
     def test_data_from_added_experiments(self):
         exp1 = self.session.query(Experiments).filter_by(name='first experiment').one()
@@ -105,7 +99,6 @@ class TestExperiments(BaseTest):
         self.assertEqual(len(exp2.experimentgroups), 0)
 
 class TestExperimentGroups(BaseTest):
-
     def setUp(self):
         super(TestExperimentGroups, self).setUp()
         self.init_database()
@@ -115,7 +108,6 @@ class TestExperimentGroups(BaseTest):
         user2 = create_User(self.session, 'second user', 'second password')
         create_ExperimentGroup(self.session, 'expgroupA', experiment, [user1])
         create_ExperimentGroup(self.session, 'expgroupB', experiment, [user2])
-
 
     def test_add_experimentGroups(self):
         expGroup1 = self.session.query(ExperimentGroups).filter_by(id=1).one()
@@ -138,9 +130,7 @@ class TestExperimentGroups(BaseTest):
         self.assertEqual(expGroup1.users, [user1])
         self.assertEqual(expGroup2.users, [user2])
 
-
 class TestUsers(BaseTest):
-
     def setUp(self):
         super(TestUsers, self).setUp()
         self.init_database()
@@ -154,7 +144,6 @@ class TestUsers(BaseTest):
         experiment = create_Experiment(self.session, 'first experiment', None)
         experimentGroup1 = create_ExperimentGroup(self.session, 'expgroupA', experiment, [user1])
         experimentGroup2 = create_ExperimentGroup(self.session, 'expgroupB', experiment, [user2])
-
 
     def test_add_users(self):
         user1 = self.session.query(Users).filter_by(username='first user').one()
@@ -179,9 +168,7 @@ class TestUsers(BaseTest):
         self.assertEqual(user1.experimentgroups, [experimentGroup1])
         self.assertEqual(user2.experimentgroups, [experimentGroup2])
 
-
 class TestDataItems(BaseTest):
-
     def setUp(self):
         super(TestDataItems, self).setUp()
         self.init_database()
@@ -193,15 +180,12 @@ class TestDataItems(BaseTest):
         dataItem2 = create_DataItem(self.session, 20, user2)
 
     def test_add_DataItems(self):
-        
         dataItem1 = self.session.query(DataItems).filter_by(id=1).one()
         dataItem2 = self.session.query(DataItems).filter_by(id=2).one()
 
         self.assertEqual(len(self.session.query(DataItems).all()), 2)
 
-
     def test_data_from_added_dataItems(self):
-
         dataItem1 = self.session.query(DataItems).filter_by(id=1).one()
         dataItem2 = self.session.query(DataItems).filter_by(id=2).one()
 
@@ -225,7 +209,6 @@ def create_user_if_does_not_exists(session, user):
             session.add(user)
 
 class Test_user_opens_app(BaseTest):
-
     def setUp(self):
         super(Test_user_opens_app, self).setUp()
         self.init_database()
@@ -233,7 +216,6 @@ class Test_user_opens_app(BaseTest):
         self.user = Users(username='test user', password='test password')
 
     def test_user_does_not_exists(self):
-
         self.assertEqual(len(self.session.query(Users).all()), 0)
 
     def test_create_user_if_does_not_exists(self):
@@ -258,7 +240,6 @@ def get_experimentgroups_in_which_user_participates(session, user):
     return experimentgroups
 
 class Test_get_experiments_and_groups_in_which_user_participates(BaseTest):
-
     def setUp(self):
         super(Test_get_experiments_and_groups_in_which_user_participates, self).setUp()
         self.init_database()
@@ -307,7 +288,6 @@ def assign_user_to_experiment(experiment, user):
     return experimentgroup
 
 class Test_get_experiments_in_which_user_does_not_participate_and_assign_user(BaseTest):
-
     def setUp(self):
         super(Test_get_experiments_in_which_user_does_not_participate_and_assign_user, self).setUp()
         self.init_database()
@@ -345,8 +325,3 @@ class Test_get_experiments_in_which_user_does_not_participate_and_assign_user(Ba
 
         for experimentgroup in experimentgroups:
             self.assertTrue(self.user in experimentgroup.users)
-
-
-
-
-
