@@ -82,28 +82,3 @@ class Experiments:
 			dataInGroups['experimentgroups'].append(expgroup)
 
 		return {'dataInGroups': dataInGroups}
-
-
-
-"""
-@view_defaults(renderer='json')
-class Hello:
-	def __init__(self, request):
-		self.request = request
-	@view_config(route_name='hello', request_method="GET")
-	def hello_get(self):
-		return dict(a=1, b=2)
-	@view_config(route_name='hello', request_method="POST")
-	def hello_post(self):
-		json = self.request.json_body
-		json["kukkuu"] = "hellurei"
-		json["hedari"] = self.request.headers["hedari"]
-		self.request.headers["foo"] = 3
-		return json
-
-"""
-#curl -H "Content-Type: application/json" -X POST -d '{"name":"First experiment","experimentgroups":["group A", "group B"]}' http://0.0.0.0:6543/experiments
-
-#curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"xyz"}' http://0.0.0.0:6543/hello/123
-
-#curl -H "Content-Type: application/json" -H "hedari: todella paha" -X POST -d '{"username":"xyz","password":"xyz"}' http://0.0.0.0:6543/hello/123
