@@ -117,7 +117,7 @@ class DatabaseInterface:
 		return self.dbsession.query(DataItem).filter_by(user_id=id)
 
 	def checkUser(self, username): #OK
-		user = self.dbsession.query(Users).filter_by(username=username).all()
+		user = self.dbsession.query(User).filter_by(username=username).all()
 		if user == []:
 			return self.createUser({'username':username})
 		else:
