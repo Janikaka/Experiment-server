@@ -1,0 +1,22 @@
+from sqlalchemy import (
+    Column,
+    Index,
+    Integer,
+    Text,
+    ForeignKey
+)
+
+from .meta import Base
+from sqlalchemy.orm import relationship
+
+class DataItem(Base):
+    __tablename__ = 'dataitems'
+    id = Column(Integer, primary_key=True)
+<<<<<<< HEAD:experiment_server/models/dataItems.py
+    value = Column(Integer)
+    key = Column(Text)
+=======
+>>>>>>> d091cfb6423b02fc8db8054ca4f90e72d33bfc07:experiment_server/models/dataitems.py
+    user_id = Column(Integer, ForeignKey('users.id'))
+    key = Column(Text)
+    value = Column(Integer)
