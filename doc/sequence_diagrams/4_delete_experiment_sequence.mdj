@@ -46,7 +46,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFVtQfwcPWwlWQ="
 							},
-							"name": "Delete experiment",
+							"name": "Delete an experiment",
 							"visible": true,
 							"defaultDiagram": false,
 							"ownedViews": [
@@ -77,11 +77,11 @@
 											"containerExtending": false,
 											"left": 71,
 											"top": 5,
-											"width": 106,
+											"width": 124,
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "Delete experiment",
+											"text": "Delete an experiment",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										},
@@ -2198,12 +2198,12 @@
 											"containerChangeable": false,
 											"containerExtending": false,
 											"left": 530,
-											"top": 242,
+											"top": 234,
 											"width": 112,
-											"height": 26,
+											"height": 39,
 											"autoResize": false,
 											"underline": false,
-											"text": "Delete experiment from database",
+											"text": "Delete the experiment from database",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										}
@@ -2218,9 +2218,9 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"left": 520,
-									"top": 232,
+									"top": 224,
 									"width": 132,
-									"height": 57,
+									"height": 59,
 									"autoResize": false,
 									"nameLabel": {
 										"$ref": "AAAAAAFVui/5t9YF5R8="
@@ -2252,8 +2252,8 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 810,
-											"top": 252,
+											"left": 786,
+											"top": 244,
 											"width": 98,
 											"height": 26,
 											"autoResize": false,
@@ -2272,8 +2272,8 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 800,
-									"top": 224,
+									"left": 776,
+									"top": 216,
 									"width": 118,
 									"height": 73,
 									"autoResize": false,
@@ -2308,12 +2308,12 @@
 											"containerChangeable": false,
 											"containerExtending": false,
 											"left": 548.25,
-											"top": 396.25,
+											"top": 388,
 											"width": 72.5,
-											"height": 40.5,
+											"height": 56,
 											"autoResize": false,
 											"underline": false,
-											"text": "Succeeded in deleting experiment",
+											"text": "Succeeded in deleting the  experiment",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										}
@@ -2328,9 +2328,9 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"left": 512,
-									"top": 376,
+									"top": 360,
 									"width": 145,
-									"height": 81,
+									"height": 112,
 									"autoResize": false,
 									"nameLabel": {
 										"$ref": "AAAAAAFVujEqDNYggHI="
@@ -2362,7 +2362,7 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 832,
+											"left": 816,
 											"top": 402,
 											"width": 41,
 											"height": 26,
@@ -2382,68 +2382,13 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 808,
+									"left": 792,
 									"top": 392,
 									"width": 89,
 									"height": 49,
 									"autoResize": false,
 									"nameLabel": {
 										"$ref": "AAAAAAFVujGv/NYxmnk="
-									},
-									"wordWrap": true
-								},
-								{
-									"_type": "FCDisplayView",
-									"_id": "AAAAAAFVujHlbNY7xS0=",
-									"_parent": {
-										"$ref": "AAAAAAFVui5AztXll38="
-									},
-									"model": {
-										"$ref": "AAAAAAFVujHla9Y5quw="
-									},
-									"subViews": [
-										{
-											"_type": "LabelView",
-											"_id": "AAAAAAFVujHlbNY84wA=",
-											"_parent": {
-												"$ref": "AAAAAAFVujHlbNY7xS0="
-											},
-											"visible": true,
-											"enabled": true,
-											"lineColor": "#000000",
-											"fillColor": "#ffffff",
-											"fontColor": "#000000",
-											"font": "Arial;13;0",
-											"showShadow": true,
-											"containerChangeable": false,
-											"containerExtending": false,
-											"left": 555,
-											"top": 562,
-											"width": 51,
-											"height": 13,
-											"autoResize": false,
-											"underline": false,
-											"text": "response",
-											"horizontalAlignment": 2,
-											"verticalAlignment": 5
-										}
-									],
-									"visible": true,
-									"enabled": true,
-									"lineColor": "#000000",
-									"fillColor": "#ffffff",
-									"fontColor": "#000000",
-									"font": "Arial;13;0",
-									"showShadow": true,
-									"containerChangeable": false,
-									"containerExtending": false,
-									"left": 528,
-									"top": 552,
-									"width": 105,
-									"height": 41,
-									"autoResize": false,
-									"nameLabel": {
-										"$ref": "AAAAAAFVujHlbNY84wA="
 									},
 									"wordWrap": true
 								},
@@ -2476,7 +2421,7 @@
 											"containerChangeable": false,
 											"containerExtending": false,
 											"left": 598,
-											"top": 178,
+											"top": 174,
 											"width": 0,
 											"height": 13,
 											"autoResize": false,
@@ -2507,7 +2452,7 @@
 										"$ref": "AAAAAAFVui5Q9tXrhPs="
 									},
 									"lineStyle": 2,
-									"points": "584:138;584:232",
+									"points": "584:138;584:224",
 									"nameLabel": {
 										"$ref": "AAAAAAFVujMDbtZKP1Y="
 									}
@@ -2540,8 +2485,8 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 725,
-											"top": 239,
+											"left": 713,
+											"top": 231,
 											"width": 0,
 											"height": 13,
 											"autoResize": false,
@@ -2572,7 +2517,7 @@
 										"$ref": "AAAAAAFVui/5ttYE9IU="
 									},
 									"lineStyle": 2,
-									"points": "651:260;800:260",
+									"points": "651:252;776:252",
 									"nameLabel": {
 										"$ref": "AAAAAAFVujMQVtZTcQk="
 									}
@@ -2606,7 +2551,7 @@
 											"containerChangeable": false,
 											"containerExtending": false,
 											"left": 599,
-											"top": 325,
+											"top": 314,
 											"width": 0,
 											"height": 13,
 											"autoResize": false,
@@ -2637,7 +2582,7 @@
 										"$ref": "AAAAAAFVui/5ttYE9IU="
 									},
 									"lineStyle": 2,
-									"points": "585:288;585:376",
+									"points": "585:282;585:360",
 									"nameLabel": {
 										"$ref": "AAAAAAFVujMZVNZcSEw="
 									}
@@ -2670,7 +2615,7 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 724,
+											"left": 716,
 											"top": 395,
 											"width": 16,
 											"height": 13,
@@ -2703,29 +2648,26 @@
 										"$ref": "AAAAAAFVujEqDNYf/+A="
 									},
 									"lineStyle": 2,
-									"points": "656:416;808:416",
+									"points": "656:416;792:416",
 									"nameLabel": {
 										"$ref": "AAAAAAFVujMkP9ZldQo="
 									}
 								},
 								{
-									"_type": "FCFlowView",
-									"_id": "AAAAAAFVujMrldZtjGE=",
+									"_type": "FCProcessView",
+									"_id": "AAAAAAFVvrsrI1DjBLk=",
 									"_parent": {
 										"$ref": "AAAAAAFVui5AztXll38="
 									},
 									"model": {
-										"$ref": "AAAAAAFVujMrldZrKig="
+										"$ref": "AAAAAAFVvrsrIlDhyHc="
 									},
 									"subViews": [
 										{
-											"_type": "EdgeLabelView",
-											"_id": "AAAAAAFVujMrldZuc1w=",
+											"_type": "LabelView",
+											"_id": "AAAAAAFVvrsrJ1Dkom4=",
 											"_parent": {
-												"$ref": "AAAAAAFVujMrldZtjGE="
-											},
-											"model": {
-												"$ref": "AAAAAAFVujMrldZrKig="
+												"$ref": "AAAAAAFVvrsrI1DjBLk="
 											},
 											"visible": true,
 											"enabled": true,
@@ -2736,15 +2678,73 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 587,
-											"top": 497,
+											"left": 546,
+											"top": 562,
+											"width": 71,
+											"height": 26,
+											"autoResize": false,
+											"underline": false,
+											"text": "Return status 200",
+											"horizontalAlignment": 2,
+											"verticalAlignment": 5
+										}
+									],
+									"visible": true,
+									"enabled": true,
+									"lineColor": "#000000",
+									"fillColor": "#ffffff",
+									"fontColor": "#000000",
+									"font": "Arial;13;0",
+									"showShadow": true,
+									"containerChangeable": false,
+									"containerExtending": false,
+									"left": 536,
+									"top": 552,
+									"width": 91,
+									"height": 49,
+									"autoResize": false,
+									"nameLabel": {
+										"$ref": "AAAAAAFVvrsrJ1Dkom4="
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "FCFlowView",
+									"_id": "AAAAAAFVvruIv1DvFJQ=",
+									"_parent": {
+										"$ref": "AAAAAAFVui5AztXll38="
+									},
+									"model": {
+										"$ref": "AAAAAAFVvruIvlDtJm4="
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "AAAAAAFVvruIv1Dw5QA=",
+											"_parent": {
+												"$ref": "AAAAAAFVvruIv1DvFJQ="
+											},
+											"model": {
+												"$ref": "AAAAAAFVvruIvlDtJm4="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 586,
+											"top": 504,
 											"width": 23,
 											"height": 13,
 											"autoResize": false,
 											"alpha": 1.5707963267948966,
 											"distance": 15,
 											"hostEdge": {
-												"$ref": "AAAAAAFVujMrldZtjGE="
+												"$ref": "AAAAAAFVvruIv1DvFJQ="
 											},
 											"edgePosition": 1,
 											"underline": false,
@@ -2763,15 +2763,15 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"head": {
-										"$ref": "AAAAAAFVujHlbNY7xS0="
+										"$ref": "AAAAAAFVvrsrI1DjBLk="
 									},
 									"tail": {
 										"$ref": "AAAAAAFVujEqDNYf/+A="
 									},
 									"lineStyle": 2,
-									"points": "584:456;584:552",
+									"points": "583:471;583:552",
 									"nameLabel": {
-										"$ref": "AAAAAAFVujMrldZuc1w="
+										"$ref": "AAAAAAFVvruIv1Dw5QA="
 									}
 								}
 							]
@@ -2805,7 +2805,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFVui5AztXkQ0w="
 							},
-							"name": "Delete experiment from database",
+							"name": "Delete the experiment from database",
 							"ownedElements": [
 								{
 									"_type": "FCFlow",
@@ -2849,7 +2849,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFVui5AztXkQ0w="
 							},
-							"name": "Succeeded in deleting experiment",
+							"name": "Succeeded in deleting the  experiment",
 							"ownedElements": [
 								{
 									"_type": "FCFlow",
@@ -2867,7 +2867,7 @@
 								},
 								{
 									"_type": "FCFlow",
-									"_id": "AAAAAAFVujMrldZrKig=",
+									"_id": "AAAAAAFVvruIvlDtJm4=",
 									"_parent": {
 										"$ref": "AAAAAAFVujEqDNYdBlU="
 									},
@@ -2876,7 +2876,7 @@
 										"$ref": "AAAAAAFVujEqDNYdBlU="
 									},
 									"target": {
-										"$ref": "AAAAAAFVujHla9Y5quw="
+										"$ref": "AAAAAAFVvrsrIlDhyHc="
 									}
 								}
 							]
@@ -2890,12 +2890,12 @@
 							"name": "Error message"
 						},
 						{
-							"_type": "FCDisplay",
-							"_id": "AAAAAAFVujHla9Y5quw=",
+							"_type": "FCProcess",
+							"_id": "AAAAAAFVvrsrIlDhyHc=",
 							"_parent": {
 								"$ref": "AAAAAAFVui5AztXkQ0w="
 							},
-							"name": "response"
+							"name": "Return status 200"
 						}
 					]
 				}

@@ -125,7 +125,7 @@
 											"height": 39,
 											"autoResize": false,
 											"underline": false,
-											"text": "                      Delete user from database",
+											"text": "                      Delete the user from database",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										}
@@ -174,7 +174,7 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 698,
+											"left": 650,
 											"top": 258,
 											"width": 93,
 											"height": 21,
@@ -194,7 +194,7 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 688,
+									"left": 640,
 									"top": 232,
 									"width": 113,
 									"height": 65,
@@ -235,7 +235,7 @@
 											"height": 40.5,
 											"autoResize": false,
 											"underline": false,
-											"text": "Succeeded in deleting user",
+											"text": "Succeeded in deleting the user",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										}
@@ -256,61 +256,6 @@
 									"autoResize": false,
 									"nameLabel": {
 										"$ref": "AAAAAAFVunFFtNmoHhU="
-									},
-									"wordWrap": true
-								},
-								{
-									"_type": "FCDisplayView",
-									"_id": "AAAAAAFVunIEUdm3QcU=",
-									"_parent": {
-										"$ref": "AAAAAAFVum6ny9lorUY="
-									},
-									"model": {
-										"$ref": "AAAAAAFVunIEUdm1WDo="
-									},
-									"subViews": [
-										{
-											"_type": "LabelView",
-											"_id": "AAAAAAFVunIEUdm4bEA=",
-											"_parent": {
-												"$ref": "AAAAAAFVunIEUdm3QcU="
-											},
-											"visible": true,
-											"enabled": true,
-											"lineColor": "#000000",
-											"fillColor": "#ffffff",
-											"fontColor": "#000000",
-											"font": "Arial;13;0",
-											"showShadow": true,
-											"containerChangeable": false,
-											"containerExtending": false,
-											"left": 443,
-											"top": 562,
-											"width": 51,
-											"height": 26,
-											"autoResize": false,
-											"underline": false,
-											"text": "             response",
-											"horizontalAlignment": 2,
-											"verticalAlignment": 5
-										}
-									],
-									"visible": true,
-									"enabled": true,
-									"lineColor": "#000000",
-									"fillColor": "#ffffff",
-									"fontColor": "#000000",
-									"font": "Arial;13;0",
-									"showShadow": true,
-									"containerChangeable": false,
-									"containerExtending": false,
-									"left": 416,
-									"top": 552,
-									"width": 105,
-									"height": 54,
-									"autoResize": false,
-									"nameLabel": {
-										"$ref": "AAAAAAFVunIEUdm4bEA="
 									},
 									"wordWrap": true
 								},
@@ -339,7 +284,7 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 728,
+											"left": 680,
 											"top": 402,
 											"width": 41,
 											"height": 26,
@@ -359,7 +304,7 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 704,
+									"left": 656,
 									"top": 392,
 									"width": 89,
 									"height": 49,
@@ -462,7 +407,7 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 609,
+											"left": 585,
 											"top": 244,
 											"width": 0,
 											"height": 13,
@@ -494,7 +439,7 @@
 										"$ref": "AAAAAAFVum/3k9mF9y8="
 									},
 									"lineStyle": 2,
-									"points": "530:265;688:265",
+									"points": "530:265;640:265",
 									"nameLabel": {
 										"$ref": "AAAAAAFVunOKG9nt2vA="
 									}
@@ -592,7 +537,7 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 612,
+											"left": 588,
 											"top": 395,
 											"width": 16,
 											"height": 13,
@@ -625,29 +570,26 @@
 										"$ref": "AAAAAAFVunFFtNmnOyA="
 									},
 									"lineStyle": 2,
-									"points": "536:416;704:416",
+									"points": "536:416;656:416",
 									"nameLabel": {
 										"$ref": "AAAAAAFVunOY5Nn/i6M="
 									}
 								},
 								{
-									"_type": "FCFlowView",
-									"_id": "AAAAAAFVunOje9oH7CE=",
+									"_type": "FCProcessView",
+									"_id": "AAAAAAFVvsoyZVgR6A8=",
 									"_parent": {
 										"$ref": "AAAAAAFVum6ny9lorUY="
 									},
 									"model": {
-										"$ref": "AAAAAAFVunOje9oFCwk="
+										"$ref": "AAAAAAFVvsoyZFgPgG8="
 									},
 									"subViews": [
 										{
-											"_type": "EdgeLabelView",
-											"_id": "AAAAAAFVunOje9oI1N0=",
+											"_type": "LabelView",
+											"_id": "AAAAAAFVvsoyZVgSTS8=",
 											"_parent": {
-												"$ref": "AAAAAAFVunOje9oH7CE="
-											},
-											"model": {
-												"$ref": "AAAAAAFVunOje9oFCwk="
+												"$ref": "AAAAAAFVvsoyZVgR6A8="
 											},
 											"visible": true,
 											"enabled": true,
@@ -658,15 +600,73 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 471,
-											"top": 497,
+											"left": 426,
+											"top": 538,
+											"width": 79,
+											"height": 26,
+											"autoResize": false,
+											"underline": false,
+											"text": "Return status 200",
+											"horizontalAlignment": 2,
+											"verticalAlignment": 5
+										}
+									],
+									"visible": true,
+									"enabled": true,
+									"lineColor": "#000000",
+									"fillColor": "#ffffff",
+									"fontColor": "#000000",
+									"font": "Arial;13;0",
+									"showShadow": true,
+									"containerChangeable": false,
+									"containerExtending": false,
+									"left": 416,
+									"top": 528,
+									"width": 99,
+									"height": 49,
+									"autoResize": false,
+									"nameLabel": {
+										"$ref": "AAAAAAFVvsoyZVgSTS8="
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "FCFlowView",
+									"_id": "AAAAAAFVvspzxlgeNrk=",
+									"_parent": {
+										"$ref": "AAAAAAFVum6ny9lorUY="
+									},
+									"model": {
+										"$ref": "AAAAAAFVvspzxlgcjgo="
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "AAAAAAFVvspzx1gfCus=",
+											"_parent": {
+												"$ref": "AAAAAAFVvspzxlgeNrk="
+											},
+											"model": {
+												"$ref": "AAAAAAFVvspzxlgcjgo="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 470,
+											"top": 485,
 											"width": 23,
 											"height": 13,
 											"autoResize": false,
 											"alpha": 1.5707963267948966,
 											"distance": 15,
 											"hostEdge": {
-												"$ref": "AAAAAAFVunOje9oH7CE="
+												"$ref": "AAAAAAFVvspzxlgeNrk="
 											},
 											"edgePosition": 1,
 											"underline": false,
@@ -685,15 +685,15 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"head": {
-										"$ref": "AAAAAAFVunIEUdm3QcU="
+										"$ref": "AAAAAAFVvsoyZVgR6A8="
 									},
 									"tail": {
 										"$ref": "AAAAAAFVunFFtNmnOyA="
 									},
 									"lineStyle": 2,
-									"points": "468:456;468:552",
+									"points": "467:456;467:528",
 									"nameLabel": {
-										"$ref": "AAAAAAFVunOje9oI1N0="
+										"$ref": "AAAAAAFVvspzx1gfCus="
 									}
 								}
 							]
@@ -727,7 +727,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFVum6ny9lnIoU="
 							},
-							"name": "                      Delete user from database",
+							"name": "                      Delete the user from database",
 							"ownedElements": [
 								{
 									"_type": "FCFlow",
@@ -771,7 +771,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFVum6ny9lnIoU="
 							},
-							"name": "Succeeded in deleting user",
+							"name": "Succeeded in deleting the user",
 							"ownedElements": [
 								{
 									"_type": "FCFlow",
@@ -789,7 +789,7 @@
 								},
 								{
 									"_type": "FCFlow",
-									"_id": "AAAAAAFVunOje9oFCwk=",
+									"_id": "AAAAAAFVvspzxlgcjgo=",
 									"_parent": {
 										"$ref": "AAAAAAFVunFFs9mlQyY="
 									},
@@ -798,18 +798,10 @@
 										"$ref": "AAAAAAFVunFFs9mlQyY="
 									},
 									"target": {
-										"$ref": "AAAAAAFVunIEUdm1WDo="
+										"$ref": "AAAAAAFVvsoyZFgPgG8="
 									}
 								}
 							]
-						},
-						{
-							"_type": "FCDisplay",
-							"_id": "AAAAAAFVunIEUdm1WDo=",
-							"_parent": {
-								"$ref": "AAAAAAFVum6ny9lnIoU="
-							},
-							"name": "             response"
 						},
 						{
 							"_type": "FCDisplay",
@@ -818,6 +810,14 @@
 								"$ref": "AAAAAAFVum6ny9lnIoU="
 							},
 							"name": "Error message"
+						},
+						{
+							"_type": "FCProcess",
+							"_id": "AAAAAAFVvsoyZFgPgG8=",
+							"_parent": {
+								"$ref": "AAAAAAFVum6ny9lnIoU="
+							},
+							"name": "Return status 200"
 						}
 					]
 				}
@@ -846,7 +846,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFVtQfwcPWwlWQ="
 							},
-							"name": "Delete user",
+							"name": "Delete an user",
 							"visible": true,
 							"defaultDiagram": false,
 							"ownedViews": [
@@ -877,11 +877,11 @@
 											"containerExtending": false,
 											"left": 71,
 											"top": 5,
-											"width": 67,
+											"width": 85,
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "Delete user",
+											"text": "Delete an user",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										},

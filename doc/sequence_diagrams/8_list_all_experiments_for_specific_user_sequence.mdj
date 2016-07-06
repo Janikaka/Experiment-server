@@ -125,7 +125,7 @@
 											"height": 39,
 											"autoResize": false,
 											"underline": false,
-											"text": "                   Get user from database",
+											"text": "                   Get the user from database",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										}
@@ -180,7 +180,7 @@
 											"height": 39,
 											"autoResize": false,
 											"underline": false,
-											"text": "Get  experiments user participates from database",
+											"text": "                            Get experiments the user participates",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										}
@@ -197,7 +197,7 @@
 									"left": 424,
 									"top": 344,
 									"width": 139,
-									"height": 59,
+									"height": 65,
 									"autoResize": false,
 									"nameLabel": {
 										"$ref": "AAAAAAFVuoLhSdyVSSQ="
@@ -235,7 +235,7 @@
 											"height": 56.5,
 											"autoResize": false,
 											"underline": false,
-											"text": "Succeeded in getting user and experiments",
+											"text": "Succeeded in getting the user and experiments",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										}
@@ -311,61 +311,6 @@
 									"autoResize": false,
 									"nameLabel": {
 										"$ref": "AAAAAAFVuogOJNy7TAs="
-									},
-									"wordWrap": true
-								},
-								{
-									"_type": "FCDisplayView",
-									"_id": "AAAAAAFVuogzAtzEH9Q=",
-									"_parent": {
-										"$ref": "AAAAAAFVuoF9Kdxv4p8="
-									},
-									"model": {
-										"$ref": "AAAAAAFVuogzAdzCy3U="
-									},
-									"subViews": [
-										{
-											"_type": "LabelView",
-											"_id": "AAAAAAFVuogzAtzFeG4=",
-											"_parent": {
-												"$ref": "AAAAAAFVuogzAtzEH9Q="
-											},
-											"visible": true,
-											"enabled": true,
-											"lineColor": "#000000",
-											"fillColor": "#ffffff",
-											"fontColor": "#000000",
-											"font": "Arial;13;0",
-											"showShadow": true,
-											"containerChangeable": false,
-											"containerExtending": false,
-											"left": 443,
-											"top": 666,
-											"width": 84,
-											"height": 39,
-											"autoResize": false,
-											"underline": false,
-											"text": "              render('experiments_for        _user.jinja2')",
-											"horizontalAlignment": 2,
-											"verticalAlignment": 5
-										}
-									],
-									"visible": true,
-									"enabled": true,
-									"lineColor": "#000000",
-									"fillColor": "#ffffff",
-									"fontColor": "#000000",
-									"font": "Arial;13;0",
-									"showShadow": true,
-									"containerChangeable": false,
-									"containerExtending": false,
-									"left": 408,
-									"top": 656,
-									"width": 154,
-									"height": 59,
-									"autoResize": false,
-									"nameLabel": {
-										"$ref": "AAAAAAFVuogzAtzFeG4="
 									},
 									"wordWrap": true
 								},
@@ -648,7 +593,7 @@
 											"containerChangeable": false,
 											"containerExtending": false,
 											"left": 502,
-											"top": 434,
+											"top": 437,
 											"width": 0,
 											"height": 13,
 											"autoResize": false,
@@ -679,7 +624,7 @@
 										"$ref": "AAAAAAFVuoLhSdyUkiE="
 									},
 									"lineStyle": 2,
-									"points": "488:402;488:480",
+									"points": "488:408;488:480",
 									"nameLabel": {
 										"$ref": "AAAAAAFVuosgoN0Vqbc="
 									}
@@ -752,72 +697,6 @@
 								},
 								{
 									"_type": "FCFlowView",
-									"_id": "AAAAAAFVuoswed0mjEc=",
-									"_parent": {
-										"$ref": "AAAAAAFVuoF9Kdxv4p8="
-									},
-									"model": {
-										"$ref": "AAAAAAFVuoswed0kIRY="
-									},
-									"subViews": [
-										{
-											"_type": "EdgeLabelView",
-											"_id": "AAAAAAFVuoswed0nASc=",
-											"_parent": {
-												"$ref": "AAAAAAFVuoswed0mjEc="
-											},
-											"model": {
-												"$ref": "AAAAAAFVuoswed0kIRY="
-											},
-											"visible": true,
-											"enabled": true,
-											"lineColor": "#000000",
-											"fillColor": "#ffffff",
-											"fontColor": "#000000",
-											"font": "Arial;13;0",
-											"showShadow": true,
-											"containerChangeable": false,
-											"containerExtending": false,
-											"left": 491,
-											"top": 617,
-											"width": 23,
-											"height": 13,
-											"autoResize": false,
-											"alpha": 1.5707963267948966,
-											"distance": 15,
-											"hostEdge": {
-												"$ref": "AAAAAAFVuoswed0mjEc="
-											},
-											"edgePosition": 1,
-											"underline": false,
-											"text": "Yes",
-											"horizontalAlignment": 2,
-											"verticalAlignment": 5
-										}
-									],
-									"visible": true,
-									"enabled": true,
-									"lineColor": "#000000",
-									"fillColor": "#ffffff",
-									"fontColor": "#000000",
-									"font": "Arial;13;0",
-									"showShadow": true,
-									"containerChangeable": false,
-									"containerExtending": false,
-									"head": {
-										"$ref": "AAAAAAFVuogzAtzEH9Q="
-									},
-									"tail": {
-										"$ref": "AAAAAAFVuocY6NyoWTM="
-									},
-									"lineStyle": 2,
-									"points": "488:592;488:656",
-									"nameLabel": {
-										"$ref": "AAAAAAFVuoswed0nASc="
-									}
-								},
-								{
-									"_type": "FCFlowView",
 									"_id": "AAAAAAFVuos+ad0w5AM=",
 									"_parent": {
 										"$ref": "AAAAAAFVuoF9Kdxv4p8="
@@ -880,6 +759,127 @@
 									"nameLabel": {
 										"$ref": "AAAAAAFVuos+ad0xk+I="
 									}
+								},
+								{
+									"_type": "FCProcessView",
+									"_id": "AAAAAAFVvsa4JVYD2eA=",
+									"_parent": {
+										"$ref": "AAAAAAFVuoF9Kdxv4p8="
+									},
+									"model": {
+										"$ref": "AAAAAAFVvsa4JVYBS9s="
+									},
+									"subViews": [
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAFVvsa4JlYE2dY=",
+											"_parent": {
+												"$ref": "AAAAAAFVvsa4JVYD2eA="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 426,
+											"top": 672,
+											"width": 134,
+											"height": 39,
+											"autoResize": false,
+											"underline": false,
+											"text": "              render('experiments_for        _user.jinja2')",
+											"horizontalAlignment": 2,
+											"verticalAlignment": 5
+										}
+									],
+									"visible": true,
+									"enabled": true,
+									"lineColor": "#000000",
+									"fillColor": "#ffffff",
+									"fontColor": "#000000",
+									"font": "Arial;13;0",
+									"showShadow": true,
+									"containerChangeable": false,
+									"containerExtending": false,
+									"left": 416,
+									"top": 662,
+									"width": 154,
+									"height": 67,
+									"autoResize": false,
+									"nameLabel": {
+										"$ref": "AAAAAAFVvsa4JlYE2dY="
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "FCFlowView",
+									"_id": "AAAAAAFVvsdDF1YYuXU=",
+									"_parent": {
+										"$ref": "AAAAAAFVuoF9Kdxv4p8="
+									},
+									"model": {
+										"$ref": "AAAAAAFVvsdDFlYWj18="
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "AAAAAAFVvsdDF1YZR3A=",
+											"_parent": {
+												"$ref": "AAAAAAFVvsdDF1YYuXU="
+											},
+											"model": {
+												"$ref": "AAAAAAFVvsdDFlYWj18="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 492,
+											"top": 620,
+											"width": 23,
+											"height": 13,
+											"autoResize": false,
+											"alpha": 1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "AAAAAAFVvsdDF1YYuXU="
+											},
+											"edgePosition": 1,
+											"underline": false,
+											"text": "Yes",
+											"horizontalAlignment": 2,
+											"verticalAlignment": 5
+										}
+									],
+									"visible": true,
+									"enabled": true,
+									"lineColor": "#000000",
+									"fillColor": "#ffffff",
+									"fontColor": "#000000",
+									"font": "Arial;13;0",
+									"showShadow": true,
+									"containerChangeable": false,
+									"containerExtending": false,
+									"head": {
+										"$ref": "AAAAAAFVvsa4JVYD2eA="
+									},
+									"tail": {
+										"$ref": "AAAAAAFVuocY6NyoWTM="
+									},
+									"lineStyle": 2,
+									"points": "489:592;489:662",
+									"nameLabel": {
+										"$ref": "AAAAAAFVvsdDF1YZR3A="
+									}
 								}
 							]
 						},
@@ -912,7 +912,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFVuoF9Kdxu88Y="
 							},
-							"name": "                   Get user from database",
+							"name": "                   Get the user from database",
 							"ownedElements": [
 								{
 									"_type": "FCFlow",
@@ -948,7 +948,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFVuoF9Kdxu88Y="
 							},
-							"name": "Get  experiments user participates from database",
+							"name": "                            Get experiments the user participates",
 							"ownedElements": [
 								{
 									"_type": "FCFlow",
@@ -984,7 +984,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFVuoF9Kdxu88Y="
 							},
-							"name": "Succeeded in getting user and experiments",
+							"name": "Succeeded in getting the user and experiments",
 							"ownedElements": [
 								{
 									"_type": "FCFlow",
@@ -1002,7 +1002,7 @@
 								},
 								{
 									"_type": "FCFlow",
-									"_id": "AAAAAAFVuoswed0kIRY=",
+									"_id": "AAAAAAFVvsdDFlYWj18=",
 									"_parent": {
 										"$ref": "AAAAAAFVuocY6Nym68M="
 									},
@@ -1011,7 +1011,7 @@
 										"$ref": "AAAAAAFVuocY6Nym68M="
 									},
 									"target": {
-										"$ref": "AAAAAAFVuogzAdzCy3U="
+										"$ref": "AAAAAAFVvsa4JVYBS9s="
 									}
 								}
 							]
@@ -1025,20 +1025,20 @@
 							"name": "Error message"
 						},
 						{
-							"_type": "FCDisplay",
-							"_id": "AAAAAAFVuogzAdzCy3U=",
-							"_parent": {
-								"$ref": "AAAAAAFVuoF9Kdxu88Y="
-							},
-							"name": "              render('experiments_for        _user.jinja2')"
-						},
-						{
 							"_type": "FCDatabase",
 							"_id": "AAAAAAFVuomh39zkxag=",
 							"_parent": {
 								"$ref": "AAAAAAFVuoF9Kdxu88Y="
 							},
 							"name": "Experiment server database"
+						},
+						{
+							"_type": "FCProcess",
+							"_id": "AAAAAAFVvsa4JVYBS9s=",
+							"_parent": {
+								"$ref": "AAAAAAFVuoF9Kdxu88Y="
+							},
+							"name": "              render('experiments_for        _user.jinja2')"
 						}
 					]
 				}
@@ -1067,7 +1067,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFVtQfwcPWwlWQ="
 							},
-							"name": "List all experiments for scpecific user",
+							"name": "List all experiments for a scpecific user",
 							"visible": true,
 							"defaultDiagram": false,
 							"ownedViews": [
@@ -1098,11 +1098,11 @@
 											"containerExtending": false,
 											"left": 71,
 											"top": 5,
-											"width": 216,
+											"width": 227,
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "List all experiments for scpecific user",
+											"text": "List all experiments for a scpecific user",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										},
