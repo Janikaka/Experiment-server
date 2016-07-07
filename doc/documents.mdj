@@ -17558,7 +17558,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFVw2ea/seXFpE="
 					},
-					"name": "ERDDiagram1",
+					"name": "Database diagram",
 					"visible": true,
 					"defaultDiagram": false,
 					"ownedViews": [
