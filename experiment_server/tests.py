@@ -50,7 +50,7 @@ class BaseTest(unittest.TestCase):
         user3 = self.DBInterface.createUser({'username': 'Third user', 'experimentgroups': [experiment2.experimentgroups[0]]})
         user4 = self.DBInterface.createUser({'username': 'Fourth user', 'experimentgroups': [experiment2.experimentgroups[1], experiment1.experimentgroups[1]]})
         user5 = self.DBInterface.createUser({'username': 'Fifth user'})
-        self.DBInterface.createDataitem({'user': 1, 'key': 'dummy', 'value': '10höpöhöpö'})
+        self.DBInterface.createDataitem({'user': 1, 'key': 'dummy', 'value': 10})
         self.DBInterface.createDataitem({'user': 2, 'key': 'dummy', 'value': 20})
         self.DBInterface.createDataitem({'user': 3, 'key': 'dummy', 'value': 30})
         self.DBInterface.createDataitem({'user': 4, 'key': 'dummy', 'value': 40})

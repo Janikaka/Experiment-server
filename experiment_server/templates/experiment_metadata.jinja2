@@ -24,7 +24,7 @@
 	{% for experimentgroup in experimentgroups %}
 		<li><b>Name: </b>{{ experimentgroup.name }}<br>
 			<b>Configurations: </b>
-			Key: {{ experimentgroup.configuration.key }}, Value: {{ experimentgroup.configuration.value }}
+			Key: {{ experimentgroup.configurations.key }}, Value: {{ experimentgroup.configurations.value }}
 		</li>
 		
 	{% endfor %}

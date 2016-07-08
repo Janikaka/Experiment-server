@@ -42,7 +42,7 @@ def main(argv=sys.argv):
         user1 = User(username='First user')
         user2 = User(username='Second user')
         
-        dataitem1 = DataItem(value='10höpöhpöp')
+        dataitem1 = DataItem(value=10)
         dataitem2 = DataItem(value=20)
 
         user1.dataitems.append(dataitem1)
