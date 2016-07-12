@@ -1,6 +1,7 @@
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
 from ..models import DatabaseInterface
+import json
 
 
 @view_defaults(renderer='json')
@@ -27,11 +28,15 @@ class Users:
 	#6 List all users
 	@view_config(route_name='users', request_method="GET")
 	def users_GET(self):
-		experiments = self.DB.getAllUsers()
-		output = json.dumps({'data':experiments})
+		users = self.DB.getAllUsers()
+		usersJSON = []
+		for i in range(len(users)):
+			user = {"id":users[i].id, "username":users[i].username}
+			usersJSON.append(user)
+		output = json.dumps({'data': usersJSON})
 		headers = ()
 		res = Response(output)
-		res.headers.add('Access-Control-Allow-Origin', 'http://127.0.0.1:6543/users')
+		res.headers.add('Access-Control-Allow-Origin', '*')
 		print(res)
 		return res
 
@@ -40,10 +45,14 @@ class Users:
 	def experiments_for_user_GET(self):
 		id = self.request.matchdict['id']
 		experiments = self.DB.getExperimentsUserParticipates(id)
-		output = json.dumps({'data':experiments})
+		experimentsJSON = []
+		for i in range(len(experiments)):
+			exp = {"id":experiments[i].id, "name": experiments[i].name}
+			experimentsJSON.append(exp)
+		output = json.dumps({'data': experimentsJSON})
 		headers = ()
 		res = Response(output)
-		res.headers.add('Access-Control-Allow-Origin', 'http://127.0.0.1:6543/experiments')
+		res.headers.add('Access-Control-Allow-Origin', '*')
 		print(res)
 		return res
 

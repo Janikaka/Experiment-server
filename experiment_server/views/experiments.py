@@ -27,17 +27,22 @@ class Experiments:
 			self.DB.createConfiguration({'key':confKey, 'value':confValue, 'experimentgroup':expgroup})
 		self.DB.createExperiment({'name':name, 'experimentgroups':expgroups});
 		res = Response()
-		res.status_code = 200
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		print(res)
 		return res
 
 	#2 List all experiments
 	@view_config(route_name='experiments', request_method="GET", renderer='../templates/all_experiments.jinja2')
 	def experiments_GET(self):
 		experiments = self.DB.getAllExperiments()
-		output = json.dumps({'data':experiments})
+		experimentsJSON = []
+		for i in range(len(experiments)):
+			exp = {"id":experiments[i].id, "name": experiments[i].name}
+			experimentsJSON.append(exp)
+		output = json.dumps({'data': experimentsJSON})
 		headers = ()
 		res = Response(output)
-		res.headers.add('Access-Control-Allow-Origin', 'http://127.0.0.1:6543/experiments')
+		res.headers.add('Access-Control-Allow-Origin', '*')
 		print(res)
 		return res
 
@@ -49,7 +54,7 @@ class Experiments:
 		output = json.dumps({'data': {'name': experiment.name, 'id': experiment.id, 'experimentgroups': experiment.experimentgroups}})
 		headers = ()
 		res = Response(output)
-		res.headers.add('Access-Control-Allow-Origin', 'http://127.0.0.1:6543/experiments/' + id)
+		res.headers.add('Access-Control-Allow-Origin', '*')
 		print(res)
 		return res
 
@@ -63,10 +68,14 @@ class Experiments:
 	def users_for_experiment_GET(self):
 		id = self.request.matchdict['id']
 		users = self.DB.getUsersInExperiment(id)
-		output = json.dumps({'data': users})
+		usersJSON = []
+		for i in range(len(users)):
+			user = {"id":users[i].id, "username":users[i].username}
+			usersJSON.append(user)
+		output = json.dumps({'data': usersJSON})
 		headers = ()
 		res = Response(output)
-		res.headers.add('Access-Control-Allow-Origin', 'http://127.0.0.1:6543/experiments/' + id + '/users')
+		res.headers.add('Access-Control-Allow-Origin', '*')
 		print(res)
 		return res
 
