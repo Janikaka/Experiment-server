@@ -96,7 +96,7 @@ class DatabaseInterface:
 		return self.dbsession.query(User).filter_by(username=username).one()
 
 	def getAllUsers(self): #OK
-		return self.dbsession.query(User.all())
+		return self.dbsession.query(User).all()
 
 	def getExperimentsUserParticipates(self, id): #CHECK
 		experimentgroups = self.getExperimentgroupsForUser(id)

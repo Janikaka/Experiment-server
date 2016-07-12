@@ -25,15 +25,27 @@ class Users:
 		return {'configurations': configurations}
 
 	#6 List all users
-	@view_config(route_name='users', request_method="GET", renderer='../templates/all_users.jinja2')
+	@view_config(route_name='users', request_method="GET")
 	def users_GET(self):
-		return {'users': self.DB.getAllUsers()}
+		experiments = self.DB.getAllUsers()
+		output = json.dumps({'data':experiments})
+		headers = ()
+		res = Response(output)
+		res.headers.add('Access-Control-Allow-Origin', 'http://127.0.0.1:6543/users')
+		print(res)
+		return res
 
 	#8 List all experiments for specific user 
-	@view_config(route_name='experiments_for_user', request_method="GET", renderer='../templates/experiments_for_user.jinja2')
+	@view_config(route_name='experiments_for_user', request_method="GET")
 	def experiments_for_user_GET(self):
 		id = self.request.matchdict['id']
-		return {'user': self.DB.getUser(id), 'experiments': self.DB.getExperimentsUserParticipates(id)}
+		experiments = self.DB.getExperimentsUserParticipates(id)
+		output = json.dumps({'data':experiments})
+		headers = ()
+		res = Response(output)
+		res.headers.add('Access-Control-Allow-Origin', 'http://127.0.0.1:6543/experiments')
+		print(res)
+		return res
 
 	#9 Save experiment data
 	@view_config(route_name='events', request_method="POST")
@@ -50,18 +62,7 @@ class Users:
 	#10 Delete user
 	@view_config(route_name='user', request_method="DELETE")
 	def user_DELETE(self):
-		#Browser need to refresh after deleting
 		self.DB.deleteUser(self.request.matchdict['id'])
-
-	@view_config(route_name='user', request_method="GET", renderer='../templates/user.jinja2')
-	def user_GET(self):
-		userId = self.request.matchdict['id']
-		user = self.DB.getUser(userId)
-		dataitems = self.DB.getDataitemsForUser(userId)
-		experimentgroups = self.DB.getExperimentgroupsForUser(userId)
-		return {'user':user, 'dataitems': dataitems, 'experimentgroups': experimentgroups}
-	
-
 
 
 
