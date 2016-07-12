@@ -31,13 +31,12 @@ class Users:
 		users = self.DB.getAllUsers()
 		usersJSON = []
 		for i in range(len(users)):
-			user = {"id":users[i].id, "username":users[i].username}
+			user = {'id':users[i].id, 'username':users[i].username}
 			usersJSON.append(user)
 		output = json.dumps({'data': usersJSON})
 		headers = ()
 		res = Response(output)
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		print(res)
 		return res
 
 	#8 List all experiments for specific user 
@@ -47,13 +46,14 @@ class Users:
 		experiments = self.DB.getExperimentsUserParticipates(id)
 		experimentsJSON = []
 		for i in range(len(experiments)):
-			exp = {"id":experiments[i].id, "name": experiments[i].name}
+			experimentgroup = self.DB.getExperimentgroupForUserInExperiment(id, experiments[i].id)
+			expgroup = {'id': experimentgroup.id, 'name':experimentgroup.name}
+			exp = {'id':experiments[i].id, 'name': experiments[i].name, 'experimentgroup': expgroup}
 			experimentsJSON.append(exp)
 		output = json.dumps({'data': experimentsJSON})
 		headers = ()
 		res = Response(output)
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		print(res)
 		return res
 
 	#9 Save experiment data

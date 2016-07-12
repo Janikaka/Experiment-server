@@ -275,6 +275,16 @@ class TestDatabaseInterface(BaseTest):
         assert experiments4 == [experiment2, experiment1]
         assert experiments5 == []
 
+    def test_getExperimentgroupForUserInExperiment(self):
+        expgroup1 = self.DBInterface.getExperimentgroupForUserInExperiment(1, 1)
+        expgroup2 = self.DBInterface.getExperimentgroupForUserInExperiment(2, 1)
+        expgroup3 = self.DBInterface.getExperimentgroupForUserInExperiment(3, 2)
+        expgroup4 = self.DBInterface.getExperimentgroupForUserInExperiment(4, 2)
+        assert expgroup1.id == 1
+        assert expgroup2.id == 2
+        assert expgroup3.id == 3
+        assert expgroup4.id == 4
+
     def test_getConfigurationForUser(self):
         confs = self.dbsession.query(Configuration).all()
 

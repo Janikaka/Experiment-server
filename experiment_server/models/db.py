@@ -74,6 +74,12 @@ class DatabaseInterface:
 	def getConfForExperimentgroup(self, experimentgroupId): #OK
 		return self.dbsession.query(ExperimentGroup).filter_by(id=experimentgroupId).one().configuration
 
+	def getExperimentgroupForUserInExperiment(self, userId, experimentId):
+		expgroups = self.getExperimentgroupsForUser(userId)
+		for expgroup in expgroups:
+			if expgroup.experiment_id == experimentId:
+				return expgroup
+
 #---------------------------------------------------------------------------------
 #                                      Users                                      
 #---------------------------------------------------------------------------------
