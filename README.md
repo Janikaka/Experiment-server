@@ -15,7 +15,7 @@ $VENV/bin/pserve development.ini
 
 Creating a new experiment:
 
-    $ curl -H "Content-Type: application/json" -X POST -d '{"name": "First experiment", "experimentgroups": ["group A", "group B"]}' http://localhost:6543/experiments
+    $ curl -H "Content-Type: application/json" -X POST -d '{"name": "My First Experiment", "experimentgroups": [{"name":"Group A", "configurations":[{"key":"key A", "value":4}]}, {"name": "Group B", "configurations":[{"key":"key B", "value":5}]}]}' http://localhost:6543/experiments
 
 Deleting an experiment:
 
