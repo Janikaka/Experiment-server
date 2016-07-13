@@ -65,6 +65,13 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
 
+	@view_config(route_name='experiment', request_method="OPTIONS")
+	def experiment_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'POST,DELETE,OPTIONS')
+		return res
+
 	#4 Delete experiment
 	@view_config(route_name='experiment', request_method="DELETE")
 	def experiment_DELETE(self):
