@@ -246,6 +246,22 @@ class TestDatabaseInterface(BaseTest):
         assert user1.experimentgroups == []
         assert user3.experimentgroups == []
 
+    def test_deleteUserFromExperiment(self):
+        expgroup1 = self.dbsession.query(ExperimentGroup).filter_by(id=1).one()
+        expgroup2 = self.dbsession.query(ExperimentGroup).filter_by(id=2).one()
+        expgroup4 = self.dbsession.query(ExperimentGroup).filter_by(id=4).one()
+        self.DBInterface.deleteUserFromExperiment(1, 1)
+        self.DBInterface.deleteUserFromExperiment(4, 1)
+        assert [expgroup1] == self.dbsession.query(User).filter_by(id=1).one().experimentgroups
+        assert [expgroup4, expgroup2] == self.dbsession.query(User).filter_by(id=4).one().experimentgroups
+
+        experimentgroupsForUser1 = self.dbsession.query(User).filter_by(id=1).one().experimentgroups
+        experimentgroupsForUser4 = self.dbsession.query(User).filter_by(id=4).one().experimentgroups
+
+        assert [] == self.dbsession.query(User).filter_by(id=1).one().experimentgroups
+        assert [expgroup4] == self.dbsession.query(User).filter_by(id=4).one().experimentgroups
+
+
     def test_getUsersInExperiment(self):
         users1 = self.DBInterface.getUsersInExperiment(1)
         users2 = self.DBInterface.getUsersInExperiment(2)

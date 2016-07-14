@@ -79,7 +79,6 @@ class Experiments:
 		headers = ()
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		print(res)
 		return res
 
 	#7 List all users for specific experiment
@@ -98,6 +97,25 @@ class Experiments:
 		headers = ()
 		res = Response(output)
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		return res
+
+
+	# Delete user from specific experiment
+	@view_config(route_name='user_for_experiment', request_method="DELETE")
+	def user_for_experiment_DELETE(self):
+		experimentId = self.request.matchdict['expid']
+		userId = self.request.matchdict['userid']
+		self.DB.deleteUserFromExperiment(userId, experimentId)
+		headers = ()
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		return res
+
+	@view_config(route_name='user_for_experiment', request_method="OPTIONS")
+	def experiment_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
 		return res
 
 	#11 Show experiment data

@@ -42,6 +42,14 @@ class DatabaseInterface:
 			users.extend(experimentgroup.users)
 		return users
 
+	def deleteUserFromExperiment(self, userId, experimentId):
+		expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
+		user = self.getUser(userId)
+		user.experimentgroups.remove(expgroup)
+		expgroup.users.remove(user)
+
+
+
 #---------------------------------------------------------------------------------
 #                                 ExperimentGroups                                
 #---------------------------------------------------------------------------------
