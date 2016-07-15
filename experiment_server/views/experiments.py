@@ -99,12 +99,14 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
 
-
 	# Delete user from specific experiment
 	@view_config(route_name='user_for_experiment', request_method="DELETE")
 	def user_for_experiment_DELETE(self):
-		experimentId = self.request.matchdict['expid']
-		userId = self.request.matchdict['userid']
+		print("DELETEEEEEEE")
+		experimentId = int(self.request.matchdict['expid'])
+		userId = int(self.request.matchdict['userid'])
+		print("experimentId %d" %experimentId)
+		print("userId %d" %userId)
 		self.DB.deleteUserFromExperiment(userId, experimentId)
 		headers = ()
 		res = Response()

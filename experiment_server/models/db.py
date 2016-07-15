@@ -44,9 +44,10 @@ class DatabaseInterface:
 
 	def deleteUserFromExperiment(self, userId, experimentId):
 		expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
+		print(expgroup.name)
 		user = self.getUser(userId)
+		print(user.experimentgroups[0])
 		user.experimentgroups.remove(expgroup)
-		expgroup.users.remove(user)
 
 
 
