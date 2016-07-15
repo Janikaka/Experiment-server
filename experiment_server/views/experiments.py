@@ -55,10 +55,13 @@ class Experiments:
 		for i in range(len(experiment.experimentgroups)):
 			expgroup = experiment.experimentgroups[i]
 			confs = expgroup.configurations
+			users = []
+			for i in range(len(expgroup.users)):
+				users.append({'id':expgroup.users[i].id, 'username':expgroup.users[i].username})
 			configurations = []
 			for i in range(len(confs)):
 				configurations.append({'id':confs[i].id, 'key':confs[i].key, 'value':confs[i].value})
-			experimentgroups.append({'id':expgroup.id, 'name':expgroup.name, 'configurations':configurations})
+			experimentgroups.append({'id':expgroup.id, 'name':expgroup.name, 'configurations':configurations, 'users': users})
 		output = json.dumps({'data': {'id': experiment.id, 'name': experiment.name, 'experimentgroups': experimentgroups}})
 		headers = ()
 		res = Response(output)

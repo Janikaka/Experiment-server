@@ -42,7 +42,7 @@ class Users:
 	#8 List all experiments for specific user 
 	@view_config(route_name='experiments_for_user', request_method="GET")
 	def experiments_for_user_GET(self):
-		id = self.request.matchdict['id']
+		id = int(self.request.matchdict['id'])
 		experiments = self.DB.getExperimentsUserParticipates(id)
 		experimentsJSON = []
 		for i in range(len(experiments)):
