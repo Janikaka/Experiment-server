@@ -10,20 +10,32 @@ class Users:
 		self.request = request
 		self.DB = DatabaseInterface(self.request.dbsession)
 
+	@view_config(route_name='configurations', request_method="OPTIONS")
+	def configurations_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+		return res
+
 	#5 List configurations for specific user
 	@view_config(route_name='configurations', request_method="GET")
 	def configurations_GET(self):
 	#Also adds the user to the DB if it doesn't exist
-		json = self.request.json_body
-		username = self.request.headers['username']
-		#userData = {'username': username, 'password': password}
+		#json = self.request.json_body
+		print("TAAAL")
+		username = self.request.headers.get('username')
+		print("CONFIGURATIONSS USERNAME: %s" % username)
 		user = self.DB.checkUser(username)
 		self.DB.assignUserToExperiments(user.id)
 		confs = self.DB.getConfigurationForUser(user.id)
 		configurations = []
 		for conf in confs:
 			configurations.append({'key':conf.key, 'value':conf.value})
-		return {'configurations': configurations}
+		output = json.dumps({'data': configurations})
+		headers = ()
+		res = Response(output)
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		return res
 
 	#6 List all users
 	@view_config(route_name='users', request_method="GET")
@@ -73,7 +85,7 @@ class Users:
 	def experiment_OPTIONS(self):
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		res.headers.add('Access-Control-Allow-Methods', 'GET,DELETE,OPTIONS')
+		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
 		return res
 
 	#10 Delete user
