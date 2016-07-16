@@ -31,7 +31,10 @@ class Users:
 		users = self.DB.getAllUsers()
 		usersJSON = []
 		for i in range(len(users)):
-			user = {'id':users[i].id, 'username':users[i].username}
+			user = {
+			'id':users[i].id, 
+			'username':users[i].username, 
+			'totalDataitems':self.DB.getTotalDataitemsForUser(users[i].id)}
 			usersJSON.append(user)
 		output = json.dumps({'data': usersJSON})
 		headers = ()

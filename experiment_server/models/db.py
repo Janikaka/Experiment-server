@@ -49,8 +49,6 @@ class DatabaseInterface:
 		print(user.experimentgroups[0])
 		user.experimentgroups.remove(expgroup)
 
-
-
 #---------------------------------------------------------------------------------
 #                                 ExperimentGroups                                
 #---------------------------------------------------------------------------------
@@ -123,6 +121,8 @@ class DatabaseInterface:
 	def getExperimentgroupsForUser(self, id):
 		return self.dbsession.query(User).filter_by(id=id).one().experimentgroups
 
+
+
 	def deleteUser(self, id): #CHECK
 	#Deletes also dataitems in user
 		user = self.dbsession.query(User).filter_by(id=id).one()
@@ -175,6 +175,15 @@ class DatabaseInterface:
 		dataitem = DataItem(value=value, key=key, user=self.getUser(userId))
 		self.dbsession.add(dataitem)
 		return dataitem
+
+	def getTotalDataitemsForExperiment(self, experimentId):
+		return 100
+
+	def getTotalDataitemsForExpgroup(self, experimentgroupId):
+		return 25
+
+	def getTotalDataitemsForUser(self, userId):
+		return 10
 
 	#TODO deleteDataitem
 
