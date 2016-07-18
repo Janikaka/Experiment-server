@@ -58,15 +58,33 @@ class Experiments:
 	def experiment_metadata_GET(self):
 		id = self.request.matchdict['id']
 		experiment = self.DB.getExperiment(id)
+		totalDataitems = self.DB.getTotalDataitemsForExperiment(id)
 		experimentgroups = []
 		for i in range(len(experiment.experimentgroups)):
 			expgroup = experiment.experimentgroups[i]
+			totalDataitemsForExpgroup = self.DB.getTotalDataitemsForExpgroup(expgroup.id)
 			confs = expgroup.configurations
+			users = []
+			for i in range(len(expgroup.users)):
+				users.append({'id':expgroup.users[i].id, 'username':expgroup.users[i].username})
 			configurations = []
 			for i in range(len(confs)):
 				configurations.append({'id':confs[i].id, 'key':confs[i].key, 'value':confs[i].value})
-			experimentgroups.append({'id':expgroup.id, 'name':expgroup.name, 'configurations':configurations})
-		output = json.dumps({'data': {'id': experiment.id, 'name': experiment.name, 'experimentgroups': experimentgroups}})
+			experimentgroups.append(
+				{'id':expgroup.id, 
+				'name':expgroup.name, 
+				'configurations':configurations, 
+				'users': users,
+				'totalDataitems':totalDataitemsForExpgroup
+				})
+		output = json.dumps(
+			{'data': 
+				{'id': experiment.id, 
+				'name': experiment.name, 
+				'experimentgroups': experimentgroups,
+				'totalDataitems':totalDataitems
+				}
+			})
 		headers = ()
 		res = Response(output)
 		res.headers.add('Access-Control-Allow-Origin', '*')
