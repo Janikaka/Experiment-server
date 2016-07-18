@@ -3,6 +3,7 @@ from pyramid.response import Response
 from ..models import DatabaseInterface
 from pyramid.httpexceptions import HTTPFound
 import json
+from datetime import datetime
 
 
 @view_defaults(renderer='json')
@@ -10,15 +11,15 @@ class Experiments:
 	def __init__(self, request):
 		self.request = request
 		self.DB = DatabaseInterface(self.request.dbsession)
-
+#2016-07-18 18:35:21
 	#1 Create new experiment
 	@view_config(route_name='experiments', request_method="POST")
 	def experiments_POST(self):
 		data = self.request.json_body
 		name = data['name']
 		experimentgroups = data['experimentgroups']
-		startDatetime = data['startDatetime']
-		endDatetime = data['endDatetime']
+		startDatetime = datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
+		endDatetime = datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
 		expgroups = []
 		for i in range(len(experimentgroups)):
 			expgroup = self.DB.createExperimentgroup({'name': experimentgroups[i]['name']})
@@ -81,8 +82,10 @@ class Experiments:
 			{'data': 
 				{'id': experiment.id, 
 				'name': experiment.name, 
+				'startDatetime': str(experiment.startDatetime),
+				'endDatetime': str(experiment.endDatetime),
 				'experimentgroups': experimentgroups,
-				'totalDataitems':totalDataitems
+				'totalDataitems': totalDataitems
 				}
 			})
 		headers = ()
