@@ -47,8 +47,8 @@ def main(argv=sys.argv):
 
         user1.dataitems.append(dataitem1)
         user2.dataitems.append(dataitem2)
-
-        experiment1 = Experiment(name='First experiment')
+        import datetime
+        experiment1 = Experiment(name='First experiment', startDatetime=datetime.datetime.now(), endDatetime=datetime.datetime.now())
 
 
         experimentgroup1 = ExperimentGroup(name='group A', users=[user1])

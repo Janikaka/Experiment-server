@@ -17,6 +17,8 @@ class Experiments:
 		data = self.request.json_body
 		name = data['name']
 		experimentgroups = data['experimentgroups']
+		startDatetime = data['startDatetime']
+		endDatetime = data['endDatetime']
 		expgroups = []
 		for i in range(len(experimentgroups)):
 			expgroup = self.DB.createExperimentgroup({'name': experimentgroups[i]['name']})
@@ -26,7 +28,12 @@ class Experiments:
 				key = confs[j]['key']
 				value = confs[j]['value']
 				self.DB.createConfiguration({'key':key, 'value':value, 'experimentgroup':expgroup})
-		self.DB.createExperiment({'name':name, 'experimentgroups':expgroups});
+		self.DB.createExperiment(
+			{'name':name, 
+			'startDatetime':startDatetime,
+			'endDatetime':endDatetime,
+			'experimentgroups':expgroups
+			});
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		print(res)
