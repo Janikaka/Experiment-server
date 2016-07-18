@@ -13,17 +13,17 @@ class DatabaseInterface:
 #                                   Experiments                                   
 #---------------------------------------------------------------------------------
 	def createExperiment(self, data): #CHECK
-		import datetime
 		name = data['name']
 		experimentgroups = data['experimentgroups']
 		startDatetime = data['startDatetime']
-		print("TAAALLAA")
-		print(startDatetime)
 		endDatetime = data['endDatetime']
+		size = data['size']
 		if (startDatetime is not None and endDatetime is not None):
 			experiment = Experiment(name=name, startDatetime=startDatetime, endDatetime=endDatetime)
 		else:
 			experiment = Experiment(name=name)
+		if (size is not None):
+			experiment.size = size
 		for experimentgroup in experimentgroups:
 			experiment.experimentgroups.append(experimentgroup)
 		self.dbsession.add(experiment)

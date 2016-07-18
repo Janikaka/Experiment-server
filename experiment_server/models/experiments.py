@@ -17,3 +17,4 @@ class Experiment(Base):
     startDatetime = Column(DateTime, default=datetime.datetime.now()) #Remove default later
     endDatetime = Column(DateTime, default=datetime.datetime.now())
     experimentgroups = relationship("ExperimentGroup", backref="experiment", cascade="delete")
+    size = Column(Integer, default=100) #Remove default later

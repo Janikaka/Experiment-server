@@ -11,7 +11,14 @@ class Experiments:
 	def __init__(self, request):
 		self.request = request
 		self.DB = DatabaseInterface(self.request.dbsession)
-#2016-07-18 18:35:21
+
+	@view_config(route_name='experiments', request_method="OPTIONS")
+	def experiments_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS')
+		return res
+
 	#1 Create new experiment
 	@view_config(route_name='experiments', request_method="POST")
 	def experiments_POST(self):
@@ -20,6 +27,7 @@ class Experiments:
 		experimentgroups = data['experimentgroups']
 		startDatetime = datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
 		endDatetime = datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
+		size = data['size']
 		expgroups = []
 		for i in range(len(experimentgroups)):
 			expgroup = self.DB.createExperimentgroup({'name': experimentgroups[i]['name']})
@@ -30,10 +38,11 @@ class Experiments:
 				value = confs[j]['value']
 				self.DB.createConfiguration({'key':key, 'value':value, 'experimentgroup':expgroup})
 		self.DB.createExperiment(
-			{'name':name, 
-			'startDatetime':startDatetime,
-			'endDatetime':endDatetime,
-			'experimentgroups':expgroups
+			{'name': name, 
+			'startDatetime': startDatetime,
+			'endDatetime': endDatetime,
+			'experimentgroups': expgroups,
+			'size': size
 			});
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
@@ -52,6 +61,13 @@ class Experiments:
 		headers = ()
 		res = Response(output)
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		return res
+
+	@view_config(route_name='experiment_metadata', request_method="OPTIONS")
+	def experiment_metadata_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
 		return res
 
 	#3 Show specific experiment metadata
@@ -85,7 +101,8 @@ class Experiments:
 				'startDatetime': str(experiment.startDatetime),
 				'endDatetime': str(experiment.endDatetime),
 				'experimentgroups': experimentgroups,
-				'totalDataitems': totalDataitems
+				'totalDataitems': totalDataitems,
+				'size': experiment.size
 				}
 			})
 		headers = ()
@@ -97,7 +114,7 @@ class Experiments:
 	def experiment_OPTIONS(self):
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		res.headers.add('Access-Control-Allow-Methods', 'POST,DELETE,OPTIONS')
+		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
 		return res
 
 	#4 Delete experiment
@@ -107,6 +124,13 @@ class Experiments:
 		headers = ()
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		return res
+
+	@view_config(route_name='users_for_experiment', request_method="OPTIONS")
+	def users_for_experiment_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
 		return res
 
 	#7 List all users for specific experiment
@@ -127,25 +151,31 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
 
+	@view_config(route_name='user_for_experiment', request_method="OPTIONS")
+	def user_for_experiment_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
+		return res
+
 	# Delete user from specific experiment
 	@view_config(route_name='user_for_experiment', request_method="DELETE")
 	def user_for_experiment_DELETE(self):
-		print("DELETEEEEEEE")
 		experimentId = int(self.request.matchdict['expid'])
 		userId = int(self.request.matchdict['userid'])
-		print("experimentId %d" %experimentId)
-		print("userId %d" %userId)
 		self.DB.deleteUserFromExperiment(userId, experimentId)
 		headers = ()
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
 
-	@view_config(route_name='user_for_experiment', request_method="OPTIONS")
-	def experiment_OPTIONS(self):
+	
+
+	@view_config(route_name='experiment_data', request_method="OPTIONS")
+	def experiment_data_OPTIONS(self):
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
+		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
 		return res
 
 	#11 Show experiment data
@@ -165,5 +195,4 @@ class Experiments:
 				usersData.append(userData)
 			expgroup = {'experimentgroup': {'id': experimentgroup.id, 'name': experimentgroup.name}, 'users': usersData}
 			dataInGroups['experimentgroups'].append(expgroup)
-
 		return {'dataInGroups': dataInGroups}

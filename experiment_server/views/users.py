@@ -37,6 +37,13 @@ class Users:
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
 
+	@view_config(route_name='users', request_method="OPTIONS")
+	def users_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+		return res
+
 	#6 List all users
 	@view_config(route_name='users', request_method="GET")
 	def users_GET(self):
@@ -52,6 +59,13 @@ class Users:
 		headers = ()
 		res = Response(output)
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		return res
+
+	@view_config(route_name='experiments_for_user', request_method="OPTIONS")
+	def experiments_for_user_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
 		return res
 
 	#8 List all experiments for specific user 
@@ -71,6 +85,13 @@ class Users:
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
 
+	@view_config(route_name='events', request_method="OPTIONS")
+	def events_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+		return res
+
 	#9 Save experiment data
 	@view_config(route_name='events', request_method="POST")
 	def events_POST(self):
@@ -82,7 +103,7 @@ class Users:
 		self.DB.createDataitem({'user': user.id, 'value': value, 'key':key})
 
 	@view_config(route_name='user', request_method="OPTIONS")
-	def experiment_OPTIONS(self):
+	def user_OPTIONS(self):
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
