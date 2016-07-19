@@ -60,8 +60,8 @@ def main(argv=sys.argv):
         experiment1.experimentgroups.append(experimentgroup1)
         experiment1.experimentgroups.append(experimentgroup2)
 
-        conf1 = Configuration(key='confkey1', value=1, experimentgroup=experimentgroup1)
-        conf2 = Configuration(key='confkey2', value=2, experimentgroup=experimentgroup2)
+        conf1 = Configuration(key='confkey1', value='hard', experimentgroup=experimentgroup1)
+        conf2 = Configuration(key='confkey2', value='easy', experimentgroup=experimentgroup2)
 
         dbsession.add(dataitem1)
         dbsession.add(dataitem2)

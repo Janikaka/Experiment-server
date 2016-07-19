@@ -1,9 +1,9 @@
 from sqlalchemy import (
     Column,
-    Index,
     Integer,
     Text,
-    ForeignKey
+    ForeignKey,
+    PickleType
 )
 
 from .meta import Base
@@ -14,5 +14,5 @@ class Configuration(Base):
 	id = Column(Integer, primary_key=True)
 	experimentgroup_id = Column(Integer, ForeignKey('experimentgroups.id'))
 	key = Column(Text)
-	value = Column(Integer)
+	value = Column(PickleType)
 

@@ -68,10 +68,11 @@ class BaseTest(unittest.TestCase):
         self.DBInterface.createDataitem({'user': 2, 'key': 'dummy', 'value': 20})
         self.DBInterface.createDataitem({'user': 3, 'key': 'dummy', 'value': 30})
         self.DBInterface.createDataitem({'user': 4, 'key': 'dummy', 'value': 40})
-        configurations = [{'key': 'key1', 'value': 1, 'experimentgroup': experimentgroups[0]},
-        {'key': 'key2', 'value': 2, 'experimentgroup': experimentgroups[1]},
-        {'key': 'key3', 'value': 3, 'experimentgroup': experimentgroups[2]}, 
-        {'key': 'key4', 'value': 4, 'experimentgroup': experimentgroups[3]}]
+        configurations = [
+        {'key': 'key1', 'value': 1, 'experimentgroup': experimentgroups[0]},
+        {'key': 'key2', 'value': 0.5, 'experimentgroup': experimentgroups[1]},
+        {'key': 'key3', 'value': 'hard', 'experimentgroup': experimentgroups[2]}, 
+        {'key': 'key4', 'value': False, 'experimentgroup': experimentgroups[3]}]
         self.DBInterface.createConfiguration(configurations[0])
         self.DBInterface.createConfiguration(configurations[1])
         self.DBInterface.createConfiguration(configurations[2])
@@ -199,9 +200,9 @@ class TestDatabaseInterface(BaseTest):
         expgroup4 = self.dbsession.query(ExperimentGroup).filter_by(id=4).one()
         confs = [
         {'id': 1, 'key': 'key1', 'value': 1, 'experimentgroup': expgroup1},
-        {'id': 2, 'key': 'key2', 'value': 2, 'experimentgroup': expgroup2},
-        {'id': 3, 'key': 'key3', 'value': 3, 'experimentgroup': expgroup3},
-        {'id': 4, 'key': 'key4', 'value': 4, 'experimentgroup': expgroup4}]
+        {'id': 2, 'key': 'key2', 'value': 0.5, 'experimentgroup': expgroup2},
+        {'id': 3, 'key': 'key3', 'value': 'hard', 'experimentgroup': expgroup3},
+        {'id': 4, 'key': 'key4', 'value': False, 'experimentgroup': expgroup4}]
 
         for i in range(len(confsFromDB)):
             for keyy in confs[i]:
