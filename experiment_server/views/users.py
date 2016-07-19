@@ -15,16 +15,15 @@ class Users:
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+		res.headers.add('Access-Control-Allow-Headers', 'username')
 		return res
 
 	#5 List configurations for specific user
 	@view_config(route_name='configurations', request_method="GET")
 	def configurations_GET(self):
 	#Also adds the user to the DB if it doesn't exist
-		#json = self.request.json_body
-		print("TAAAL")
 		username = self.request.headers.get('username')
-		print("CONFIGURATIONSS USERNAME: %s" % username)
+		print("confs for: %s" %username)
 		user = self.DB.checkUser(username)
 		self.DB.assignUserToExperiments(user.id)
 		confs = self.DB.getConfigurationForUser(user.id)
