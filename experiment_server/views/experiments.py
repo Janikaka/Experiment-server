@@ -3,7 +3,6 @@ from pyramid.response import Response
 from ..models import DatabaseInterface
 from pyramid.httpexceptions import HTTPFound
 import json
-from datetime import datetime
 
 
 @view_defaults(renderer='json')
@@ -25,8 +24,8 @@ class Experiments:
 		data = self.request.json_body
 		name = data['name']
 		experimentgroups = data['experimentgroups']
-		startDatetime = datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
-		endDatetime = datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
+		startDatetime = data['startDatetime']
+		endDatetime = data['endDatetime']
 		size = data['size']
 		expgroups = []
 		for i in range(len(experimentgroups)):

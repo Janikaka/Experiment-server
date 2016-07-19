@@ -4,6 +4,7 @@ from .users import User
 from .dataitems import DataItem
 from .configurations import Configuration
 import random
+from datetime import datetime
 
 class DatabaseInterface:
 	def __init__(self, dbsession):
@@ -15,8 +16,8 @@ class DatabaseInterface:
 	def createExperiment(self, data): #CHECK
 		name = data['name']
 		experimentgroups = data['experimentgroups']
-		startDatetime = data['startDatetime']
-		endDatetime = data['endDatetime']
+		startDatetime = datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
+		endDatetime = datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
 		size = data['size']
 		if (startDatetime is not None and endDatetime is not None):
 			experiment = Experiment(name=name, startDatetime=startDatetime, endDatetime=endDatetime)

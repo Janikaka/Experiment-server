@@ -43,8 +43,22 @@ class BaseTest(unittest.TestCase):
         experimentgroupNames = ['group A', 'group B', 'group C', 'group D']
         for name in experimentgroupNames:
             experimentgroups.append(self.DBInterface.createExperimentgroup({'name': name}))
-        experiment1 = self.DBInterface.createExperiment({'name': 'First experiment', 'experimentgroups':[experimentgroups[0], experimentgroups[1]]})
-        experiment2 = self.DBInterface.createExperiment({'name': 'Second experiment', 'experimentgroups':[experimentgroups[2], experimentgroups[3]]})
+        experiment1 = self.DBInterface.createExperiment(
+            {'name': 'First experiment', 
+            'experimentgroups':[experimentgroups[0], 
+            experimentgroups[1]], 
+            'startDatetime': '2016-08-01 00:00:01',
+            'endDatetime': '2016-08-08 00:00:01',
+            'size': 100
+            })
+        experiment2 = self.DBInterface.createExperiment(
+            {'name': 'Second experiment', 
+            'experimentgroups':[experimentgroups[2], 
+            experimentgroups[3]], 
+            'startDatetime': '2016-09-01 00:00:01',
+            'endDatetime': '2016-09-08 00:00:01',
+            'size': 200
+            })
         user1 = self.DBInterface.createUser({'username': 'First user', 'experimentgroups': [experiment1.experimentgroups[0]]})
         user2 = self.DBInterface.createUser({'username': 'Second user', 'experimentgroups': [experiment1.experimentgroups[1]]})
         user3 = self.DBInterface.createUser({'username': 'Third user', 'experimentgroups': [experiment2.experimentgroups[0]]})
