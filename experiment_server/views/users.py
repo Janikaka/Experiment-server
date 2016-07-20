@@ -24,7 +24,7 @@ class Users:
 	#Also adds the user to the DB if it doesn't exist
 		username = self.request.headers.get('username')
 		user = self.DB.checkUser(username)
-		self.DB.assignUserToExperiments(user.id)
+		self.DB.assignUserToRunningExperiments(user.id)
 		confs = self.DB.getConfigurationForUser(user.id)
 		configurations = []
 		for conf in confs:

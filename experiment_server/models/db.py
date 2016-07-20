@@ -33,6 +33,13 @@ class DatabaseInterface:
 	def getAllExperiments(self): #OK
 		return self.dbsession.query(Experiment).all()
 
+	def getAllRunningExperiments(self):
+		dateTimeNow = datetime.datetime.now()
+		return self.dbsession.query(Experiment).filter(
+			and_(Experiment.startDatetime <= dateTimeNow,
+				dateTimeNow <= Experiment.endDatetime))
+
+
 	def getExperiment(self, id): #OK
 		return self.dbsession.query(Experiment).filter_by(id=id).one()
 
@@ -156,6 +163,17 @@ class DatabaseInterface:
 		experimentgroup = experimentgroups[random.randint(0, len(experimentgroups)-1)]
 		self.dbsession.query(User).filter_by(id=userId).one().experimentgroups.append(experimentgroup)
 
+	def assignUserToRunningExperiments(self, id):
+		allExperiments = self.getAllRunningExperiments()
+		experimentsUserParticipates = self.getExperimentsUserParticipates(id)
+		experimentsUserDoesNotParticipate = []
+		for experiment in allExperiments:
+			if experiment not in experimentsUserParticipates:
+				experimentsUserDoesNotParticipate.append(experiment)
+		for experiment in experimentsUserDoesNotParticipate:
+			self.assignUserToExperiment({'user':id, 'experiment':experiment.id})
+
+	#Remove this later:
 	def assignUserToExperiments(self, id):
 		allExperiments = self.getAllExperiments()
 		experimentsUserParticipates = self.getExperimentsUserParticipates(id)
