@@ -200,8 +200,35 @@ class Experiments:
 	def experimentgroup_OPTIONS(self):
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
+		res.headers.add('Access-Control-Allow-Methods', 'GET,DELETE,OPTIONS')
 		return res
+
+	#Get experiment group
+	@view_config(route_name='experimentgroup', request_method="GET")
+	def experimentgroup_GET(self):
+		id = self.request.matchdict['id']
+		expgroup = self.DB.getExperimentgroup(id)
+		confs = expgroup.configurations
+		configurations = []
+		for i in range(len(confs)):
+				configurations.append({'id':confs[i].id, 'key':confs[i].key, 'value':confs[i].value})
+		users = []
+		for i in range(len(expgroup.users)):
+			users.append({'id': expgroup.users[i].id, 'username': expgroup.users[i].username})
+		experimentgroup = {
+		'id': expgroup.id, 
+		'name': expgroup.name, 
+		'configurations': configurations, 
+		'users': users,
+		'totalDataitems': self.DB.getTotalDataitemsForExpgroup(expgroup.id)
+		}
+		output = json.dumps({'data': experimentgroup})
+		headers = ()
+		res = Response(output)
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		return res
+
+
 
 	# Delete experiment group
 	@view_config(route_name='experimentgroup', request_method="DELETE")
@@ -212,3 +239,5 @@ class Experiments:
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
+
+
