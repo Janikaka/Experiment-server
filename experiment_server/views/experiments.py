@@ -195,3 +195,20 @@ class Experiments:
 			expgroup = {'experimentgroup': {'id': experimentgroup.id, 'name': experimentgroup.name}, 'users': usersData}
 			dataInGroups['experimentgroups'].append(expgroup)
 		return {'dataInGroups': dataInGroups}
+
+	@view_config(route_name='experimentgroup', request_method="OPTIONS")
+	def experimentgroup_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
+		return res
+
+	# Delete experiment group
+	@view_config(route_name='experimentgroup', request_method="DELETE")
+	def experimentgroup_DELETE(self):
+		id = self.request.matchdict['id']
+		self.DB.deleteExperimentgroup(id)
+		headers = ()
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		return res

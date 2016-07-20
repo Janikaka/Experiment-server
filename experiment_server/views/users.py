@@ -23,7 +23,6 @@ class Users:
 	def configurations_GET(self):
 	#Also adds the user to the DB if it doesn't exist
 		username = self.request.headers.get('username')
-		print("confs for: %s" %username)
 		user = self.DB.checkUser(username)
 		self.DB.assignUserToExperiments(user.id)
 		confs = self.DB.getConfigurationForUser(user.id)
@@ -89,6 +88,7 @@ class Users:
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		res.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+		res.headers.add('Access-Control-Allow-Headers', 'username')
 		return res
 
 	#9 Save experiment data

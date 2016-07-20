@@ -53,9 +53,7 @@ class DatabaseInterface:
 
 	def deleteUserFromExperiment(self, userId, experimentId):
 		expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
-		print(expgroup.name)
 		user = self.getUser(userId)
-		print(user.experimentgroups[0])
 		user.experimentgroups.remove(expgroup)
 
 #---------------------------------------------------------------------------------
@@ -70,6 +68,11 @@ class DatabaseInterface:
 
 	def deleteExperimentgroup(self, id): #CHECK
 		experimentgroup = self.dbsession.query(ExperimentGroup).filter_by(id=id).one()
+		"""
+		confs = experimentgroup.configurations
+		for conf in confs:
+			self.deleteConfiguration(conf.id)
+		"""
 		self.deleteExperimentgroupInUsers(id)
 		self.dbsession.delete(experimentgroup)
 
@@ -130,11 +133,13 @@ class DatabaseInterface:
 	def getExperimentgroupsForUser(self, id):
 		return self.dbsession.query(User).filter_by(id=id).one().experimentgroups
 
-
-
 	def deleteUser(self, id): #CHECK
-	#Deletes also dataitems in user
 		user = self.dbsession.query(User).filter_by(id=id).one()
+		"""
+		dataitems = user.dataitems
+		for dataitem in dataitems:
+			self.dbsession.deleteDataitem(dataitem.id)
+		"""
 		self.dbsession.delete(user)
 
 	def getDataitemsForUser(self, id): #OK
@@ -158,7 +163,6 @@ class DatabaseInterface:
 	def assignUserToExperiment(self, data):
 		userId = data['user']
 		experimentId = data['experiment']
-		#TODO Do this better?
 		experimentgroups = self.getExperimentgroups(experimentId)
 		experimentgroup = experimentgroups[random.randint(0, len(experimentgroups)-1)]
 		self.dbsession.query(User).filter_by(id=userId).one().experimentgroups.append(experimentgroup)
@@ -194,7 +198,9 @@ class DatabaseInterface:
 	def getTotalDataitemsForUser(self, userId):
 		return 10
 
-	#TODO deleteDataitem
+	def deleteDataitem(self, id):
+		dataitem = self.dbsession.query(DataItem).filter_by(id=id).one()
+		self.dbsession.delete(dataitem)
 
 #---------------------------------------------------------------------------------
 #                                 Configurations                                  
@@ -208,6 +214,9 @@ class DatabaseInterface:
 		self.dbsession.add(configuration)
 		return configuration
 
-	#TODO deleteConfiguration
+	def deleteConfiguration(self, id):
+		conf = self.dbsession.query(Configuration).filter_by(id=id).one()
+		self.dbsession.delete(conf)
+
 
 	#TODO getUsersInConfiguration?
