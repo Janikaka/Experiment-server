@@ -19,11 +19,11 @@ class DatabaseInterface:
 		startDatetime = datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
 		endDatetime = datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
 		size = data['size']
-		if (startDatetime is not None and endDatetime is not None):
+		if startDatetime is not None and endDatetime is not None:
 			experiment = Experiment(name=name, startDatetime=startDatetime, endDatetime=endDatetime)
 		else:
 			experiment = Experiment(name=name)
-		if (size is not None):
+		if size is not None:
 			experiment.size = size
 		for experimentgroup in experimentgroups:
 			experiment.experimentgroups.append(experimentgroup)
@@ -37,7 +37,6 @@ class DatabaseInterface:
 		return self.dbsession.query(Experiment).filter_by(id=id).one()
 
 	def deleteExperiment(self, id): #CHECK
-	#Deletes also experimentgroups in experiment
 		experiment = self.dbsession.query(Experiment).filter_by(id=id).one()
 		experimentgroups = experiment.experimentgroups
 		for experimentgroup in experimentgroups:
@@ -68,11 +67,6 @@ class DatabaseInterface:
 
 	def deleteExperimentgroup(self, id): #CHECK
 		experimentgroup = self.dbsession.query(ExperimentGroup).filter_by(id=id).one()
-		"""
-		confs = experimentgroup.configurations
-		for conf in confs:
-			self.deleteConfiguration(conf.id)
-		"""
 		self.deleteExperimentgroupInUsers(id)
 		self.dbsession.delete(experimentgroup)
 
@@ -135,11 +129,6 @@ class DatabaseInterface:
 
 	def deleteUser(self, id): #CHECK
 		user = self.dbsession.query(User).filter_by(id=id).one()
-		"""
-		dataitems = user.dataitems
-		for dataitem in dataitems:
-			self.dbsession.deleteDataitem(dataitem.id)
-		"""
 		self.dbsession.delete(user)
 
 	def getDataitemsForUser(self, id): #OK
@@ -217,6 +206,3 @@ class DatabaseInterface:
 	def deleteConfiguration(self, id):
 		conf = self.dbsession.query(Configuration).filter_by(id=id).one()
 		self.dbsession.delete(conf)
-
-
-	#TODO getUsersInConfiguration?
