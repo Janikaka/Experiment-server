@@ -20,3 +20,6 @@ class ExperimentGroup(Base):
         secondary=users_experimentgroups,
         back_populates="experimentgroups"
     )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

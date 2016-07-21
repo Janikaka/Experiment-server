@@ -4,7 +4,8 @@ from .users import User
 from .dataitems import DataItem
 from .configurations import Configuration
 import random
-from datetime import datetime
+import datetime
+from sqlalchemy import and_
 
 class DatabaseInterface:
 	def __init__(self, dbsession):

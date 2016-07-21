@@ -15,3 +15,6 @@ class DataItem(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     key = Column(Text)
     value = Column(Integer)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

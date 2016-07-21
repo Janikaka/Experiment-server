@@ -18,3 +18,13 @@ class Experiment(Base):
     endDatetime = Column(DateTime, default=datetime.datetime.now())
     experimentgroups = relationship("ExperimentGroup", backref="experiment", cascade="delete")
     size = Column(Integer, default=100) #Remove default later
+
+    def as_dict(self):
+        result = {}
+        for c in self.__table__.columns:
+            if c.name == 'startDatetime' or c.name == 'endDatetime':
+                result[c.name] = str(getattr(self, c.name))
+            else:
+                result[c.name] = getattr(self, c.name)
+        return result
+        #return {c.name: getattr(self, c.name) for c in self.__table__.columns}

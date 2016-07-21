@@ -28,7 +28,7 @@ class Users:
 		confs = self.DB.getConfigurationForUser(user.id)
 		configurations = []
 		for conf in confs:
-			configurations.append({'key':conf.key, 'value':conf.value})
+			configurations.append(conf.as_dict())
 		output = json.dumps({'data': configurations})
 		headers = ()
 		res = Response(output)
@@ -48,12 +48,11 @@ class Users:
 		users = self.DB.getAllUsers()
 		usersJSON = []
 		for i in range(len(users)):
-			user = {
-			'id':users[i].id, 
-			'username':users[i].username, 
-			'totalDataitems':self.DB.getTotalDataitemsForUser(users[i].id)}
+			user = users[i].as_dict()
+			user['totalDataitems'] = self.DB.getTotalDataitemsForUser(users[i].id)
 			usersJSON.append(user)
 		output = json.dumps({'data': usersJSON})
+		print(output)
 		headers = ()
 		res = Response(output)
 		res.headers.add('Access-Control-Allow-Origin', '*')
@@ -73,9 +72,9 @@ class Users:
 		experiments = self.DB.getExperimentsUserParticipates(id)
 		experimentsJSON = []
 		for i in range(len(experiments)):
-			experimentgroup = self.DB.getExperimentgroupForUserInExperiment(id, experiments[i].id)
-			expgroup = {'id': experimentgroup.id, 'name':experimentgroup.name}
-			exp = {'id':experiments[i].id, 'name': experiments[i].name, 'experimentgroup': expgroup}
+			expgroup = self.DB.getExperimentgroupForUserInExperiment(id, experiments[i].id)
+			exp = experiments[i].as_dict()
+			exp['experimentgroup'] = expgroup.as_dict()
 			experimentsJSON.append(exp)
 		output = json.dumps({'data': experimentsJSON})
 		headers = ()
