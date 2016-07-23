@@ -125,7 +125,7 @@ class Experiments:
 	def users_for_experiment_GET(self):
 		id = self.request.matchdict['id']
 		id = int(id)
-		users = self.DB.getUsersInExperiment(id)
+		users = self.DB.getUsersForExperiment(id)
 		usersJSON = []
 		for i in range(len(users)):
 			user = users[i].as_dict()
@@ -172,7 +172,7 @@ class Experiments:
 		experimentgroups = self.DB.getExperimentgroups(experimentId)
 		dataInGroups = {'experimentgroups': []}
 		for experimentgroup in experimentgroups:
-			users = self.DB.getUsersInExperimentgroup(experimentgroup.id)
+			users = self.DB.getUsersForExperimentgroup(experimentgroup.id)
 			usersData = []
 			for user in users:
 				userData = {'user':user.id, 'dataValues': []}

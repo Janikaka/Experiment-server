@@ -4,7 +4,7 @@ from .users import User
 from .dataitems import DataItem
 from .configurations import Configuration
 import random
-import datetime
+from datetime import datetime
 from sqlalchemy import and_
 
 class DatabaseInterface:
@@ -14,25 +14,35 @@ class DatabaseInterface:
 #---------------------------------------------------------------------------------
 #                                   Experiments                                   
 #---------------------------------------------------------------------------------
-	def createExperiment(self, data): #CHECK
+	def createExperiment(self, data):
 		name = data['name']
 		experimentgroups = data['experimentgroups']
+		print(data['startDatetime'])
+		print(data['endDatetime'])
 		startDatetime = datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
 		endDatetime = datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
 		size = data['size']
-		if startDatetime is not None and endDatetime is not None:
-			experiment = Experiment(name=name, startDatetime=startDatetime, endDatetime=endDatetime)
-		else:
-			experiment = Experiment(name=name)
-		if size is not None:
-			experiment.size = size
-		for experimentgroup in experimentgroups:
-			experiment.experimentgroups.append(experimentgroup)
+		experiment = Experiment(
+			name=name,
+			startDatetime=startDatetime,
+			endDatetime=endDatetime,
+			size=size,
+			experimentgroups=experimentgroups)
 		self.dbsession.add(experiment)
 		return experiment
 
-	def getAllExperiments(self): #OK
+	def deleteExperiment(self, id):
+		experiment = self.dbsession.query(Experiment).filter_by(id=id).one()
+		experimentgroups = experiment.experimentgroups
+		for experimentgroup in experimentgroups:
+			self.deleteExperimentgroupInUsers(experimentgroup.id)
+		self.dbsession.delete(experiment)
+
+	def getAllExperiments(self):
 		return self.dbsession.query(Experiment).all()
+
+	def getExperiment(self, id):
+		return self.dbsession.query(Experiment).filter_by(id=id).one()
 
 	def getAllRunningExperiments(self):
 		dateTimeNow = datetime.datetime.now()
@@ -40,60 +50,41 @@ class DatabaseInterface:
 			and_(Experiment.startDatetime <= dateTimeNow,
 				dateTimeNow <= Experiment.endDatetime))
 
+	def getExperimentsWithStatus(self, status):
+		#'running', 'finished', 'open', 'waiting'
 
-	def getExperiment(self, id): #OK
-		return self.dbsession.query(Experiment).filter_by(id=id).one()
-
-	def deleteExperiment(self, id): #CHECK
-		experiment = self.dbsession.query(Experiment).filter_by(id=id).one()
-		experimentgroups = experiment.experimentgroups
+	def getExperimentsUserParticipates(self, id):
+		experimentgroups = self.getExperimentgroupsForUser(id)
+		experiments = []
 		for experimentgroup in experimentgroups:
-			self.deleteExperimentgroupInUsers(experimentgroup.id)
-		self.dbsession.delete(experiment)
-
-	def getUsersInExperiment(self, id): #CHECK
-		experimentgroups = self.dbsession.query(Experiment).filter_by(id=id).one().experimentgroups
-		users = []
-		for experimentgroup in experimentgroups:
-			users.extend(experimentgroup.users)
-		return users
-
-	def deleteUserFromExperiment(self, userId, experimentId):
-		expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
-		user = self.getUser(userId)
-		user.experimentgroups.remove(expgroup)
+			experiments.append(experimentgroup.experiment)
+		return experiments
 
 #---------------------------------------------------------------------------------
 #                                 ExperimentGroups                                
 #---------------------------------------------------------------------------------
 
-	def createExperimentgroup(self, data): #OK
+	def createExperimentgroup(self, data):
 		name = data['name']
 		experimentgroup = ExperimentGroup(name=name)
 		self.dbsession.add(experimentgroup)
 		return experimentgroup
 
-	def deleteExperimentgroup(self, id): #CHECK
+	def deleteExperimentgroup(self, id):
 		experimentgroup = self.dbsession.query(ExperimentGroup).filter_by(id=id).one()
 		self.deleteExperimentgroupInUsers(id)
 		self.dbsession.delete(experimentgroup)
 
-	def deleteExperimentgroupInUsers(self, experimentgroupId): #OK
+	def deleteExperimentgroupInUsers(self, experimentgroupId):
 		experimentgroup = self.getExperimentgroup(experimentgroupId)
 		for user in experimentgroup.users:
 				user.experimentgroups.remove(experimentgroup)
 
-	def getExperimentgroup(self, id): #OK
+	def getExperimentgroup(self, id):
 		return self.dbsession.query(ExperimentGroup).filter_by(id=id).one()
 
-	def getExperimentgroups(self, id): #OK
+	def getExperimentgroups(self, id):
 		return self.dbsession.query(ExperimentGroup).filter_by(experiment_id = id).all()
-
-	def getUsersInExperimentgroup(self, experimentgroupId): #OK
-		return self.dbsession.query(ExperimentGroup).filter_by(id=experimentgroupId).one().users
-
-	def getConfForExperimentgroup(self, experimentgroupId): #OK
-		return self.dbsession.query(ExperimentGroup).filter_by(id=experimentgroupId).one().configuration
 
 	def getExperimentgroupForUserInExperiment(self, userId, experimentId):
 		expgroups = self.getExperimentgroupsForUser(userId)
@@ -101,11 +92,14 @@ class DatabaseInterface:
 			if expgroup.experiment_id == experimentId:
 				return expgroup
 
+	def getExperimentgroupsForUser(self, id):
+		return self.dbsession.query(User).filter_by(id=id).one().experimentgroups
+
 #---------------------------------------------------------------------------------
 #                                      Users                                      
 #---------------------------------------------------------------------------------
 
-	def createUser(self, data): #CHECK
+	def createUser(self, data):
 		keys = ['username', 'password', 'experimentgroups', 'dataitems']
 		for key in keys:
 			try:
@@ -116,46 +110,25 @@ class DatabaseInterface:
 		self.dbsession.add(user)
 		return self.dbsession.query(User).filter_by(username=data['username']).one()
 
-	def getUser(self, id): #OK
+	def getUser(self, id):
 		return self.dbsession.query(User).filter_by(id=id).one()
 
 	def getUserByUsername(self, username):
 		return self.dbsession.query(User).filter_by(username=username).one()
 
-	def getAllUsers(self): #OK
+	def getAllUsers(self):
 		return self.dbsession.query(User).all()
 
-	def getExperimentsUserParticipates(self, id): #CHECK
-		experimentgroups = self.getExperimentgroupsForUser(id)
-		experiments = []
-		for experimentgroup in experimentgroups:
-			experiments.append(experimentgroup.experiment)
-		return experiments
-
-	def getExperimentgroupsForUser(self, id):
-		return self.dbsession.query(User).filter_by(id=id).one().experimentgroups
-
-	def deleteUser(self, id): #CHECK
+	def deleteUser(self, id):
 		user = self.dbsession.query(User).filter_by(id=id).one()
 		self.dbsession.delete(user)
 
-	def getDataitemsForUser(self, id): #OK
-		return self.dbsession.query(DataItem).filter_by(user_id=id)
-
-	def checkUser(self, username): #OK
+	def checkUser(self, username):
 		user = self.dbsession.query(User).filter_by(username=username).all()
 		if user == []:
 			return self.createUser({'username':username})
 		else:
 			return user[0]
-
-	def getConfigurationForUser(self, id): #CHECK
-		expgroups = self.getExperimentgroupsForUser(id)
-		confs = []
-		for expgroup in expgroups:
-		    for conf in expgroup.configurations:
-		        confs.append(conf)
-		return confs
 
 	def assignUserToExperiment(self, data):
 		userId = data['user']
@@ -174,29 +147,33 @@ class DatabaseInterface:
 		for experiment in experimentsUserDoesNotParticipate:
 			self.assignUserToExperiment({'user':id, 'experiment':experiment.id})
 
-	#Remove this later:
-	def assignUserToExperiments(self, id):
-		allExperiments = self.getAllExperiments()
-		experimentsUserParticipates = self.getExperimentsUserParticipates(id)
-		experimentsUserDoesNotParticipate = []
-		for experiment in allExperiments:
-			if experiment not in experimentsUserParticipates:
-				experimentsUserDoesNotParticipate.append(experiment)
-		for experiment in experimentsUserDoesNotParticipate:
-			self.assignUserToExperiment({'user':id, 'experiment':experiment.id})
+	def getUsersForExperiment(self, id):
+		experimentgroups = self.dbsession.query(Experiment).filter_by(id=id).one().experimentgroups
+		users = []
+		for experimentgroup in experimentgroups:
+			users.extend(experimentgroup.users)
+		return users
+
+	def deleteUserFromExperiment(self, userId, experimentId):
+		expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
+		user = self.getUser(userId)
+		user.experimentgroups.remove(expgroup)
+
+	def getUsersForExperimentgroup(self, experimentgroupId):
+		return self.dbsession.query(ExperimentGroup).filter_by(id=experimentgroupId).one().users
 
 #---------------------------------------------------------------------------------
 #                                    Dataitems                                     
 #---------------------------------------------------------------------------------
 	
-	def createDataitem(self, data): #CHECK
+	def createDataitem(self, data):
 		userId = data['user']
 		value = data['value']
 		key = data['key']
 		dataitem = DataItem(value=value, key=key, user=self.getUser(userId))
 		self.dbsession.add(dataitem)
 		return dataitem
-
+	
 	def getTotalDataitemsForExperiment(self, experimentId):
 		return 100
 
@@ -206,6 +183,9 @@ class DatabaseInterface:
 	def getTotalDataitemsForUser(self, userId):
 		return 10
 
+	def getDataitemsForUser(self, id):
+		return self.dbsession.query(DataItem).filter_by(user_id=id)
+
 	def deleteDataitem(self, id):
 		dataitem = self.dbsession.query(DataItem).filter_by(id=id).one()
 		self.dbsession.delete(dataitem)
@@ -214,7 +194,7 @@ class DatabaseInterface:
 #                                 Configurations                                  
 #---------------------------------------------------------------------------------
 
-	def createConfiguration(self, data): #CHECK
+	def createConfiguration(self, data):
 		key = data['key']
 		value = data['value']
 		experimentgroup = data['experimentgroup']
@@ -225,3 +205,15 @@ class DatabaseInterface:
 	def deleteConfiguration(self, id):
 		conf = self.dbsession.query(Configuration).filter_by(id=id).one()
 		self.dbsession.delete(conf)
+
+	def getConfsForExperimentgroup(self, experimentgroupId):
+		return self.dbsession.query(ExperimentGroup).filter_by(id=experimentgroupId).one().configurations
+
+	def getTotalConfigurationForUser(self, id):
+		expgroups = self.getExperimentgroupsForUser(id)
+		confs = []
+		for expgroup in expgroups:
+		    for conf in expgroup.configurations:
+		        confs.append(conf)
+		return confs
+

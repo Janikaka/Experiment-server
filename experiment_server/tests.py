@@ -284,9 +284,9 @@ class TestDatabaseInterface(BaseTest):
         assert not user4 in expgroup2.users
 
 
-    def test_getUsersInExperiment(self):
-        users1 = self.DBInterface.getUsersInExperiment(1)
-        users2 = self.DBInterface.getUsersInExperiment(2)
+    def test_getUsersForExperiment(self):
+        users1 = self.DBInterface.getUsersForExperiment(1)
+        users2 = self.DBInterface.getUsersForExperiment(2)
         user1 = self.dbsession.query(User).filter_by(id=1).one()
         user2 = self.dbsession.query(User).filter_by(id=2).one()
         user3 = self.dbsession.query(User).filter_by(id=3).one()
@@ -323,14 +323,14 @@ class TestDatabaseInterface(BaseTest):
         assert expgroup3.id == 3
         assert expgroup4.id == 4
 
-    def test_getConfigurationForUser(self):
+    def test_getTotalConfigurationForUser(self):
         confs = self.dbsession.query(Configuration).all()
 
-        user1Confs = self.DBInterface.getConfigurationForUser(1)
-        user2Confs = self.DBInterface.getConfigurationForUser(2)
-        user3Confs = self.DBInterface.getConfigurationForUser(3)
-        user4Confs = self.DBInterface.getConfigurationForUser(4)
-        user5Confs = self.DBInterface.getConfigurationForUser(5)
+        user1Confs = self.DBInterface.getTotalConfigurationForUser(1)
+        user2Confs = self.DBInterface.getTotalConfigurationForUser(2)
+        user3Confs = self.DBInterface.getTotalConfigurationForUser(3)
+        user4Confs = self.DBInterface.getTotalConfigurationForUser(4)
+        user5Confs = self.DBInterface.getTotalConfigurationForUser(5)
         usersConfs = [user1Confs, user2Confs, user3Confs, user4Confs, user5Confs]
 
         userConfsToCompare = [[confs[0]], [confs[1]], [confs[2]], [confs[3], confs[1]], []]
@@ -338,7 +338,7 @@ class TestDatabaseInterface(BaseTest):
         for i in range(len(usersConfs)):
             assert usersConfs[i] == userConfsToCompare[i]
 
-    def test_assignUserToExperiments(self):
+    def test_assignUserToRunningExperiments(self):
         #TODO
         assert 1==1
 

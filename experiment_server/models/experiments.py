@@ -8,16 +8,15 @@ from sqlalchemy import (
 
 from .meta import Base
 from sqlalchemy.orm import relationship
-import datetime #Remove this later
 
 class Experiment(Base):
     __tablename__ = 'experiments'
     id = Column(Integer, primary_key=True)
     name = Column(Text, unique=True, index=True)
-    startDatetime = Column(DateTime, default=datetime.datetime.now()) #Remove default later
-    endDatetime = Column(DateTime, default=datetime.datetime.now())
+    startDatetime = Column(DateTime)
+    endDatetime = Column(DateTime)
     experimentgroups = relationship("ExperimentGroup", backref="experiment", cascade="delete")
-    size = Column(Integer, default=100) #Remove default later
+    size = Column(Integer)
 
     def as_dict(self):
         result = {}
@@ -27,4 +26,3 @@ class Experiment(Base):
             else:
                 result[c.name] = getattr(self, c.name)
         return result
-        #return {c.name: getattr(self, c.name) for c in self.__table__.columns}

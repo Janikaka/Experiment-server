@@ -25,7 +25,7 @@ class Users:
 		username = self.request.headers.get('username')
 		user = self.DB.checkUser(username)
 		self.DB.assignUserToRunningExperiments(user.id)
-		confs = self.DB.getConfigurationForUser(user.id)
+		confs = self.DB.getTotalConfigurationForUser(user.id)
 		configurations = []
 		for conf in confs:
 			configurations.append(conf.as_dict())
