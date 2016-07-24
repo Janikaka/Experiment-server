@@ -53,8 +53,11 @@ class Experiments:
 		experiments = self.DB.getAllExperiments()
 		experimentsJSON = []
 		for i in range(len(experiments)):
-			experimentsJSON.append(experiments[i].as_dict())
+			experiment = experiments[i].as_dict()
+			experiment['status'] = self.DB.getStatusForExperiment(experiments[i].id)
+			experimentsJSON.append(experiment)
 		output = json.dumps({'data': experimentsJSON})
+		print(output)
 		headers = ()
 		res = Response(output)
 		res.headers.add('Access-Control-Allow-Origin', '*')
@@ -91,6 +94,7 @@ class Experiments:
 			experimentgroups.append(expgroupAsJSON)
 		experimentAsJSON['experimentgroups'] = experimentgroups
 		experimentAsJSON['totalDataitems'] = totalDataitems
+		experimentAsJSON['status'] = self.DB.getStatusForExperiment(experiment.id)
 		output = json.dumps({'data': experimentAsJSON})
 		headers = ()
 		res = Response(output)
@@ -138,26 +142,6 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
 
-	@view_config(route_name='user_for_experiment', request_method="OPTIONS")
-	def user_for_experiment_OPTIONS(self):
-		res = Response()
-		res.headers.add('Access-Control-Allow-Origin', '*')
-		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
-		return res
-
-	# Delete user from specific experiment
-	@view_config(route_name='user_for_experiment', request_method="DELETE")
-	def user_for_experiment_DELETE(self):
-		experimentId = int(self.request.matchdict['expid'])
-		userId = int(self.request.matchdict['userid'])
-		self.DB.deleteUserFromExperiment(userId, experimentId)
-		headers = ()
-		res = Response()
-		res.headers.add('Access-Control-Allow-Origin', '*')
-		return res
-
-	
-
 	@view_config(route_name='experiment_data', request_method="OPTIONS")
 	def experiment_data_OPTIONS(self):
 		res = Response()
@@ -168,21 +152,12 @@ class Experiments:
 	#11 Show experiment data
 	@view_config(route_name='experiment_data', request_method="GET")
 	def experiment_data_GET(self):
-		experimentId = self.request.matchdict['id']
-		experimentgroups = self.DB.getExperimentgroups(experimentId)
-		dataInGroups = {'experimentgroups': []}
-		for experimentgroup in experimentgroups:
-			users = self.DB.getUsersForExperimentgroup(experimentgroup.id)
-			usersData = []
-			for user in users:
-				userData = {'user':user.id, 'dataValues': []}
-				dataitems = self.DB.getDataitemsForUser(user.id)
-				for dataitem in dataitems:
-					userData['dataValues'].append(dataitem.value)
-				usersData.append(userData)
-			expgroup = {'experimentgroup': {'id': experimentgroup.id, 'name': experimentgroup.name}, 'users': usersData}
-			dataInGroups['experimentgroups'].append(expgroup)
-		return {'dataInGroups': dataInGroups}
+		data =  {'testi1': [{'testi2': 'kukkelikuu2'}, {'testi3': 'kukkelikuu3'}]}
+		output = json.dumps({'data': data})
+		headers = ()
+		res = Response(output)
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		return res
 
 	@view_config(route_name='experimentgroup', request_method="OPTIONS")
 	def experimentgroup_OPTIONS(self):
@@ -191,7 +166,7 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Methods', 'GET,DELETE,OPTIONS')
 		return res
 
-	#Get experiment group
+	#13 Show specific experimentgroup metadata
 	@view_config(route_name='experimentgroup', request_method="GET")
 	def experimentgroup_GET(self):
 		id = self.request.matchdict['id']
@@ -213,9 +188,7 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
 
-
-
-	# Delete experiment group
+	#12 Delete experimentgroup
 	@view_config(route_name='experimentgroup', request_method="DELETE")
 	def experimentgroup_DELETE(self):
 		id = self.request.matchdict['id']
@@ -225,4 +198,21 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
 
+	@view_config(route_name='user_for_experiment', request_method="OPTIONS")
+	def user_for_experiment_OPTIONS(self):
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
+		return res
+
+	#14 Delete user from specific experiment
+	@view_config(route_name='user_for_experiment', request_method="DELETE")
+	def user_for_experiment_DELETE(self):
+		experimentId = int(self.request.matchdict['expid'])
+		userId = int(self.request.matchdict['userid'])
+		self.DB.deleteUserFromExperiment(userId, experimentId)
+		headers = ()
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		return res
 

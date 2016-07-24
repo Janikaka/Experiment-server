@@ -4,7 +4,7 @@ from .users import User
 from .dataitems import DataItem
 from .configurations import Configuration
 import random
-from datetime import datetime
+import datetime
 from sqlalchemy import and_
 
 class DatabaseInterface:
@@ -19,8 +19,8 @@ class DatabaseInterface:
 		experimentgroups = data['experimentgroups']
 		print(data['startDatetime'])
 		print(data['endDatetime'])
-		startDatetime = datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
-		endDatetime = datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
+		startDatetime = datetime.datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
+		endDatetime = datetime.datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
 		size = data['size']
 		experiment = Experiment(
 			name=name,
@@ -41,6 +41,27 @@ class DatabaseInterface:
 	def getAllExperiments(self):
 		return self.dbsession.query(Experiment).all()
 
+	def getStatusForExperiment(self, id):
+		#open = 'open'
+		running = 'running'
+		finished = 'finished'
+		waiting = 'waiting'
+
+		experiment = self.getExperiment(id)
+		dateTimeNow = datetime.datetime.now()
+		startDatetime = experiment.startDatetime
+		endDatetime = experiment.endDatetime
+		if startDatetime >= endDatetime:
+			#validate this earlier
+			return None
+		if startDatetime <= dateTimeNow and dateTimeNow < endDatetime:
+			return running
+		elif dateTimeNow >= endDatetime:
+			return finished
+		elif dateTimeNow < startDatetime:
+			return waiting
+		return None	
+
 	def getExperiment(self, id):
 		return self.dbsession.query(Experiment).filter_by(id=id).one()
 
@@ -49,9 +70,6 @@ class DatabaseInterface:
 		return self.dbsession.query(Experiment).filter(
 			and_(Experiment.startDatetime <= dateTimeNow,
 				dateTimeNow <= Experiment.endDatetime))
-
-	def getExperimentsWithStatus(self, status):
-		#'running', 'finished', 'open', 'waiting'
 
 	def getExperimentsUserParticipates(self, id):
 		experimentgroups = self.getExperimentgroupsForUser(id)

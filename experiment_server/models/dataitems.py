@@ -3,7 +3,8 @@ from sqlalchemy import (
     Index,
     Integer,
     Text,
-    ForeignKey
+    ForeignKey,
+    DateTime
 )
 
 from .meta import Base
@@ -15,6 +16,8 @@ class DataItem(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     key = Column(Text)
     value = Column(Integer)
+    startDatetime = Column(DateTime)
+    endDatetime = Column(DateTime)
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

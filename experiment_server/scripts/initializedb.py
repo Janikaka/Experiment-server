@@ -39,18 +39,70 @@ def main(argv=sys.argv):
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
 
+        import datetime
+
         user1 = User(username='First user')
         user2 = User(username='Second user')
         
-        dataitem1 = DataItem(value=10)
-        dataitem2 = DataItem(value=20)
+        dataitem1 = DataItem(
+            key='key1',
+            value=10,
+            startDatetime=datetime.datetime.now(),
+            endDatetime=datetime.datetime.now()
+            )
+        dataitem2 = DataItem(
+            key='key2',
+            value=20,
+            startDatetime=datetime.datetime.now(),
+            endDatetime=datetime.datetime.now()
+            )
 
         user1.dataitems.append(dataitem1)
         user2.dataitems.append(dataitem2)
-        import datetime
-        experiment1 = Experiment(name='First experiment', 
-            startDatetime=datetime.datetime.now(), 
-            endDatetime=datetime.datetime.now(),
+
+        dt = datetime.datetime.now()
+        dateTimeNow = datetime.datetime(
+                dt.year, 
+                dt.month, 
+                dt.day,
+                dt.hour,
+                dt.minute,
+                dt.second)
+        experiment1 = Experiment(name='Running experiment', 
+            startDatetime=dateTimeNow, 
+            endDatetime=datetime.datetime(
+                dateTimeNow.year+1, 
+                dateTimeNow.month, 
+                dateTimeNow.day,
+                dateTimeNow.hour,
+                dateTimeNow.minute,
+                dateTimeNow.second),
+            size=100)
+        experiment2 = Experiment(name='Finished experiment', 
+            startDatetime=dateTimeNow, 
+            endDatetime=datetime.datetime(
+                dateTimeNow.year, 
+                dateTimeNow.month, 
+                dateTimeNow.day,
+                dateTimeNow.hour,
+                dateTimeNow.minute,
+                dateTimeNow.second+1),
+            size=100)
+        experiment3 = Experiment(name='Waiting experiment', 
+            startDatetime=datetime.datetime(
+                dateTimeNow.year+1, 
+                dateTimeNow.month, 
+                dateTimeNow.day,
+                dateTimeNow.hour,
+                dateTimeNow.minute,
+                dateTimeNow.second), 
+            endDatetime=datetime.datetime(
+                dateTimeNow.year+2, 
+                dateTimeNow.month, 
+                dateTimeNow.day,
+                dateTimeNow.hour,
+                dateTimeNow.minute,
+                dateTimeNow.second),
             size=100)
 
 
@@ -77,6 +129,8 @@ def main(argv=sys.argv):
         dbsession.add(experimentgroup1)
         dbsession.add(experimentgroup2)
         dbsession.add(experiment1)
+        dbsession.add(experiment2)
+        dbsession.add(experiment3)
         dbsession.add(conf1)
         dbsession.add(conf2)
         dbsession.add(conf3)
