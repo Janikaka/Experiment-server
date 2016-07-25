@@ -204,6 +204,34 @@ class DatabaseInterface:
 	def getDataitemsForUser(self, id):
 		return self.dbsession.query(DataItem).filter_by(user_id=id)
 
+	def getDataitemsForUserOnPeriod(self, id, startDatetime, endDatetime):
+		return self.dbsession.query(DataItem).filter(
+			and_(DataItem.user_id == id,
+				startDatetime <= DataItem.startDatetime,
+				DataItem.endDatetime <= endDatetime))
+
+	def getDataitemsForUserInExperiment(self, userId, expId):
+		experiment = self.getExperiment(expId)
+		startDatetime = experiment.startDatetime
+		endDatetime = experiment.endDatetime
+		return self.getDataitemsForUserOnPeriod(userId, startDatetime, endDatetime)
+
+	def getDataitemsForExperimentgroup(self, id):
+		expgroup = self.getExperimentgroup(id)
+		experiment = expgroup.experiment
+		dataitems = []
+		for user in expgroup.users:
+			dataitems.extend(self.getDataitemsForUserInExperiment(user.id, experiment.id))
+		return dataitems
+
+	def getDataitemsForExperiment(self, id):
+		experiment = self.getExperiment(id)
+		dataitems = []
+		for expgroup in experiment.experimentgroups:
+			dataitems.extend(self.getDataitemsForExperimentgroup(expgroup.id))
+		return dataitems
+
+
 	def deleteDataitem(self, id):
 		dataitem = self.dbsession.query(DataItem).filter_by(id=id).one()
 		self.dbsession.delete(dataitem)

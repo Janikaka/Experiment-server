@@ -152,12 +152,44 @@ class Experiments:
 	#11 Show experiment data
 	@view_config(route_name='experiment_data', request_method="GET")
 	def experiment_data_GET(self):
-		data =  {'testi1': [{'testi2': 'kukkelikuu2'}, {'testi3': 'kukkelikuu3'}]}
-		output = json.dumps({'data': data})
+		expId = self.request.matchdict['id']
+		experiment = self.DB.getExperiment(expId)
+		expgroups = experiment.experimentgroups
+		experimentAsJSON = experiment.as_dict()
+		experimentgroups = []
+		for expgroup in expgroups:
+
+			experimentgroup = expgroup.as_dict()
+			dataitemsForExpgroup = []
+			for dataitem in self.DB.getDataitemsForExperimentgroup(expgroup.id):
+				dataitemsForExpgroup.append(dataitem.as_dict())
+			experimentgroup['dataitems'] = dataitemsForExpgroup
+
+			users = []
+			for user in expgroup.users:
+				userAsJSON = user.as_dict()
+				dataitemsForUser = []
+				for dataitem in self.DB.getDataitemsForUserInExperiment(user.id, expId):
+					dataitemsForUser.append(dataitem.as_dict())
+				userAsJSON['dataitems'] = dataitemsForUser
+				users.append(userAsJSON)
+
+			experimentgroup['users'] = users
+			experimentgroups.append(experimentgroup)
+		dataitemsForExperiment = []
+		for dataitem in self.DB.getDataitemsForExperiment(expId):
+			dataitemsForExperiment.append(dataitem.as_dict())
+		data = {'dataitems': dataitemsForExperiment,
+		'experimentgroups': experimentgroups}
+		return {'experiment': experimentAsJSON, 'data':data}
+		"""
+		output = json.dumps({'experiment': experimentAsJSON, 'data': data})
 		headers = ()
+		print(output)
 		res = Response(output)
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		return res
+		"""
 
 	@view_config(route_name='experimentgroup', request_method="OPTIONS")
 	def experimentgroup_OPTIONS(self):
