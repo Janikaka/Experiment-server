@@ -53,7 +53,10 @@ def main(argv=sys.argv):
         user1 = User(username='First user')
         user2 = User(username='Second user')
         user3 = User(username='Third user')
-        
+        dbsession.add(user1)
+        dbsession.add(user2)
+        dbsession.add(user3)
+
         dataitem1 = DataItem(
             key='key1',
             value=10,
@@ -163,6 +166,13 @@ def main(argv=sys.argv):
                 dateTimeNow.second)
             )
 
+        dbsession.add(dataitem1)
+        dbsession.add(dataitem2)
+        dbsession.add(dataitem3)
+        dbsession.add(dataitem4)
+        dbsession.add(dataitem5)
+        dbsession.add(dataitem6)
+
         user2.dataitems.append(dataitem1)
         user2.dataitems.append(dataitem2)
         user1.dataitems.append(dataitem3)
@@ -207,6 +217,9 @@ def main(argv=sys.argv):
                 dateTimeNow.second),
             size=100)
 
+        dbsession.add(experiment1)
+        dbsession.add(experiment2)
+        dbsession.add(experiment3)
 
         experimentgroup1A = ExperimentGroup(name='group 1 A', users=[user1])
         experimentgroup1B = ExperimentGroup(name='group 1 B', users=[user2])
@@ -216,6 +229,13 @@ def main(argv=sys.argv):
 
         experimentgroup3A = ExperimentGroup(name='group 3 A', users=[user3])
         experimentgroup3B = ExperimentGroup(name='group 3 B', users=[])
+
+        dbsession.add(experimentgroup1A)
+        dbsession.add(experimentgroup1B)
+        dbsession.add(experimentgroup2A)
+        dbsession.add(experimentgroup2B)
+        dbsession.add(experimentgroup3A)
+        dbsession.add(experimentgroup3B)
 
         experiment1.experimentgroups.append(experimentgroup1A)
         experiment1.experimentgroups.append(experimentgroup1B)
@@ -233,25 +253,8 @@ def main(argv=sys.argv):
         conf6 = Configuration(key='v2', value= 0.3, experimentgroup=experimentgroup1B)
         conf7 = Configuration(key='v3', value= 'easy', experimentgroup=experimentgroup1B)
         conf8 = Configuration(key='v4', value= False, experimentgroup=experimentgroup1B)
-
-        dbsession.add(dataitem1)
-        dbsession.add(dataitem2)
-        dbsession.add(dataitem3)
-        dbsession.add(dataitem4)
-        dbsession.add(dataitem5)
-        dbsession.add(dataitem6)
-        dbsession.add(user1)
-        dbsession.add(user2)
-        dbsession.add(user3)
-        dbsession.add(experimentgroup1A)
-        dbsession.add(experimentgroup1B)
-        dbsession.add(experimentgroup2A)
-        dbsession.add(experimentgroup2B)
-        dbsession.add(experimentgroup3A)
-        dbsession.add(experimentgroup3B)
-        dbsession.add(experiment1)
-        dbsession.add(experiment2)
-        dbsession.add(experiment3)
+        
+        
         dbsession.add(conf1)
         dbsession.add(conf2)
         dbsession.add(conf3)

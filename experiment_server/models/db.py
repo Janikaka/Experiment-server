@@ -18,8 +18,6 @@ class DatabaseInterface:
 	def createExperiment(self, data):
 		name = data['name']
 		experimentgroups = data['experimentgroups']
-		print(data['startDatetime'])
-		print(data['endDatetime'])
 		startDatetime = datetime.datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
 		endDatetime = datetime.datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
 		size = data['size']
@@ -55,9 +53,9 @@ class DatabaseInterface:
 		if startDatetime >= endDatetime:
 			#validate this earlier
 			return None
-		if startDatetime <= dateTimeNow and dateTimeNow < endDatetime:
+		if startDatetime <= dateTimeNow and dateTimeNow <= endDatetime:
 			return running
-		elif dateTimeNow >= endDatetime:
+		elif dateTimeNow > endDatetime:
 			return finished
 		elif dateTimeNow < startDatetime:
 			return waiting
@@ -70,7 +68,7 @@ class DatabaseInterface:
 		dateTimeNow = datetime.datetime.now()
 		return self.dbsession.query(Experiment).filter(
 			and_(Experiment.startDatetime <= dateTimeNow,
-				dateTimeNow <= Experiment.endDatetime))
+				dateTimeNow <= Experiment.endDatetime)).all()
 
 	def getExperimentsUserParticipates(self, id):
 		experimentgroups = self.getExperimentgroupsForUser(id)
@@ -92,6 +90,7 @@ class DatabaseInterface:
 	def deleteExperimentgroup(self, id):
 		experimentgroup = self.dbsession.query(ExperimentGroup).filter_by(id=id).one()
 		self.deleteExperimentgroupInUsers(id)
+		experimentgroup.experiment.experimentgroups.remove(experimentgroup)
 		self.dbsession.delete(experimentgroup)
 
 	def deleteExperimentgroupInUsers(self, experimentgroupId):
@@ -140,6 +139,8 @@ class DatabaseInterface:
 
 	def deleteUser(self, id):
 		user = self.dbsession.query(User).filter_by(id=id).one()
+		for experimentgroup in user.experimentgroups:
+			experimentgroup.users.remove(user)
 		self.dbsession.delete(user)
 
 	def checkUser(self, username):
@@ -149,11 +150,12 @@ class DatabaseInterface:
 		else:
 			return user[0]
 
-	def assignUserToExperiment(self, data):
-		userId = data['user']
-		experimentId = data['experiment']
+	def assignUserToExperiment(self, userId, experimentId):
 		experimentgroups = self.getExperimentgroups(experimentId)
-		experimentgroup = experimentgroups[random.randint(0, len(experimentgroups)-1)]
+		if len(experimentgroups) == 1:
+			experimentgroup = experimentgroups[0]
+		else:
+			experimentgroup = experimentgroups[random.randint(0, len(experimentgroups)-1)]
 		self.dbsession.query(User).filter_by(id=userId).one().experimentgroups.append(experimentgroup)
 
 	def assignUserToRunningExperiments(self, id):
@@ -164,7 +166,7 @@ class DatabaseInterface:
 			if experiment not in experimentsUserParticipates:
 				experimentsUserDoesNotParticipate.append(experiment)
 		for experiment in experimentsUserDoesNotParticipate:
-			self.assignUserToExperiment({'user':id, 'experiment':experiment.id})
+			self.assignUserToExperiment(id, experiment.id)
 
 	def getUsersForExperiment(self, id):
 		experimentgroups = self.dbsession.query(Experiment).filter_by(id=id).one().experimentgroups
@@ -186,15 +188,15 @@ class DatabaseInterface:
 #---------------------------------------------------------------------------------
 	
 	def createDataitem(self, data):
-		userId = data['user']
+		user = data['user']
 		value = data['value']
 		key = data['key']
 		startDatetime = datetime.datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
-		endDatetime = datetime.datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
+		endDatetime = datetime.datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
 		dataitem = DataItem(
 			value=value, 
 			key=key, 
-			user=self.getUser(userId), 
+			user=user, 
 			startDatetime=startDatetime,
 			endDatetime=endDatetime)
 		self.dbsession.add(dataitem)
@@ -231,7 +233,7 @@ class DatabaseInterface:
 		return self.dbsession.query(DataItem).filter(
 			and_(DataItem.user_id == id,
 				startDatetime <= DataItem.startDatetime,
-				DataItem.endDatetime <= endDatetime))
+				DataItem.endDatetime <= endDatetime)).all()
 
 	def getDataitemsForUserInExperiment(self, userId, expId):
 		experiment = self.getExperiment(expId)

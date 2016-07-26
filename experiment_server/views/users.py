@@ -99,7 +99,7 @@ class Users:
 		username = self.request.headers['username']
 		user = self.DB.getUserByUsername(username)
 		self.DB.createDataitem(
-			{'user': user.id,
+			{'user': user,
 			'value': value,
 			'key':key,
 			'startDatetime':startDatetime,
