@@ -6,6 +6,7 @@ from .configurations import Configuration
 import random
 import datetime
 from sqlalchemy import and_
+from sqlalchemy import func
 
 class DatabaseInterface:
 	def __init__(self, dbsession):
@@ -188,18 +189,40 @@ class DatabaseInterface:
 		userId = data['user']
 		value = data['value']
 		key = data['key']
-		dataitem = DataItem(value=value, key=key, user=self.getUser(userId))
+		startDatetime = datetime.datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
+		endDatetime = datetime.datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
+		dataitem = DataItem(
+			value=value, 
+			key=key, 
+			user=self.getUser(userId), 
+			startDatetime=startDatetime,
+			endDatetime=endDatetime)
 		self.dbsession.add(dataitem)
 		return dataitem
 	
 	def getTotalDataitemsForExperiment(self, experimentId):
-		return 100
+		count = 0
+		experiment = self.getExperiment(experimentId)
+		for expgroup in experiment.experimentgroups:
+			count += self.getTotalDataitemsForExpgroup(expgroup.id)
+		return count
 
 	def getTotalDataitemsForExpgroup(self, experimentgroupId):
-		return 25
+		count = 0
+		expgroup = self.getExperimentgroup(experimentgroupId)
+		for user in expgroup.users:
+			count += self.getTotalDataitemsForUserInExperiment(user.id, expgroup.experiment_id)
+		return count
 
-	def getTotalDataitemsForUser(self, userId):
-		return 10
+	def getTotalDataitemsForUserInExperiment(self, userId, expId):
+		experiment = self.getExperiment(expId)
+		startDatetime = experiment.startDatetime
+		endDatetime = experiment.endDatetime
+		count = self.dbsession.query(DataItem.id).filter(
+			and_(DataItem.user_id == userId,
+				startDatetime <= DataItem.startDatetime,
+				DataItem.endDatetime <= endDatetime)).count()
+		return count
 
 	def getDataitemsForUser(self, id):
 		return self.dbsession.query(DataItem).filter_by(user_id=id)

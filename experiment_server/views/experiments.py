@@ -135,6 +135,7 @@ class Experiments:
 			user = users[i].as_dict()
 			experimentgroup = self.DB.getExperimentgroupForUserInExperiment(users[i].id, id)
 			user['experimentgroup'] = experimentgroup.as_dict()
+			user['totalDataitems'] = self.DB.getTotalDataitemsForUserInExperiment(users[i].id, id)
 			usersJSON.append(user)
 		output = json.dumps({'data': usersJSON})
 		headers = ()
@@ -209,7 +210,7 @@ class Experiments:
 				configurations.append(confs[i].as_dict())
 		users = []
 		for i in range(len(expgroup.users)):
-			users.append(users[i].as_dict())
+			users.append(expgroup.users[i].as_dict())
 		experimentgroup = expgroup.as_dict()
 		experimentgroup['configurations'] = configurations
 		experimentgroup['users'] = users

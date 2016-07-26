@@ -28,7 +28,7 @@ class Users:
 		confs = self.DB.getTotalConfigurationForUser(user.id)
 		configurations = []
 		for conf in confs:
-			configurations.append(conf.as_dict())
+			configurations.append({'key': conf.key, 'value': conf.value})
 		output = json.dumps({'data': configurations})
 		headers = ()
 		res = Response(output)
@@ -48,9 +48,7 @@ class Users:
 		users = self.DB.getAllUsers()
 		usersJSON = []
 		for i in range(len(users)):
-			user = users[i].as_dict()
-			user['totalDataitems'] = self.DB.getTotalDataitemsForUser(users[i].id)
-			usersJSON.append(user)
+			usersJSON.append(users[i].as_dict())
 		output = json.dumps({'data': usersJSON})
 		print(output)
 		headers = ()
@@ -96,9 +94,17 @@ class Users:
 		json = self.request.json_body
 		value = json['value']
 		key = json['key']
+		startDatetime = json['startDatetime']
+		endDatetime = json['endDatetime']
 		username = self.request.headers['username']
 		user = self.DB.getUserByUsername(username)
-		self.DB.createDataitem({'user': user.id, 'value': value, 'key':key})
+		self.DB.createDataitem(
+			{'user': user.id,
+			'value': value,
+			'key':key,
+			'startDatetime':startDatetime,
+			'endDatetime':endDatetime
+			})
 
 	@view_config(route_name='user', request_method="OPTIONS")
 	def user_OPTIONS(self):
