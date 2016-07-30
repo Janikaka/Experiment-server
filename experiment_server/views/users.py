@@ -2,6 +2,7 @@ from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
 from ..models import DatabaseInterface
 import json
+import datetime
 
 
 @view_defaults(renderer='json')
@@ -28,11 +29,12 @@ class Users:
 		confs = self.DB.getTotalConfigurationForUser(user.id)
 		configurations = []
 		for conf in confs:
-			configurations.append({'key': conf.key, 'value': conf.value})
-		output = json.dumps({'data': configurations})
+			configurations.append({'key': conf.key, 'value': int(conf.value)})
+		result = json.dumps({'data': configurations})
 		headers = ()
-		res = Response(output)
+		res = Response(result)
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=GET, url=/configurations, action=List configurations for specific user, result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	@view_config(route_name='users', request_method="OPTIONS")
@@ -49,10 +51,11 @@ class Users:
 		usersJSON = []
 		for i in range(len(users)):
 			usersJSON.append(users[i].as_dict())
-		output = json.dumps({'data': usersJSON})
+		result = json.dumps({'data': usersJSON})
 		headers = ()
-		res = Response(output)
+		res = Response(result)
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=GET, url=/users, action=List all users, result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	@view_config(route_name='experiments_for_user', request_method="OPTIONS")
@@ -73,10 +76,11 @@ class Users:
 			exp = experiments[i].as_dict()
 			exp['experimentgroup'] = expgroup.as_dict()
 			experimentsJSON.append(exp)
-		output = json.dumps({'data': experimentsJSON})
+		result = json.dumps({'data': experimentsJSON})
 		headers = ()
-		res = Response(output)
+		res = Response(result)
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=GET, url=/users/{id}/experiments, action=List all experiments for specific user , result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	@view_config(route_name='events', request_method="OPTIONS")
@@ -91,19 +95,21 @@ class Users:
 	@view_config(route_name='events', request_method="POST")
 	def events_POST(self):
 		json = self.request.json_body
-		value = json['value']
+		value = int(json['value'])
 		key = json['key']
 		startDatetime = json['startDatetime']
 		endDatetime = json['endDatetime']
 		username = self.request.headers['username']
 		user = self.DB.getUserByUsername(username)
-		self.DB.createDataitem(
+		result = self.DB.createDataitem(
 			{'user': user,
 			'value': value,
 			'key':key,
 			'startDatetime':startDatetime,
 			'endDatetime':endDatetime
 			})
+		print("%s REST method=POST, url=/events, action=Save experiment data , result=%s" % (datetime.datetime.now(), result))
+
 
 	@view_config(route_name='user', request_method="OPTIONS")
 	def user_OPTIONS(self):
@@ -115,7 +121,17 @@ class Users:
 	#10 Delete user
 	@view_config(route_name='user', request_method="DELETE")
 	def user_DELETE(self):
-		self.DB.deleteUser(self.request.matchdict['id'])
+		id = int(self.request.matchdict['id'])
+		result = self.DB.deleteUser(id)
+		if result:
+			result = 'Succeeded'
+		else:
+			result = 'Failed'
+		headers = ()
+		res = Response()
+		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=DELETE, url=/users/{id}, action=Delete user, result=%s" % (datetime.datetime.now(), result))
+		return res
 
 
 

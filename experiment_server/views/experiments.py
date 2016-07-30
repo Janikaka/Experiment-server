@@ -27,7 +27,7 @@ class Experiments:
 		experimentgroups = data['experimentgroups']
 		startDatetime = data['startDatetime']
 		endDatetime = data['endDatetime']
-		size = data['size']
+		size = int(data['size'])
 		expgroups = []
 		for i in range(len(experimentgroups)):
 			expgroup = self.DB.createExperimentgroup({'name': experimentgroups[i]['name']})
@@ -76,7 +76,7 @@ class Experiments:
 	#3 Show specific experiment metadata
 	@view_config(route_name='experiment_metadata', request_method="GET")
 	def experiment_metadata_GET(self):
-		id = self.request.matchdict['id']
+		id = int(self.request.matchdict['id'])
 		experiment = self.DB.getExperiment(id)
 		experimentAsJSON = experiment.as_dict()
 		totalDataitems = self.DB.getTotalDataitemsForExperiment(id)
@@ -102,7 +102,7 @@ class Experiments:
 		headers = ()
 		res = Response(result)
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		print("%s REST method=GET, url=/experiments/{id}/metadata, action=Show specific experiment metadata, result=%s" % (datetime.datetime.now(), result))
+		print("%s REST method=GET, url=/experiments/%d/metadata, action=Show specific experiment metadata, result=%s" % (datetime.datetime.now(), id, result))
 		return res
 
 	@view_config(route_name='experiment', request_method="OPTIONS")
@@ -115,7 +115,8 @@ class Experiments:
 	#4 Delete experiment
 	@view_config(route_name='experiment', request_method="DELETE")
 	def experiment_DELETE(self):
-		result = self.DB.deleteExperiment(self.request.matchdict['id'])
+		id = int(self.request.matchdict['id'])
+		result = self.DB.deleteExperiment(id)
 		if result:
 			result = 'Succeeded'
 		else:
@@ -123,7 +124,7 @@ class Experiments:
 		headers = ()
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		print("%s REST method=DELETE, url=/experiments/{id}/metadata, action=Delete experiment, result=%s" % (datetime.datetime.now(), result))
+		print("%s REST method=DELETE, url=/experiments/%d, action=Delete experiment, result=%s" % (datetime.datetime.now(), id, result))
 		return res
 
 	@view_config(route_name='users_for_experiment', request_method="OPTIONS")
@@ -136,8 +137,7 @@ class Experiments:
 	#7 List all users for specific experiment
 	@view_config(route_name='users_for_experiment', request_method="GET")
 	def users_for_experiment_GET(self):
-		id = self.request.matchdict['id']
-		id = int(id)
+		id = int(self.request.matchdict['id'])
 		users = self.DB.getUsersForExperiment(id)
 		usersJSON = []
 		for i in range(len(users)):
@@ -150,7 +150,7 @@ class Experiments:
 		headers = ()
 		res = Response(result)
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		print("%s REST method=GET, url=/experiments/{id}/users, action=List all users for specific experiment, result=%s" % (datetime.datetime.now(), result))
+		print("%s REST method=GET, url=/experiments/%d/users, action=List all users for specific experiment, result=%s" % (datetime.datetime.now(), id, result))
 		return res
 
 	@view_config(route_name='experiment_data', request_method="OPTIONS")
@@ -163,7 +163,7 @@ class Experiments:
 	#11 Show specific experiment data
 	@view_config(route_name='experiment_data', request_method="GET")
 	def experiment_data_GET(self):
-		expId = self.request.matchdict['id']
+		expId = int(self.request.matchdict['id'])
 		experiment = self.DB.getExperiment(expId)
 		expgroups = experiment.experimentgroups
 		experimentAsJSON = experiment.as_dict()
@@ -206,7 +206,7 @@ class Experiments:
 	#13 Show specific experimentgroup metadata
 	@view_config(route_name='experimentgroup', request_method="GET")
 	def experimentgroup_GET(self):
-		id = self.request.matchdict['expgroupid']
+		id = int(self.request.matchdict['expgroupid'])
 		expgroup = self.DB.getExperimentgroup(id)
 		confs = expgroup.configurations
 		configurations = []
@@ -229,7 +229,7 @@ class Experiments:
 	#12 Delete experimentgroup
 	@view_config(route_name='experimentgroup', request_method="DELETE")
 	def experimentgroup_DELETE(self):
-		id = self.request.matchdict['expgroupid']
+		id = int(self.request.matchdict['expgroupid'])
 		result = self.DB.deleteExperimentgroup(id)
 		if result:
 			result = 'Succeeded'

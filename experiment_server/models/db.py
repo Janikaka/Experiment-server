@@ -144,6 +144,7 @@ class DatabaseInterface:
 		for experimentgroup in user.experimentgroups:
 			experimentgroup.users.remove(user)
 		self.dbsession.delete(user)
+		return [] == self.dbsession.query(User).filter_by(id=id).all()
 
 	def checkUser(self, username):
 		user = self.dbsession.query(User).filter_by(username=username).all()
@@ -204,7 +205,7 @@ class DatabaseInterface:
 			startDatetime=startDatetime,
 			endDatetime=endDatetime)
 		self.dbsession.add(dataitem)
-		return dataitem
+		return self.dbsession.query(DataItem).filter(DataItem.id == self.dbsession.query(func.max(DataItem.id)))
 	
 	def getTotalDataitemsForExperiment(self, experimentId):
 		count = 0
