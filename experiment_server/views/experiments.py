@@ -206,7 +206,7 @@ class Experiments:
 	#13 Show specific experimentgroup metadata
 	@view_config(route_name='experimentgroup', request_method="GET")
 	def experimentgroup_GET(self):
-		id = self.request.matchdict['id']
+		id = self.request.matchdict['expgroupid']
 		expgroup = self.DB.getExperimentgroup(id)
 		confs = expgroup.configurations
 		configurations = []
@@ -229,7 +229,7 @@ class Experiments:
 	#12 Delete experimentgroup
 	@view_config(route_name='experimentgroup', request_method="DELETE")
 	def experimentgroup_DELETE(self):
-		id = self.request.matchdict['id']
+		id = self.request.matchdict['expgroupid']
 		result = self.DB.deleteExperimentgroup(id)
 		if result:
 			result = 'Succeeded'
@@ -238,7 +238,7 @@ class Experiments:
 		headers = ()
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		print("%s REST method=GET, url=/experimentgroups/{id}, action=Delete experimentgroup, result=%s" % (datetime.datetime.now(), result))
+		print("%s REST method=GET, url=/experiments/{expid}/experimentgroups/{expgroupid}, action=Delete experimentgroup, result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	@view_config(route_name='user_for_experiment', request_method="OPTIONS")

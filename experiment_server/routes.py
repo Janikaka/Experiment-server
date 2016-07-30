@@ -4,7 +4,7 @@ def includeme(config):
     config.add_route('experiments', '/experiments')
     config.add_route('experiment_metadata', '/experiments/{id}/metadata')
     config.add_route('experiment', '/experiments/{id}')
-    config.add_route('experimentgroup', '/experimentgroups/{id}')
+    config.add_route('experimentgroup', '/experiments/{expid}/experimentgroups/{expgroupid}')
     config.add_route('configurations', '/configurations')
     config.add_route('users', '/users')
     config.add_route('users_for_experiment', '/experiments/{id}/users')

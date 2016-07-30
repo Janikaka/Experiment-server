@@ -181,8 +181,7 @@ class DatabaseInterface:
 		expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
 		user = self.getUser(userId)
 		user.experimentgroups.remove(expgroup)
-		result = expgroup not in self.dbsession.query(User).filter_by(id=userId).experimentgroups and
-		user not in expgroup.users
+		result = expgroup not in self.dbsession.query(User).filter_by(id=userId).experimentgroups and user not in expgroup.users
 		return result
 
 	def getUsersForExperimentgroup(self, experimentgroupId):

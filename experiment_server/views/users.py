@@ -50,7 +50,6 @@ class Users:
 		for i in range(len(users)):
 			usersJSON.append(users[i].as_dict())
 		output = json.dumps({'data': usersJSON})
-		print(output)
 		headers = ()
 		res = Response(output)
 		res.headers.add('Access-Control-Allow-Origin', '*')
