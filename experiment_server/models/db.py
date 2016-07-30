@@ -28,7 +28,7 @@ class DatabaseInterface:
 			size=size,
 			experimentgroups=experimentgroups)
 		self.dbsession.add(experiment)
-		return experiment
+		return self.dbsession.query(Experiment).filter(Experiment.id == self.dbsession.query(func.max(Experiment.id)))
 
 	def deleteExperiment(self, id):
 		experiment = self.dbsession.query(Experiment).filter_by(id=id).one()
@@ -36,6 +36,7 @@ class DatabaseInterface:
 		for experimentgroup in experimentgroups:
 			self.deleteExperimentgroupInUsers(experimentgroup.id)
 		self.dbsession.delete(experiment)
+		return [] == self.dbsession.query(Experiment).filter_by(id=id).all()
 
 	def getAllExperiments(self):
 		return self.dbsession.query(Experiment).all()
@@ -92,6 +93,7 @@ class DatabaseInterface:
 		self.deleteExperimentgroupInUsers(id)
 		experimentgroup.experiment.experimentgroups.remove(experimentgroup)
 		self.dbsession.delete(experimentgroup)
+		return [] == self.dbsession.query(ExperimentGroup).filter_by(id=id).all()
 
 	def deleteExperimentgroupInUsers(self, experimentgroupId):
 		experimentgroup = self.getExperimentgroup(experimentgroupId)
@@ -179,6 +181,9 @@ class DatabaseInterface:
 		expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
 		user = self.getUser(userId)
 		user.experimentgroups.remove(expgroup)
+		result = expgroup not in self.dbsession.query(User).filter_by(id=userId).experimentgroups and
+		user not in expgroup.users
+		return result
 
 	def getUsersForExperimentgroup(self, experimentgroupId):
 		return self.dbsession.query(ExperimentGroup).filter_by(id=experimentgroupId).one().users

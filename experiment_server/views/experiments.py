@@ -3,6 +3,7 @@ from pyramid.response import Response
 from ..models import DatabaseInterface
 from pyramid.httpexceptions import HTTPFound
 import json
+import datetime
 
 
 @view_defaults(renderer='json')
@@ -36,7 +37,7 @@ class Experiments:
 				key = confs[j]['key']
 				value = confs[j]['value']
 				self.DB.createConfiguration({'key':key, 'value':value, 'experimentgroup':expgroup})
-		self.DB.createExperiment(
+		result = self.DB.createExperiment(
 			{'name': name, 
 			'startDatetime': startDatetime,
 			'endDatetime': endDatetime,
@@ -45,6 +46,8 @@ class Experiments:
 			});
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		#Ongelmaa:
+		print("%s REST method=POST, url=/experiments, action=Create new experiment, result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	#2 List all experiments
@@ -56,11 +59,11 @@ class Experiments:
 			experiment = experiments[i].as_dict()
 			experiment['status'] = self.DB.getStatusForExperiment(experiments[i].id)
 			experimentsJSON.append(experiment)
-		output = json.dumps({'data': experimentsJSON})
-		print(output)
+		result = json.dumps({'data': experimentsJSON})
 		headers = ()
-		res = Response(output)
+		res = Response(result)
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=GET, url=/experiments, action=List all experiments, result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	@view_config(route_name='experiment_metadata', request_method="OPTIONS")
@@ -95,10 +98,11 @@ class Experiments:
 		experimentAsJSON['experimentgroups'] = experimentgroups
 		experimentAsJSON['totalDataitems'] = totalDataitems
 		experimentAsJSON['status'] = self.DB.getStatusForExperiment(experiment.id)
-		output = json.dumps({'data': experimentAsJSON})
+		result = json.dumps({'data': experimentAsJSON})
 		headers = ()
-		res = Response(output)
+		res = Response(result)
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=GET, url=/experiments/{id}/metadata, action=Show specific experiment metadata, result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	@view_config(route_name='experiment', request_method="OPTIONS")
@@ -111,10 +115,15 @@ class Experiments:
 	#4 Delete experiment
 	@view_config(route_name='experiment', request_method="DELETE")
 	def experiment_DELETE(self):
-		self.DB.deleteExperiment(self.request.matchdict['id'])
+		result = self.DB.deleteExperiment(self.request.matchdict['id'])
+		if result:
+			result = 'Succeeded'
+		else:
+			result = 'Failed'
 		headers = ()
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=DELETE, url=/experiments/{id}/metadata, action=Delete experiment, result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	@view_config(route_name='users_for_experiment', request_method="OPTIONS")
@@ -137,10 +146,11 @@ class Experiments:
 			user['experimentgroup'] = experimentgroup.as_dict()
 			user['totalDataitems'] = self.DB.getTotalDataitemsForUserInExperiment(users[i].id, id)
 			usersJSON.append(user)
-		output = json.dumps({'data': usersJSON})
+		result = json.dumps({'data': usersJSON})
 		headers = ()
-		res = Response(output)
+		res = Response(result)
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=GET, url=/experiments/{id}/users, action=List all users for specific experiment, result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	@view_config(route_name='experiment_data', request_method="OPTIONS")
@@ -150,7 +160,7 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
 		return res
 
-	#11 Show experiment data
+	#11 Show specific experiment data
 	@view_config(route_name='experiment_data', request_method="GET")
 	def experiment_data_GET(self):
 		expId = self.request.matchdict['id']
@@ -182,15 +192,9 @@ class Experiments:
 			dataitemsForExperiment.append(dataitem.as_dict())
 		data = {'dataitems': dataitemsForExperiment,
 		'experimentgroups': experimentgroups}
-		return {'experiment': experimentAsJSON, 'data':data}
-		"""
-		output = json.dumps({'experiment': experimentAsJSON, 'data': data})
-		headers = ()
-		print(output)
-		res = Response(output)
-		res.headers.add('Access-Control-Allow-Origin', '*')
-		return res
-		"""
+		result = {'experiment': experimentAsJSON, 'data':data}
+		print("%s REST method=GET, url=/experiments/{id}/data, action=Show specific experiment data, result=%s" % (datetime.datetime.now(), result))
+		return result
 
 	@view_config(route_name='experimentgroup', request_method="OPTIONS")
 	def experimentgroup_OPTIONS(self):
@@ -215,20 +219,26 @@ class Experiments:
 		experimentgroup['configurations'] = configurations
 		experimentgroup['users'] = users
 		experimentgroup['totalDataitems'] = self.DB.getTotalDataitemsForExpgroup(expgroup.id)
-		output = json.dumps({'data': experimentgroup})
+		result = json.dumps({'data': experimentgroup})
 		headers = ()
-		res = Response(output)
+		res = Response(result)
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=GET, url=/experimentgroups/{id}, action=Show specific experimentgroup metadata, result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	#12 Delete experimentgroup
 	@view_config(route_name='experimentgroup', request_method="DELETE")
 	def experimentgroup_DELETE(self):
 		id = self.request.matchdict['id']
-		self.DB.deleteExperimentgroup(id)
+		result = self.DB.deleteExperimentgroup(id)
+		if result:
+			result = 'Succeeded'
+		else:
+			result = 'Failed'
 		headers = ()
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=GET, url=/experimentgroups/{id}, action=Delete experimentgroup, result=%s" % (datetime.datetime.now(), result))
 		return res
 
 	@view_config(route_name='user_for_experiment', request_method="OPTIONS")
@@ -243,9 +253,14 @@ class Experiments:
 	def user_for_experiment_DELETE(self):
 		experimentId = int(self.request.matchdict['expid'])
 		userId = int(self.request.matchdict['userid'])
-		self.DB.deleteUserFromExperiment(userId, experimentId)
+		result = self.DB.deleteUserFromExperiment(userId, experimentId)
+		if result:
+			result = 'Succeeded'
+		else:
+			result = 'Failed'
 		headers = ()
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
+		print("%s REST method=GET, url=/experiments/{expid}/users/{userid}', action=Delete user from specific experiment, result=%s" % (datetime.datetime.now(), result))
 		return res
 
