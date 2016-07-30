@@ -86,7 +86,7 @@ class DatabaseInterface:
 		name = data['name']
 		experimentgroup = ExperimentGroup(name=name)
 		self.dbsession.add(experimentgroup)
-		return experimentgroup
+		return self.dbsession.query(ExperimentGroup).order_by(ExperimentGroup.id.desc()).first()
 
 	def deleteExperimentgroup(self, id):
 		experimentgroup = self.dbsession.query(ExperimentGroup).filter_by(id=id).one()
@@ -128,7 +128,7 @@ class DatabaseInterface:
 				data[key] = []
 		user = User(username=data['username'], experimentgroups=data['experimentgroups'], dataitems=data['dataitems'])
 		self.dbsession.add(user)
-		return self.dbsession.query(User).filter_by(username=data['username']).one()
+		return self.dbsession.query(User).order_by(User.id.desc()).first()
 
 	def getUser(self, id):
 		return self.dbsession.query(User).filter_by(id=id).one()
@@ -182,7 +182,7 @@ class DatabaseInterface:
 		expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
 		user = self.getUser(userId)
 		user.experimentgroups.remove(expgroup)
-		result = expgroup not in self.dbsession.query(User).filter_by(id=userId).experimentgroups and user not in expgroup.users
+		result = expgroup not in self.dbsession.query(User).filter_by(id=userId).one().experimentgroups and user not in expgroup.users
 		return result
 
 	def getUsersForExperimentgroup(self, experimentgroupId):
@@ -205,7 +205,7 @@ class DatabaseInterface:
 			startDatetime=startDatetime,
 			endDatetime=endDatetime)
 		self.dbsession.add(dataitem)
-		return self.dbsession.query(DataItem).filter(DataItem.id == self.dbsession.query(func.max(DataItem.id)))
+		return self.dbsession.query(DataItem).order_by(DataItem.id.desc()).first()
 	
 	def getTotalDataitemsForExperiment(self, experimentId):
 		count = 0
@@ -264,6 +264,7 @@ class DatabaseInterface:
 
 	def deleteDataitem(self, id):
 		dataitem = self.dbsession.query(DataItem).filter_by(id=id).one()
+		dataitem.user.dataitems.remove(dataitem)
 		self.dbsession.delete(dataitem)
 
 #---------------------------------------------------------------------------------
@@ -276,10 +277,11 @@ class DatabaseInterface:
 		experimentgroup = data['experimentgroup']
 		configuration = Configuration(key=key, value=value, experimentgroup=experimentgroup)
 		self.dbsession.add(configuration)
-		return configuration
+		return self.dbsession.query(Configuration).order_by(Configuration.id.desc()).first()
 
 	def deleteConfiguration(self, id):
 		conf = self.dbsession.query(Configuration).filter_by(id=id).one()
+		conf.experimentgroup.configurations.remove(conf)
 		self.dbsession.delete(conf)
 
 	def getConfsForExperimentgroup(self, experimentgroupId):

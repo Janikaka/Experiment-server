@@ -100,7 +100,7 @@ class BaseTest(unittest.TestCase):
         dt2 = self.DB.createDataitem(
             {'key': 'key2',
              'value': 20,
-             'startDatetime': '2016-02-02 00:00:00',
+             'startDatetime': '2016-02-02 01:01:02',
              'endDatetime': '2016-02-02 02:02:02',
              'user': user1
             })
@@ -114,7 +114,7 @@ class BaseTest(unittest.TestCase):
         dt4 = self.DB.createDataitem(
             {'key': 'key4',
              'value': 40,
-             'startDatetime': '2016-04-04 00:00:00',
+             'startDatetime': '2016-04-04 03:03:04',
              'endDatetime': '2016-04-04 04:04:04',
              'user': user2
             })
@@ -317,18 +317,17 @@ class TestUsers(BaseTest):
             })
         experiment = self.dbsession.query(Experiment).filter_by(id=2).one()
         self.DB.assignUserToExperiment(user.id, experiment.id)
+
         assert expgroup.users == [user]
         assert expgroup in user.experimentgroups 
 
     def test_assignUserToRunningExperiments(self):
-        user = self.DB.createUser({'username': 'Test user'})
-
+        self.DB.createUser({'username': 'Test user'})
+        user = self.dbsession.query(User).filter_by(username='Test user').one()
         assert user.experimentgroups == []
-
         self.DB.assignUserToRunningExperiments(3)
         expgroup1 = self.dbsession.query(ExperimentGroup).filter_by(id=1).one()
         expgroup2 = self.dbsession.query(ExperimentGroup).filter_by(id=2).one()
-
         assert expgroup1 in user.experimentgroups or expgroup2 in user.experimentgroups
 
     def test_getUsersForExperiment(self):
@@ -339,12 +338,19 @@ class TestUsers(BaseTest):
         assert usersForExperiment == [user1, user2]
 
     def test_deleteUserFromExperiment(self):
-        assert 1==1
+        user = self.dbsession.query(User).filter_by(id=1).one()
+        experimentgroup = user.experimentgroups[0]
+        experiment = experimentgroup.experiment
 
-
+        assert user in experimentgroup.users and experimentgroup in user.experimentgroups
+        self.DB.deleteUserFromExperiment(user.id, experiment.id)
+        assert user not in experimentgroup.users and experimentgroup not in user.experimentgroups
 
     def test_getUsersForExperimentgroup(self):
-        assert 1==1
+        users = self.DB.getUsersForExperimentgroup(1)
+        user1 = self.dbsession.query(User).filter_by(id=1).one()
+
+        assert users == [user1]
 
 
 class TestDataitems(BaseTest):
@@ -364,7 +370,7 @@ class TestDataitems(BaseTest):
              'user': user1}
         dt2 = {'key': 'key2',
              'value': 20,
-             'startDatetime': strToDatetime('2016-02-02 00:00:00'),
+             'startDatetime': strToDatetime('2016-02-02 01:01:02'),
              'endDatetime': strToDatetime('2016-02-02 02:02:02'),
              'user': user1}
         dt3 = {'key': 'key3',
@@ -374,10 +380,11 @@ class TestDataitems(BaseTest):
              'user': user2}
         dt4 = {'key': 'key4',
              'value': 40,
-             'startDatetime': strToDatetime('2016-04-04 00:00:00'),
+             'startDatetime': strToDatetime('2016-04-04 03:03:04'),
              'endDatetime': strToDatetime('2016-04-04 04:04:04'),
              'user': user2}
         dataitems = [dt1, dt2, dt3, dt4]
+
         for i in range(len(dataitemsFromDB)):
             for key in dataitems[i]:
                 assert getattr(dataitemsFromDB[i], key) == dataitems[i][key]
@@ -402,19 +409,47 @@ class TestDataitems(BaseTest):
         assert totalDataitemsForUser2InExperiment == 2
 
     def test_getDataitemsForUserOnPeriod(self):
-        assert 1==1
+        user1 = self.dbsession.query(User).filter_by(id=1).one()
+        dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
+        startDatetime = strToDatetime('2016-01-01 00:00:00')
+        endDatetime = strToDatetime('2016-01-01 02:01:01')
+        dataitems = self.DB.getDataitemsForUserOnPeriod(user1.id, startDatetime, endDatetime)
+
+        assert dataitems == [dt1]
 
     def test_getDataitemsForUserInExperiment(self):
-        assert 1==1
+        user1 = self.dbsession.query(User).filter_by(id=1).one()
+        dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
+        dt2 = self.dbsession.query(DataItem).filter_by(id=2).one()
+        dataitems = self.DB.getDataitemsForUserInExperiment(1, 1)
+
+        assert dataitems == [dt1, dt2]
+
 
     def test_getDataitemsForExperimentgroup(self):
-        assert 1==1
+        dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
+        dt2 = self.dbsession.query(DataItem).filter_by(id=2).one()
+        dataitems = self.DB.getDataitemsForExperimentgroup(1)
+
+        assert dataitems == [dt1, dt2]
 
     def test_getDataitemsForExperiment(self):
-        assert 1==1
+        dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
+        dt2 = self.dbsession.query(DataItem).filter_by(id=2).one()
+        dt3 = self.dbsession.query(DataItem).filter_by(id=3).one()
+        dt4 = self.dbsession.query(DataItem).filter_by(id=4).one()
+        dataitems = self.DB.getDataitemsForExperiment(1)
+
+        assert dataitems == [dt1, dt2, dt3, dt4]
 
     def test_deleteDataitem(self):
-        assert 1==1
+        dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
+        user1 = self.dbsession.query(User).filter_by(id=1).one()
+        assert dt1 in user1.dataitems
+        self.DB.deleteDataitem(dt1.id)
+        assert dt1 not in user1.dataitems
+        dt1 = self.dbsession.query(DataItem).filter_by(id=1).all()
+        assert [] == dt1
 
 
 class TestConfigurations(BaseTest):
@@ -424,20 +459,54 @@ class TestConfigurations(BaseTest):
         self.init_databaseData()
 
     def test_createConfiguration(self):
-        assert 1==1
+        configurationsFromDB = self.dbsession.query(Configuration).all()
+        expgroup1 = self.dbsession.query(ExperimentGroup).filter_by(id=1).one()
+        expgroup2 = self.dbsession.query(ExperimentGroup).filter_by(id=2).one()
+        conf1 = {'key': 'v1',
+             'value': 0.5,
+             'experimentgroup': expgroup1
+            }
+        conf2 = {'key': 'v2',
+             'value': True,
+             'experimentgroup': expgroup1
+            }
+        conf3 = {'key': 'v1',
+             'value': 1.0,
+             'experimentgroup': expgroup2
+            }
+        conf4 = {'key': 'v2',
+             'value': False,
+             'experimentgroup': expgroup2
+            }
+        confs = [conf1, conf2, conf3, conf4]
+
+        for i in range(len(configurationsFromDB)):
+            for key in confs[i]:
+                assert getattr(configurationsFromDB[i], key) == confs[i][key]
+
 
     def test_deleteConfiguration(self):
-        assert 1==1
+        conf1 = self.dbsession.query(Configuration).filter_by(id=1).one()
+        expgroup = conf1.experimentgroup
+        assert conf1 in expgroup.configurations
+        self.DB.deleteConfiguration(conf1.id)
+        assert conf1 not in expgroup.configurations
+        conf1 = self.dbsession.query(Configuration).filter_by(id=1).all()
+        assert [] == conf1
 
     def test_getConfsForExperimentgroup(self):
-        assert 1==1
+        configurations = self.DB.getConfsForExperimentgroup(1)
+        conf1 = self.dbsession.query(Configuration).filter_by(id=1).one()
+        conf2 = self.dbsession.query(Configuration).filter_by(id=2).one()
+
+        assert configurations == [conf1, conf2]
 
     def test_getTotalConfigurationForUser(self):
-        assert 1==1
-
-
-
-
+        configurations = self.DB.getTotalConfigurationForUser(1)
+        conf1 = self.dbsession.query(Configuration).filter_by(id=1).one()
+        conf2 = self.dbsession.query(Configuration).filter_by(id=2).one()
+        
+        assert configurations == [conf1, conf2]
 
 
 
