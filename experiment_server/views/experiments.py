@@ -37,16 +37,17 @@ class Experiments:
 				key = confs[j]['key']
 				value = confs[j]['value']
 				self.DB.createConfiguration({'key':key, 'value':value, 'experimentgroup':expgroup})
-		result = self.DB.createExperiment(
+		experiment = self.DB.createExperiment(
 			{'name': name, 
 			'startDatetime': startDatetime,
 			'endDatetime': endDatetime,
 			'experimentgroups': expgroups,
 			'size': size
 			});
+		result = json.dump({'data': experiment})
 		res = Response()
 		res.headers.add('Access-Control-Allow-Origin', '*')
-		#Ongelmaa:
+		#Experimenter sends double request
 		print("%s REST method=POST, url=/experiments, action=Create new experiment, result=%s" % (datetime.datetime.now(), result))
 		return res
 
@@ -78,6 +79,14 @@ class Experiments:
 	def experiment_metadata_GET(self):
 		id = int(self.request.matchdict['id'])
 		experiment = self.DB.getExperiment(id)
+		if experiment is None:
+			result = None
+			headers = ()
+			res = Response(result)
+			res.status_code = 400
+			res.headers.add('Access-Control-Allow-Origin', '*')
+			print("%s REST method=GET, url=/experiments/%d/metadata, action=Show specific experiment metadata, result=%s" % (datetime.datetime.now(), id, result))
+			return res
 		experimentAsJSON = experiment.as_dict()
 		totalDataitems = self.DB.getTotalDataitemsForExperiment(id)
 		experimentgroups = []
@@ -117,12 +126,14 @@ class Experiments:
 	def experiment_DELETE(self):
 		id = int(self.request.matchdict['id'])
 		result = self.DB.deleteExperiment(id)
-		if result:
-			result = 'Succeeded'
-		else:
-			result = 'Failed'
 		headers = ()
 		res = Response()
+		if result:
+			result = 'Succeeded'
+			res.status_code = 200
+		else:
+			result = 'Failed'
+			res.status_code = 400
 		res.headers.add('Access-Control-Allow-Origin', '*')
 		print("%s REST method=DELETE, url=/experiments/%d, action=Delete experiment, result=%s" % (datetime.datetime.now(), id, result))
 		return res

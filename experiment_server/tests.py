@@ -513,6 +513,107 @@ class TestConfigurations(BaseTest):
 #---------------------------------------------------------------------------------
 #                                  REST-Inteface                                  
 #---------------------------------------------------------------------------------
+from .views.experiments import Experiments
+class TestExperimentsREST(BaseTest):
+    
+    def setUp(self):
+        super(TestExperimentsREST, self).setUp()
+        self.init_database()
+        self.init_databaseData()
+        self.req = dummy_request(self.dbsession)
+
+    def test_experiments_POST(self):
+
+        assert 1==1
+
+    def test_experiments_GET(self):
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experiments_GET()
+        experiments = response.json['data']
+        experiment = experiments[0]
+        
+        assert response.status_code == 200
+        assert experiment['id'] == 1
+        assert experiment['name'] == 'Test experiment'
+        assert experiment['startDatetime'] == '2016-01-01 00:00:00'
+        assert experiment['endDatetime'] == '2017-01-01 00:00:00'
+        assert experiment['size'] == 100
+        assert experiment['status'] == 'running'
+
+    def test_experiment_metadata_GET(self):
+        self.req.matchdict = {'id':1}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experiment_metadata_GET()
+        experimentFromReq = response.json['data']
+        experiment = {'id': 1, 
+        'name': 'Test experiment', 
+        'startDatetime': '2016-01-01 00:00:00',  
+        'endDatetime': '2017-01-01 00:00:00', 
+        'status': 'running',
+        'size': 100,
+        'totalDataitems': 4, 
+        'experimentgroups': 
+            [{'id': 1, 
+            'name': 'Group A', 
+            'users': [{'id': 1, 'username': 'First user'}], 
+            'experiment_id': 1, 
+            'configurations': 
+                [{'id': 1, 'key': 'v1', 'value': 0.5, 'experimentgroup_id': 1}, 
+                {'id': 2, 'key': 'v2', 'value': True, 'experimentgroup_id': 1}]
+            }, 
+            {'id': 2, 
+            'name': 'Group B', 
+            'users': [{'id': 2, 'username': 'Second user'}], 
+            'experiment_id': 1, 
+            'configurations': 
+                [{'id': 3, 'key': 'v1', 'value': 1.0, 'experimentgroup_id': 2}, 
+                {'id': 4, 'key': 'v2', 'value': False, 'experimentgroup_id': 2}]
+            }]
+        }
+
+        assert experimentFromReq == experiment
+        assert response.status_code == 200
+        self.req.matchdict = {'id':2}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experiment_metadata_GET()
+        assert response.status_code == 400
+
+    def test_experiment_DELETE(self):
+        self.req.matchdict = {'id':1}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experiment_DELETE()
+
+        assert response.status_code == 200
+        self.req.matchdict = {'id':2}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experiment_DELETE()
+        assert response.status_code == 400
+
+    def test_users_for_experiment_GET(self):
+        self.req.matchdict = {'id':1}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.users_for_experiment_GET()
+        usersFromReq = response.json['data']
+        print("*** %s ***" % usersFromReq)
+        users = [{'id': 1, 
+        'username': 'First user', 
+        'experimentgroup': {'name': 'Group A', 'id': 1, 'experiment_id': 1}, 
+        'totalDataitems': 2}, 
+        {'id': 2, 
+        'username': 'Second user', 
+        'experimentgroup': {'name': 'Group B', 'id': 2, 'experiment_id': 1}, 
+        'totalDataitems': 2}]
+        assert usersFromReq == users
+
+
+
+
+
+
+        
+
+        
+
 
 
 
