@@ -28,10 +28,10 @@ class DatabaseInterface:
 			size=size,
 			experimentgroups=experimentgroups)
 		self.dbsession.add(experiment)
-		return self.dbsession.query(Experiment).filter(Experiment.id == self.dbsession.query(func.max(Experiment.id)))
+		return self.dbsession.query(Experiment).filter(Experiment.id == self.dbsession.query(func.max(Experiment.id))).first()
 
 	def deleteExperiment(self, id):
-		experiment = self.dbsession.query(Experiment).filter_by(id=id).first()
+		experiment = self.dbsession.query(Experiment).filter_by(id=id).first()	
 		if experiment is None:
 			return False
 		experimentgroups = experiment.experimentgroups
@@ -92,6 +92,8 @@ class DatabaseInterface:
 
 	def deleteExperimentgroup(self, id):
 		experimentgroup = self.dbsession.query(ExperimentGroup).filter_by(id=id).first()
+		if experimentgroup is None:
+			return False
 		self.deleteExperimentgroupInUsers(id)
 		experimentgroup.experiment.experimentgroups.remove(experimentgroup)
 		self.dbsession.delete(experimentgroup)
@@ -99,6 +101,8 @@ class DatabaseInterface:
 
 	def deleteExperimentgroupInUsers(self, experimentgroupId):
 		experimentgroup = self.getExperimentgroup(experimentgroupId)
+		if experimentgroup is None:
+			return False
 		for user in experimentgroup.users:
 				user.experimentgroups.remove(experimentgroup)
 
@@ -110,12 +114,17 @@ class DatabaseInterface:
 
 	def getExperimentgroupForUserInExperiment(self, userId, experimentId):
 		expgroups = self.getExperimentgroupsForUser(userId)
+		if expgroups is None:
+			return None
 		for expgroup in expgroups:
 			if expgroup.experiment_id == experimentId:
 				return expgroup
 
 	def getExperimentgroupsForUser(self, id):
-		return self.dbsession.query(User).filter_by(id=id).first().experimentgroups
+		user = self.dbsession.query(User).filter_by(id=id).first()
+		if user is None:
+			return None
+		return user.experimentgroups
 
 #---------------------------------------------------------------------------------
 #                                      Users                                      
@@ -143,6 +152,8 @@ class DatabaseInterface:
 
 	def deleteUser(self, id):
 		user = self.dbsession.query(User).filter_by(id=id).first()
+		if user is None:
+			return False
 		for experimentgroup in user.experimentgroups:
 			experimentgroup.users.remove(user)
 		self.dbsession.delete(user)
@@ -174,15 +185,19 @@ class DatabaseInterface:
 			self.assignUserToExperiment(id, experiment.id)
 
 	def getUsersForExperiment(self, id):
-		experimentgroups = self.dbsession.query(Experiment).filter_by(id=id).first().experimentgroups
+		experiment = self.getExperiment(id)
+		if experiment is None:
+			return None
 		users = []
-		for experimentgroup in experimentgroups:
+		for experimentgroup in experiment.experimentgroups:
 			users.extend(experimentgroup.users)
 		return users
 
 	def deleteUserFromExperiment(self, userId, experimentId):
 		expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
 		user = self.getUser(userId)
+		if expgroup is None or user is None:
+			return None
 		user.experimentgroups.remove(expgroup)
 		result = expgroup not in self.dbsession.query(User).filter_by(id=userId).first().experimentgroups and user not in expgroup.users
 		return result

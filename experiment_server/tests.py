@@ -523,15 +523,35 @@ class TestExperimentsREST(BaseTest):
         self.req = dummy_request(self.dbsession)
 
     def test_experiments_POST(self):
+        json_body = {'name': 'Example Experiment',
+                    'startDatetime': '2016-01-01 00:00:00',
+                    'endDatetime':'2017-01-01 00:00:00',
+                    'size':100,
+                    'experimentgroups': [
+                        {'name': 'expgroup',
+                        'configurations': [{'key': 'key1', 'value': 10}]
+                        }]
+                    }
+        self.req.json_body = json_body
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experiments_POST()
+        result = response.json['data']
+        experiment =  {'id': 2,
+                    'name': 'Example Experiment', 
+                    'size': 100, 
+                    'startDatetime': '2016-01-01 00:00:00', 
+                    'endDatetime': '2017-01-01 00:00:00'}
 
-        assert 1==1
+        assert response.status_code == 200
+        assert result == experiment
 
     def test_experiments_GET(self):
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiments_GET()
-        experiments = response.json['data']
-        experiment = experiments[0]
+        result = response.json['data']
+        experiment = result[0]
         
+        assert len(result) == 1
         assert response.status_code == 200
         assert experiment['id'] == 1
         assert experiment['name'] == 'Test experiment'
@@ -544,7 +564,7 @@ class TestExperimentsREST(BaseTest):
         self.req.matchdict = {'id':1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_metadata_GET()
-        experimentFromReq = response.json['data']
+        result = response.json['data']
         experiment = {'id': 1, 
         'name': 'Test experiment', 
         'startDatetime': '2016-01-01 00:00:00',  
@@ -571,12 +591,16 @@ class TestExperimentsREST(BaseTest):
             }]
         }
 
-        assert experimentFromReq == experiment
+        assert result == experiment
         assert response.status_code == 200
+        
         self.req.matchdict = {'id':2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_metadata_GET()
         assert response.status_code == 400
+        assert response.json == None
+        
+
 
     def test_experiment_DELETE(self):
         self.req.matchdict = {'id':1}
@@ -585,15 +609,17 @@ class TestExperimentsREST(BaseTest):
 
         assert response.status_code == 200
         self.req.matchdict = {'id':2}
+        print(self.req.matchdict)
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_DELETE()
         assert response.status_code == 400
+        assert response.json == None
 
     def test_users_for_experiment_GET(self):
         self.req.matchdict = {'id':1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.users_for_experiment_GET()
-        usersFromReq = response.json['data']
+        result = response.json['data']
         users = [{'id': 1, 
         'username': 'First user', 
         'experimentgroup': {'name': 'Group A', 'id': 1, 'experiment_id': 1}, 
@@ -602,17 +628,24 @@ class TestExperimentsREST(BaseTest):
         'username': 'Second user', 
         'experimentgroup': {'name': 'Group B', 'id': 2, 'experiment_id': 1}, 
         'totalDataitems': 2}]
-        assert usersFromReq == users
+        
+        assert response.status_code == 200
+        assert result == users
+        self.req.matchdict = {'id':2}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.users_for_experiment_GET()
+        assert response.status_code == 400
+        assert response.json == None
 
     def test_experiment_data_GET(self):
+        #TODO
         assert 1==1
 
     def test_experimentgroup_GET(self):
-        self.req.matchdict = {'expgroupid':1}
-        
+        self.req.matchdict = {'expgroupid':1, 'expid':1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_GET()
-        expgroupFromReq = response.json['data']
+        result = response.json['data']
         experimentgroup = {'id': 1, 
         'configurations': [
             {'experimentgroup_id': 1, 'key': 'v1', 'id': 1, 'value': 0.5}, 
@@ -622,7 +655,128 @@ class TestExperimentsREST(BaseTest):
         'experiment_id': 1, 
         'users': [{'id': 1, 'username': 'First user'}]}
 
+        assert response.status_code == 200
+        assert result == experimentgroup
+        self.req.matchdict = {'expgroupid':1, 'expid':2}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experimentgroup_GET()
+        assert response.status_code == 400
+        assert response.json == None
 
+    def test_experimentgroup_DELETE(self):
+        self.req.matchdict = {'expgroupid':1, 'expid':1}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experimentgroup_DELETE()
+
+        assert response.status_code == 200
+        self.req.matchdict = {'expgroupid':2, 'expid':2}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experimentgroup_DELETE()
+        assert response.status_code == 400
+        
+
+    def test_user_for_experiment_DELETE(self):
+        self.req.matchdict = {'userid':1, 'expid':1}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.user_for_experiment_DELETE()
+
+        assert response.status_code == 200
+        self.req.matchdict = {'userid':2, 'expid':2}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.user_for_experiment_DELETE()
+        assert response.status_code == 400
+
+from .views.users import Users
+class TestUsersREST(BaseTest):
+    def setUp(self):
+        super(TestUsersREST, self).setUp()
+        self.init_database()
+        self.init_databaseData()
+        self.req = dummy_request(self.dbsession)
+
+    def test_configurations_GET(self):
+        headers = {'username': 'First user'}
+        self.req.headers = headers
+        httpUsers = Users(self.req)
+        response = httpUsers.configurations_GET()
+        result = response.json['data']
+        configurations = [{'value': 0, 'key': 'v1'}, {'value': 1, 'key': 'v2'}]
+
+        assert response.status_code == 200
+        assert result == configurations
+        headers = {'username': 'sdfsdf'}
+        self.req.headers = headers
+        httpUsers = Users(self.req)
+        response = httpUsers.configurations_GET()
+        assert response.status_code == 200
+
+
+    def test_users_GET(self):
+        httpUsers = Users(self.req)
+        response = httpUsers.users_GET()
+        result = response.json['data']
+        users = [{"id": 1, "username": "First user"}, 
+        {"id": 2, "username": "Second user"}]
+
+        assert response.status_code == 200
+        assert result == users
+
+    def test_experiments_for_user_GET(self):
+        self.req.matchdict = {'id':1}
+        httpUsers = Users(self.req)
+        response = httpUsers.experiments_for_user_GET()
+        result = response.json['data']
+        experiments = [
+        {"id": 1, 
+        "name": "Test experiment",
+        "size": 100, 
+        "startDatetime": "2016-01-01 00:00:00", 
+        "endDatetime": "2017-01-01 00:00:00", 
+        "experimentgroup": {"id": 1, "experiment_id": 1, "name": "Group A"}
+        }]
+
+        assert response.status_code == 200
+        assert result == experiments
+
+    def test_events_POST(self):
+        json_body = {
+            'key': 'key1', 
+            'value': 10, 
+            'startDatetime':'2016-06-06 06:06:06',
+            'endDatetime':'2016-06-07 06:06:06',
+            }
+        headers = {'username': 'First user'}
+        self.req.json_body = json_body
+        self.req.headers = headers
+        httpUsers = Users(self.req)
+        response = httpUsers.events_POST()
+        result = response.json['data']
+        dataitem =  {'id': 5, 
+            'key': 'key1', 
+            'startDatetime': '2016-06-06 06:06:06', 
+            'endDatetime': '2016-06-07 06:06:06', 
+            'value': 10, 
+            'user_id': 1}
+
+        assert response.status_code == 200
+        assert result == dataitem
+        headers = {'username': 'fsdfdsf'}
+        self.req.headers = headers
+        httpUsers = Users(self.req)
+        response = httpUsers.events_POST()
+        assert response.status_code == 400
+
+
+    def test_user_DELETE(self):
+        self.req.matchdict = {'id':1}
+        httpUsers = Users(self.req)
+        response = httpUsers.user_DELETE()
+
+        assert response.status_code == 200
+        self.req.matchdict = {'id':3}
+        httpUsers = Users(self.req)
+        response = httpUsers.user_DELETE()
+        assert response.status_code == 400
 
 
 

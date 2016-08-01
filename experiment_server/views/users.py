@@ -4,6 +4,16 @@ from ..models import DatabaseInterface
 import json
 import datetime
 
+def printLog(timestamp, method, url, action, result):
+	print("%s REST method=%s, url=%s, action=%s, result=%s" % (timestamp, method, url, action, result))
+
+def createResponse(output, status_code):
+	outputJson = json.dumps(output)
+	headers = ()
+	res = Response(outputJson)
+	res.status_code = status_code
+	res.headers.add('Access-Control-Allow-Origin', '*')
+	return res
 
 @view_defaults(renderer='json')
 class Users:
@@ -25,17 +35,17 @@ class Users:
 	#Also adds the user to the DB if it doesn't exist
 		username = self.request.headers.get('username')
 		user = self.DB.checkUser(username)
+		if user is None:
+			printLog(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
+			return createResponse(None, 400)
 		self.DB.assignUserToRunningExperiments(user.id)
 		confs = self.DB.getTotalConfigurationForUser(user.id)
 		configurations = []
 		for conf in confs:
 			configurations.append({'key': conf.key, 'value': int(conf.value)})
-		result = json.dumps({'data': configurations})
-		headers = ()
-		res = Response(result)
-		res.headers.add('Access-Control-Allow-Origin', '*')
-		print("%s REST method=GET, url=/configurations, action=List configurations for specific user, result=%s" % (datetime.datetime.now(), result))
-		return res
+		result = {'data': configurations}
+		printLog(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', result)
+		return createResponse(result, 200)
 
 	@view_config(route_name='users', request_method="OPTIONS")
 	def users_OPTIONS(self):
@@ -51,12 +61,9 @@ class Users:
 		usersJSON = []
 		for i in range(len(users)):
 			usersJSON.append(users[i].as_dict())
-		result = json.dumps({'data': usersJSON})
-		headers = ()
-		res = Response(result)
-		res.headers.add('Access-Control-Allow-Origin', '*')
-		print("%s REST method=GET, url=/users, action=List all users, result=%s" % (datetime.datetime.now(), result))
-		return res
+		result = {'data': usersJSON}
+		printLog(datetime.datetime.now(), 'GET', '/users', 'List all users', result)
+		return createResponse(result, 200)
 
 	@view_config(route_name='experiments_for_user', request_method="OPTIONS")
 	def experiments_for_user_OPTIONS(self):
@@ -76,12 +83,9 @@ class Users:
 			exp = experiments[i].as_dict()
 			exp['experimentgroup'] = expgroup.as_dict()
 			experimentsJSON.append(exp)
-		result = json.dumps({'data': experimentsJSON})
-		headers = ()
-		res = Response(result)
-		res.headers.add('Access-Control-Allow-Origin', '*')
-		print("%s REST method=GET, url=/users/{id}/experiments, action=List all experiments for specific user , result=%s" % (datetime.datetime.now(), result))
-		return res
+		result = {'data': experimentsJSON}
+		printLog(datetime.datetime.now(), 'GET', '/users/' + str(id) + '/experiments', 'List all experiments for specific user', result)
+		return createResponse(result, 200)
 
 	@view_config(route_name='events', request_method="OPTIONS")
 	def events_OPTIONS(self):
@@ -101,15 +105,18 @@ class Users:
 		endDatetime = json['endDatetime']
 		username = self.request.headers['username']
 		user = self.DB.getUserByUsername(username)
-		result = self.DB.createDataitem(
+		if user is None:
+			printLog(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', None)
+			return createResponse(None, 400)
+		result = {'data': self.DB.createDataitem(
 			{'user': user,
 			'value': value,
 			'key':key,
 			'startDatetime':startDatetime,
 			'endDatetime':endDatetime
-			})
-		print("%s REST method=POST, url=/events, action=Save experiment data , result=%s" % (datetime.datetime.now(), result))
-
+			}).as_dict()}
+		printLog(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', result)
+		return createResponse(result, 200)
 
 	@view_config(route_name='user', request_method="OPTIONS")
 	def user_OPTIONS(self):
@@ -123,15 +130,11 @@ class Users:
 	def user_DELETE(self):
 		id = int(self.request.matchdict['id'])
 		result = self.DB.deleteUser(id)
-		if result:
-			result = 'Succeeded'
-		else:
-			result = 'Failed'
-		headers = ()
-		res = Response()
-		res.headers.add('Access-Control-Allow-Origin', '*')
-		print("%s REST method=DELETE, url=/users/{id}, action=Delete user, result=%s" % (datetime.datetime.now(), result))
-		return res
+		if not result:
+			printLog(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
+			return createResponse(None, 400)
+		printLog(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
+		return createResponse(None, 200)
 
 
 
