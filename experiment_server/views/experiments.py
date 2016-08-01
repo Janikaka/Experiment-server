@@ -201,9 +201,8 @@ class Experiments:
 		dataitemsForExperiment = []
 		for dataitem in self.DB.getDataitemsForExperiment(expId):
 			dataitemsForExperiment.append(dataitem.as_dict())
-		data = {'dataitems': dataitemsForExperiment,
-		'experimentgroups': experimentgroups}
-		result = {'experiment': experimentAsJSON, 'data':data}
+		result = {'data': {'experiment': experimentAsJSON, 'dataitems': dataitemsForExperiment,
+		'experimentgroups': experimentgroups}}
 		print("%s REST method=GET, url=/experiments/{id}/data, action=Show specific experiment data, result=%s" % (datetime.datetime.now(), result))
 		return result
 

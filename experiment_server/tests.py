@@ -594,7 +594,6 @@ class TestExperimentsREST(BaseTest):
         httpExperiments = Experiments(self.req)
         response = httpExperiments.users_for_experiment_GET()
         usersFromReq = response.json['data']
-        print("*** %s ***" % usersFromReq)
         users = [{'id': 1, 
         'username': 'First user', 
         'experimentgroup': {'name': 'Group A', 'id': 1, 'experiment_id': 1}, 
@@ -605,6 +604,24 @@ class TestExperimentsREST(BaseTest):
         'totalDataitems': 2}]
         assert usersFromReq == users
 
+    def test_experiment_data_GET(self):
+        assert 1==1
+
+    def test_experimentgroup_GET(self):
+        self.req.matchdict = {'expgroupid':1}
+        
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experimentgroup_GET()
+        expgroupFromReq = response.json['data']
+        experimentgroup = {'id': 1, 
+        'configurations': [
+            {'experimentgroup_id': 1, 'key': 'v1', 'id': 1, 'value': 0.5}, 
+            {'experimentgroup_id': 1, 'key': 'v2', 'id': 2, 'value': True}], 
+        'totalDataitems': 2, 
+        'name': 'Group A', 
+        'experiment_id': 1, 
+        'users': [{'id': 1, 'username': 'First user'}]}
+
 
 
 
@@ -613,26 +630,6 @@ class TestExperimentsREST(BaseTest):
         
 
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
