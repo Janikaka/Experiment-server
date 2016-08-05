@@ -42,7 +42,7 @@ class Users:
 		confs = self.DB.getTotalConfigurationForUser(user.id)
 		configurations = []
 		for conf in confs:
-			configurations.append({'key': conf.key, 'value': int(conf.value)})
+			configurations.append({'key': conf.key, 'value': conf.value})
 		result = {'data': configurations}
 		printLog(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', result)
 		return createResponse(result, 200)
