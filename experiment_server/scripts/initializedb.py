@@ -244,15 +244,17 @@ def main(argv=sys.argv):
         experiment3.experimentgroups.append(experimentgroup3A)
         experiment3.experimentgroups.append(experimentgroup3B)
 
-        conf1 = Configuration(key='v1', value= 3, experimentgroup=experimentgroup1A)
-        conf2 = Configuration(key='v2', value= 0.2, experimentgroup=experimentgroup1A)
-        conf3 = Configuration(key='v3', value= 'hard', experimentgroup=experimentgroup1A)
-        conf4 = Configuration(key='v4', value= True, experimentgroup=experimentgroup1A)
+        conf1 = Configuration(key='level', value=2, experimentgroup=experimentgroup1A)
+        conf2 = Configuration(key='operators', value=0, experimentgroup=experimentgroup1A)
+        conf3 = Configuration(key='howTo', value=True, experimentgroup=experimentgroup1A)
+        conf4 = Configuration(key='highScore', value= True, experimentgroup=experimentgroup1A)
+        conf5 = Configuration(key='skip', value=1, experimentgroup=experimentgroup1A)
 
-        conf5 = Configuration(key='v1', value= 2, experimentgroup=experimentgroup1B)
-        conf6 = Configuration(key='v2', value= 0.3, experimentgroup=experimentgroup1B)
-        conf7 = Configuration(key='v3', value= 'easy', experimentgroup=experimentgroup1B)
-        conf8 = Configuration(key='v4', value= False, experimentgroup=experimentgroup1B)
+        conf6 = Configuration(key='level', value=3, experimentgroup=experimentgroup1B)
+        conf7 = Configuration(key='operators', value=2, experimentgroup=experimentgroup1B)
+        conf8 = Configuration(key='howTo', value=False, experimentgroup=experimentgroup1B)
+        conf9 = Configuration(key='highScore', value=False, experimentgroup=experimentgroup1B)
+        conf10 = Configuration(key='skip', value=2, experimentgroup=experimentgroup1B)
         
         
         dbsession.add(conf1)
@@ -263,3 +265,5 @@ def main(argv=sys.argv):
         dbsession.add(conf6)
         dbsession.add(conf7)
         dbsession.add(conf8)
+        dbsession.add(conf9)
+        dbsession.add(conf10)
