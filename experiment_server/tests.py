@@ -700,7 +700,7 @@ class TestUsersREST(BaseTest):
         httpUsers = Users(self.req)
         response = httpUsers.configurations_GET()
         result = response.json['data']
-        configurations = [{'value': 0, 'key': 'v1'}, {'value': 1, 'key': 'v2'}]
+        configurations = [{'value': 0.5, 'key': 'v1'}, {'value': True, 'key': 'v2'}]
 
         assert response.status_code == 200
         assert result == configurations
