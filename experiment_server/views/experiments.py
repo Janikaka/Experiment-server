@@ -176,11 +176,6 @@ class Experiments:
 		for expgroup in expgroups:
 
 			experimentgroup = expgroup.as_dict()
-			dataitemsForExpgroup = []
-			for dataitem in self.DB.getDataitemsForExperimentgroup(expgroup.id):
-				dataitemsForExpgroup.append(dataitem.as_dict())
-			experimentgroup['dataitems'] = dataitemsForExpgroup
-
 			users = []
 			for user in expgroup.users:
 				userAsJSON = user.as_dict()
@@ -192,13 +187,9 @@ class Experiments:
 
 			experimentgroup['users'] = users
 			experimentgroups.append(experimentgroup)
-		dataitemsForExperiment = []
-		for dataitem in self.DB.getDataitemsForExperiment(expId):
-			dataitemsForExperiment.append(dataitem.as_dict())
-		result = {'data': {'experiment': experimentAsJSON, 'dataitems': dataitemsForExperiment,
-		'experimentgroups': experimentgroups}}
+		result = {'data': {'experiment': experimentAsJSON, 'experimentgroups': experimentgroups}}
 		printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/data', 'Show specific experiment data', result)
-		return result
+		return createResponse(result, 200)
 
 	@view_config(route_name='experimentgroup', request_method="OPTIONS")
 	def experimentgroup_OPTIONS(self):

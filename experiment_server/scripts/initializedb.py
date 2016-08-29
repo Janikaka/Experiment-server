@@ -50,137 +50,7 @@ def main(argv=sys.argv):
                 dt.minute,
                 dt.second)
 
-        user1 = User(username='First user')
-        user2 = User(username='Second user')
-        user3 = User(username='Third user')
-        dbsession.add(user1)
-        dbsession.add(user2)
-        dbsession.add(user3)
-
-        dataitem1 = DataItem(
-            key='key1',
-            value=10,
-            startDatetime=datetime.datetime(
-                dateTimeNow.year-1, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour,
-                dateTimeNow.minute,
-                dateTimeNow.second+1),
-            endDatetime=datetime.datetime(
-                dateTimeNow.year-1, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour+1,
-                dateTimeNow.minute,
-                dateTimeNow.second)
-            )
-        dataitem2 = DataItem(
-            key='key2',
-            value=20,
-            startDatetime=datetime.datetime(
-                dateTimeNow.year-1, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour+2,
-                dateTimeNow.minute,
-                dateTimeNow.second),
-            endDatetime=datetime.datetime(
-                dateTimeNow.year-1, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour+3,
-                dateTimeNow.minute,
-                dateTimeNow.second)
-            )
-        dataitem3 = DataItem(
-            key='key3',
-            value=30,
-            startDatetime=datetime.datetime(
-                dateTimeNow.year, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour,
-                dateTimeNow.minute,
-                dateTimeNow.second+1),
-            endDatetime=datetime.datetime(
-                dateTimeNow.year, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour+1,
-                dateTimeNow.minute,
-                dateTimeNow.second)
-            )
-        dataitem4 = DataItem(
-            key='key4',
-            value=40,
-            startDatetime=datetime.datetime(
-                dateTimeNow.year, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour+2,
-                dateTimeNow.minute,
-                dateTimeNow.second),
-            endDatetime=datetime.datetime(
-                dateTimeNow.year, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour+3,
-                dateTimeNow.minute,
-                dateTimeNow.second)
-            )
-        dataitem5 = DataItem(
-            key='key5',
-            value=50,
-            startDatetime=datetime.datetime(
-                dateTimeNow.year+1, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour,
-                dateTimeNow.minute,
-                dateTimeNow.second+1),
-            endDatetime=datetime.datetime(
-                dateTimeNow.year+1, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour+1,
-                dateTimeNow.minute,
-                dateTimeNow.second)
-            )
-        dataitem6 = DataItem(
-            key='key6',
-            value=60,
-            startDatetime=datetime.datetime(
-                dateTimeNow.year+1, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour+2,
-                dateTimeNow.minute,
-                dateTimeNow.second),
-            endDatetime=datetime.datetime(
-                dateTimeNow.year+1, 
-                dateTimeNow.month, 
-                dateTimeNow.day,
-                dateTimeNow.hour+3,
-                dateTimeNow.minute,
-                dateTimeNow.second)
-            )
-
-        dbsession.add(dataitem1)
-        dbsession.add(dataitem2)
-        dbsession.add(dataitem3)
-        dbsession.add(dataitem4)
-        dbsession.add(dataitem5)
-        dbsession.add(dataitem6)
-
-        user2.dataitems.append(dataitem1)
-        user2.dataitems.append(dataitem2)
-        user1.dataitems.append(dataitem3)
-        user2.dataitems.append(dataitem4)
-        user3.dataitems.append(dataitem5)
-        user3.dataitems.append(dataitem6)
-
-        experiment1 = Experiment(name='Running experiment', 
+        experiment1 = Experiment(name='High score', 
             startDatetime=dateTimeNow, 
             endDatetime=datetime.datetime(
                 dateTimeNow.year+1, 
@@ -190,7 +60,7 @@ def main(argv=sys.argv):
                 dateTimeNow.minute,
                 dateTimeNow.second),
             size=100)
-        experiment2 = Experiment(name='Finished experiment', 
+        experiment2 = Experiment(name='Game level', 
             startDatetime=datetime.datetime(
                 dateTimeNow.year-1, 
                 dateTimeNow.month, 
@@ -200,7 +70,7 @@ def main(argv=sys.argv):
                 dateTimeNow.second),
             endDatetime=dateTimeNow,
             size=100)
-        experiment3 = Experiment(name='Waiting experiment', 
+        experiment3 = Experiment(name='Operators', 
             startDatetime=datetime.datetime(
                 dateTimeNow.year+1, 
                 dateTimeNow.month, 
@@ -221,14 +91,14 @@ def main(argv=sys.argv):
         dbsession.add(experiment2)
         dbsession.add(experiment3)
 
-        experimentgroup1A = ExperimentGroup(name='group 1 A', users=[user1])
-        experimentgroup1B = ExperimentGroup(name='group 1 B', users=[user2])
+        experimentgroup1A = ExperimentGroup(name='High score ON')
+        experimentgroup1B = ExperimentGroup(name='High score OFF')
 
-        experimentgroup2A = ExperimentGroup(name='group 2 A', users=[user2])
-        experimentgroup2B = ExperimentGroup(name='group 2 B', users=[])
+        experimentgroup2A = ExperimentGroup(name='Level 1')
+        experimentgroup2B = ExperimentGroup(name='Level 5')
 
-        experimentgroup3A = ExperimentGroup(name='group 3 A', users=[user3])
-        experimentgroup3B = ExperimentGroup(name='group 3 B', users=[])
+        experimentgroup3A = ExperimentGroup(name='Add/Subtract')
+        experimentgroup3B = ExperimentGroup(name='Multiply/Divide')
 
         dbsession.add(experimentgroup1A)
         dbsession.add(experimentgroup1B)
@@ -244,18 +114,16 @@ def main(argv=sys.argv):
         experiment3.experimentgroups.append(experimentgroup3A)
         experiment3.experimentgroups.append(experimentgroup3B)
 
-        conf1 = Configuration(key='level', value=2, experimentgroup=experimentgroup1A)
-        conf2 = Configuration(key='operators', value=0, experimentgroup=experimentgroup1A)
-        conf3 = Configuration(key='howTo', value=True, experimentgroup=experimentgroup1A)
-        conf4 = Configuration(key='highScore', value= True, experimentgroup=experimentgroup1A)
-        conf5 = Configuration(key='skip', value=1, experimentgroup=experimentgroup1A)
+        conf1 = Configuration(key='highScore', value=True, experimentgroup=experimentgroup1A)
+        conf2 = Configuration(key='highScore', value=False, experimentgroup=experimentgroup1B)
 
-        conf6 = Configuration(key='level', value=3, experimentgroup=experimentgroup1B)
-        conf7 = Configuration(key='operators', value=2, experimentgroup=experimentgroup1B)
-        conf8 = Configuration(key='howTo', value=False, experimentgroup=experimentgroup1B)
-        conf9 = Configuration(key='highScore', value=False, experimentgroup=experimentgroup1B)
-        conf10 = Configuration(key='skip', value=2, experimentgroup=experimentgroup1B)
-        
+        conf3 = Configuration(key='level', value=1, experimentgroup=experimentgroup2A)
+        conf4 = Configuration(key='level', value=5, experimentgroup=experimentgroup2B)
+
+        conf5 = Configuration(key='operators', value=0, experimentgroup=experimentgroup3A)
+        conf6 = Configuration(key='operators', value=1, experimentgroup=experimentgroup3A)
+        conf7 = Configuration(key='operators', value=2, experimentgroup=experimentgroup3B)
+        conf8 = Configuration(key='operators', value=3, experimentgroup=experimentgroup3B)        
         
         dbsession.add(conf1)
         dbsession.add(conf2)
@@ -265,5 +133,3 @@ def main(argv=sys.argv):
         dbsession.add(conf6)
         dbsession.add(conf7)
         dbsession.add(conf8)
-        dbsession.add(conf9)
-        dbsession.add(conf10)
