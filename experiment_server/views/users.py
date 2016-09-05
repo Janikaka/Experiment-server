@@ -3,9 +3,7 @@ from pyramid.response import Response
 from ..models import DatabaseInterface
 import json
 import datetime
-
-def printLog(timestamp, method, url, action, result):
-	print("%s REST method=%s, url=%s, action=%s, result=%s" % (timestamp, method, url, action, result))
+from .log import printLog
 
 def createResponse(output, status_code):
 	outputJson = json.dumps(output)

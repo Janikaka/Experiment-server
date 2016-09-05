@@ -4,9 +4,8 @@ from ..models import DatabaseInterface
 from pyramid.httpexceptions import HTTPFound
 import json
 import datetime
+from .log import printLog
 
-def printLog(timestamp, method, url, action, result):
-	print("%s REST method=%s, url=%s, action=%s, result=%s" % (timestamp, method, url, action, result))
 
 def createResponse(output, status_code):
 	outputJson = json.dumps(output)
