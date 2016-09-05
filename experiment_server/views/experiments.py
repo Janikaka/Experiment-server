@@ -29,7 +29,7 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS')
 		return res
 
-	#1 Create new experiment
+	# Create new experiment
 	@view_config(route_name='experiments', request_method="POST")
 	def experiments_POST(self):
 		data = self.request.json_body
@@ -62,7 +62,7 @@ class Experiments:
 		printLog(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', result)
 		return createResponse(result, 200)
 
-	#2 List all experiments
+	# List all experiments
 	@view_config(route_name='experiments', request_method="GET")
 	def experiments_GET(self):
 		experiments = self.DB.getAllExperiments()
@@ -82,7 +82,7 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
 		return res
 
-	#3 Show specific experiment metadata
+	# Show specific experiment metadata
 	@view_config(route_name='experiment_metadata', request_method="GET")
 	def experiment_metadata_GET(self):
 		id = int(self.request.matchdict['id'])
@@ -121,7 +121,7 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
 		return res
 
-	#4 Delete experiment
+	# Delete experiment
 	@view_config(route_name='experiment', request_method="DELETE")
 	def experiment_DELETE(self):
 		id = int(self.request.matchdict['id'])
@@ -139,7 +139,7 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
 		return res
 
-	#7 List all users for specific experiment
+	# List all users for specific experiment
 	@view_config(route_name='users_for_experiment', request_method="GET")
 	def users_for_experiment_GET(self):
 		id = int(self.request.matchdict['id'])
@@ -165,7 +165,7 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
 		return res
 
-	#11 Show specific experiment data
+	# Show experiment data
 	@view_config(route_name='experiment_data', request_method="GET")
 	def experiment_data_GET(self):
 		expId = int(self.request.matchdict['id'])
@@ -198,7 +198,7 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Methods', 'GET,DELETE,OPTIONS')
 		return res
 
-	#13 Show specific experimentgroup metadata
+	# Show specific experiment group metadata
 	@view_config(route_name='experimentgroup', request_method="GET")
 	def experimentgroup_GET(self):
 		expgroupid = int(self.request.matchdict['expgroupid'])
@@ -222,7 +222,7 @@ class Experiments:
 		printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid), 'Show specific experimentgroup metadata', result)
 		return createResponse(result, 200)
 
-	#12 Delete experimentgroup
+	# Delete experimentgroup
 	@view_config(route_name='experimentgroup', request_method="DELETE")
 	def experimentgroup_DELETE(self):
 		expgroupid = int(self.request.matchdict['expgroupid'])
@@ -243,7 +243,7 @@ class Experiments:
 		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
 		return res
 
-	#14 Delete user from specific experiment
+	# Delete user from specific experiment
 	@view_config(route_name='user_for_experiment', request_method="DELETE")
 	def user_for_experiment_DELETE(self):
 		expid = int(self.request.matchdict['expid'])

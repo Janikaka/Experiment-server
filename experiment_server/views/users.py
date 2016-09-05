@@ -29,10 +29,10 @@ class Users:
 		res.headers.add('Access-Control-Allow-Headers', 'username')
 		return res
 
-	#5 List configurations for specific user
+	# List configurations for specific user
 	@view_config(route_name='configurations', request_method="GET")
 	def configurations_GET(self):
-	#Also adds the user to the DB if it doesn't exist
+	#Also adds the user to the DB if doesn't exist
 		username = self.request.headers.get('username')
 		user = self.DB.checkUser(username)
 		if user is None:
@@ -54,7 +54,7 @@ class Users:
 		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
 		return res
 
-	#6 List all users
+	# List all users
 	@view_config(route_name='users', request_method="GET")
 	def users_GET(self):
 		users = self.DB.getAllUsers()
@@ -72,7 +72,7 @@ class Users:
 		res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
 		return res
 
-	#8 List all experiments for specific user 
+	# List all experiments for specific user 
 	@view_config(route_name='experiments_for_user', request_method="GET")
 	def experiments_for_user_GET(self):
 		id = int(self.request.matchdict['id'])
@@ -95,7 +95,7 @@ class Users:
 		res.headers.add('Access-Control-Allow-Headers', 'username')
 		return res
 
-	#9 Save experiment data
+	# Save experiment data
 	@view_config(route_name='events', request_method="POST")
 	def events_POST(self):
 		json = self.request.json_body
@@ -125,7 +125,7 @@ class Users:
 		res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
 		return res
 
-	#10 Delete user
+	# Delete user
 	@view_config(route_name='user', request_method="DELETE")
 	def user_DELETE(self):
 		id = int(self.request.matchdict['id'])
