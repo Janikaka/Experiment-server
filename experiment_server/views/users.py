@@ -99,7 +99,7 @@ class Users:
 	@view_config(route_name='events', request_method="POST")
 	def events_POST(self):
 		json = self.request.json_body
-		value = int(json['value'])
+		value = json['value']
 		key = json['key']
 		startDatetime = json['startDatetime']
 		endDatetime = json['endDatetime']

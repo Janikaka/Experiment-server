@@ -4,7 +4,8 @@ from sqlalchemy import (
     Integer,
     Text,
     ForeignKey,
-    DateTime
+    DateTime,
+    PickleType
 )
 
 from .meta import Base
@@ -15,7 +16,7 @@ class DataItem(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     key = Column(Text)
-    value = Column(Integer)
+    value = Column(PickleType)
     startDatetime = Column(DateTime)
     endDatetime = Column(DateTime)
 
