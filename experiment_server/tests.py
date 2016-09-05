@@ -39,7 +39,6 @@ class BaseTest(unittest.TestCase):
 
     def init_database(self):
         from .models.meta import Base
-
         Base.metadata.create_all(self.engine)
 
     def init_databaseData(self):
@@ -99,21 +98,21 @@ class BaseTest(unittest.TestCase):
             })
         dt2 = self.DB.createDataitem(
             {'key': 'key2',
-             'value': 20,
+             'value': 0.5,
              'startDatetime': '2016-02-02 01:01:02',
              'endDatetime': '2016-02-02 02:02:02',
              'user': user1
             })
         dt3 = self.DB.createDataitem(
             {'key': 'key3',
-             'value': 30,
+             'value': 'liked',
              'startDatetime': '2016-03-03 00:00:00',
              'endDatetime': '2016-03-03 03:03:03',
              'user': user2
             })
         dt4 = self.DB.createDataitem(
             {'key': 'key4',
-             'value': 40,
+             'value': False,
              'startDatetime': '2016-04-04 03:03:04',
              'endDatetime': '2016-04-04 04:04:04',
              'user': user2
@@ -369,17 +368,17 @@ class TestDataitems(BaseTest):
              'endDatetime': strToDatetime('2016-01-01 01:01:01'),
              'user': user1}
         dt2 = {'key': 'key2',
-             'value': 20,
+             'value': 0.5,
              'startDatetime': strToDatetime('2016-02-02 01:01:02'),
              'endDatetime': strToDatetime('2016-02-02 02:02:02'),
              'user': user1}
         dt3 = {'key': 'key3',
-             'value': 30,
+             'value': 'liked',
              'startDatetime': strToDatetime('2016-03-03 00:00:00'),
              'endDatetime': strToDatetime('2016-03-03 03:03:03'),
              'user': user2}
         dt4 = {'key': 'key4',
-             'value': 40,
+             'value': False,
              'startDatetime': strToDatetime('2016-04-04 03:03:04'),
              'endDatetime': strToDatetime('2016-04-04 04:04:04'),
              'user': user2}

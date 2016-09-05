@@ -20,3 +20,6 @@ Creating a new experiment:
 Deleting an experiment:
 
     $ curl -H "Content-Type: application/json" -X DELETE -d '' http://localhost:6543/experiments/1
+
+Run tests:
+$VENV/bin/py.test experiment_server/tests.py -q
