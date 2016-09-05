@@ -7,7 +7,6 @@ from sqlalchemy import (
     DateTime,
     PickleType
 )
-
 from .meta import Base
 from sqlalchemy.orm import relationship
 

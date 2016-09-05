@@ -39,7 +39,6 @@ class BaseTest(unittest.TestCase):
 
     def init_database(self):
         from .models.meta import Base
-
         Base.metadata.create_all(self.engine)
 
     def init_databaseData(self):
