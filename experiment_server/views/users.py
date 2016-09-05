@@ -32,7 +32,7 @@ class Users:
 	# List configurations for specific user
 	@view_config(route_name='configurations', request_method="GET")
 	def configurations_GET(self):
-	#Also adds the user to the DB if doesn't exist
+	# Also adds the user to the DB if doesn't exist
 		username = self.request.headers.get('username')
 		user = self.DB.checkUser(username)
 		if user is None:

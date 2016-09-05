@@ -58,7 +58,7 @@ class Experiments:
 			printLog(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', None)
 			return createResponse(None, 200)
 		result = {'data': experiment.as_dict()}
-		#Experimenter sends double request
+		#Experimenter sends double request?!
 		printLog(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', result)
 		return createResponse(result, 200)
 
