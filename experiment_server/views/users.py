@@ -133,20 +133,3 @@ class Users:
 			return createResponse(None, 400)
 		printLog(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
 		return createResponse(None, 200)
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
-
-
-
-	
-=======
-	
->>>>>>> 10f5d1a8d0ce22ce7eb323fae5d75e5dfc4c0809
