@@ -31,15 +31,15 @@ When starting a new task:
 - pull latest master
 - make a local branch 
 
-	$ git branch -b [task name]
+    $ git branch -b [task name]
 
 - after committed your changes push them 
 
-	$ git push origin [task name]
+    $ git push origin [task name]
 
 - remember to delete the branch
 
-	$ git branch -d [task name] && git push origin :[task name]
+    $ git branch -d [task name] && git push origin :[task name]
 
 - make a pull request: https://help.github.com/articles/creating-a-pull-request/
 
