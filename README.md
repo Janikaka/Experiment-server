@@ -11,6 +11,10 @@ $VENV/bin/initialize_Experiment-server_db development.ini
 
 $VENV/bin/pserve development.ini
 
+Run tests:
+
+$VENV/bin/py.test experiment_server/tests.py -q
+
 ###Trying the REST API using `curl`
 
 Creating a new experiment:
@@ -21,5 +25,22 @@ Deleting an experiment:
 
     $ curl -H "Content-Type: application/json" -X DELETE -d '' http://localhost:6543/experiments/1
 
-Run tests:
-$VENV/bin/py.test experiment_server/tests.py -q
+###Work flow
+
+When starting a new task:
+- pull latest master
+- make a local branch 
+
+	$ git branch -b [task name]
+
+- after committed your changes push them 
+
+	$ git push origin [task name]
+
+- remember to delete the branch
+
+	$ git branch -d [task name] && git push origin :[task name]
+
+- make a pull request: https://help.github.com/articles/creating-a-pull-request/
+
+
