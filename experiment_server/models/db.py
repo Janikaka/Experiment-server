@@ -141,7 +141,7 @@ class DatabaseInterface:
 		self.dbsession.add(user)
 		return self.dbsession.query(User).order_by(User.id.desc()).first()
 
-	def getUser(self, id):
+	def getUserById(self, id):
 		return self.dbsession.query(User).filter_by(id=id).first()
 
 	def getUserByUsername(self, username):
@@ -195,7 +195,7 @@ class DatabaseInterface:
 
 	def deleteUserFromExperiment(self, userId, experimentId):
 		expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
-		user = self.getUser(userId)
+		user = self.getUserById(userId)
 		if expgroup is None or user is None:
 			return None
 		user.experimentgroups.remove(expgroup)
