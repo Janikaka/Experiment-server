@@ -175,13 +175,15 @@ class DatabaseInterface:
 		self.dbsession.query(User).filter_by(id=userId).first().experimentgroups.append(experimentgroup)
 
 	def assignUserToExperiments(self, id):
-		allExperiments = self.getAllRunningExperiments()
+		#We are (now) assigning users only for running experiments
+		allExperiments = self.getAllRunningExperiments() 
 		experimentsUserParticipates = self.getExperimentsUserParticipates(id)
 		experimentsUserDoesNotParticipate = []
 		for experiment in allExperiments:
 			if experiment not in experimentsUserParticipates:
 				experimentsUserDoesNotParticipate.append(experiment)
-		for experiment in experimentsUserDoesNotParticipate:
+		experimentsUserShouldParticipate = experimentsUserDoesNotParticipate
+		for experiment in experimentsUserShouldParticipate:
 			self.assignUserToExperiment(id, experiment.id)
 
 	def getUsersForExperiment(self, id):
