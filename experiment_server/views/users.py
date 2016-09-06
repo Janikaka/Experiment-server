@@ -36,7 +36,7 @@ class Users:
 		if user is None:
 			printLog(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
 			return createResponse(None, 400)
-		self.DB.assignUserToRunningExperiments(user.id)
+		self.DB.assignUserToExperiments(user.id)
 		confs = self.DB.getTotalConfigurationForUser(user.id)
 		configurations = []
 		for conf in confs:

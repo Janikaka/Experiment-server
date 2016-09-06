@@ -320,11 +320,11 @@ class TestUsers(BaseTest):
         assert expgroup.users == [user]
         assert expgroup in user.experimentgroups 
 
-    def test_assignUserToRunningExperiments(self):
+    def test_assignUserToExperiments(self):
         self.DB.createUser({'username': 'Test user'})
         user = self.dbsession.query(User).filter_by(username='Test user').one()
         assert user.experimentgroups == []
-        self.DB.assignUserToRunningExperiments(3)
+        self.DB.assignUserToExperiments(3)
         expgroup1 = self.dbsession.query(ExperimentGroup).filter_by(id=1).one()
         expgroup2 = self.dbsession.query(ExperimentGroup).filter_by(id=2).one()
         assert expgroup1 in user.experimentgroups or expgroup2 in user.experimentgroups

@@ -174,7 +174,7 @@ class DatabaseInterface:
 			experimentgroup = experimentgroups[random.randint(0, len(experimentgroups)-1)]
 		self.dbsession.query(User).filter_by(id=userId).first().experimentgroups.append(experimentgroup)
 
-	def assignUserToRunningExperiments(self, id):
+	def assignUserToExperiments(self, id):
 		allExperiments = self.getAllRunningExperiments()
 		experimentsUserParticipates = self.getExperimentsUserParticipates(id)
 		experimentsUserDoesNotParticipate = []
