@@ -293,13 +293,13 @@ class TestUsers(BaseTest):
         assert experimentgroupsFromDB[0].users == []
         assert dataitemsFromDB == [dt3, dt4]
 
-    def checkUser(self):
+    def getUser(self):
         usernames = self.dbsession.query(User.username).all()
         assert 'Example user' not in usernames
-        exampleUser = self.DB.checkUser('Example user')
+        exampleUser = self.DB.getUser('Example user')
         assert exampleUser.id == 3 and exampleUser.username == 'Example user'
-        user1 = self.DB.checkUser('First user')
-        user2 = self.DB.checkUser('Second user')
+        user1 = self.DB.getUser('First user')
+        user2 = self.DB.getUser('Second user')
         assert user1.id == 1 and user1.username == 'First user'
         assert user2.id == 2 and user2.username == 'Second user'
 

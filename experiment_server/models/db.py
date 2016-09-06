@@ -159,7 +159,7 @@ class DatabaseInterface:
 		self.dbsession.delete(user)
 		return [] == self.dbsession.query(User).filter_by(id=id).all()
 
-	def checkUser(self, username):
+	def getUser(self, username):
 		user = self.dbsession.query(User).filter_by(username=username).all()
 		if user == []:
 			return self.createUser({'username':username})

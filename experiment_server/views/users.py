@@ -32,7 +32,7 @@ class Users:
 	def configurations_GET(self):
 	# Also adds the user to the DB if doesn't exist
 		username = self.request.headers.get('username')
-		user = self.DB.checkUser(username)
+		user = self.DB.getUser(username)
 		if user is None:
 			printLog(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
 			return createResponse(None, 400)
