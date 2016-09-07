@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/TheSoftwareFactory/experiment-server/badges/gpa.svg)](https://codeclimate.com/github/TheSoftwareFactory/experiment-server)
+
 # Experiment-server
 
 A simple REST API server for providing runtime configurations for applications and receiving usage-related event data.
