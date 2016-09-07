@@ -3,7 +3,7 @@ from pyramid.response import Response
 from ..models import DatabaseInterface
 import json
 import datetime
-from .log import printLog
+from ..utils.log import printLog
 
 def createResponse(output, status_code):
 	outputJson = json.dumps(output)

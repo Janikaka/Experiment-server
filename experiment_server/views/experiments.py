@@ -4,7 +4,7 @@ from ..models import DatabaseInterface
 from pyramid.httpexceptions import HTTPFound
 import json
 import datetime
-from .log import printLog
+from ..utils.log import printLog
 
 
 def createResponse(output, status_code):
