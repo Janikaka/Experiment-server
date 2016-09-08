@@ -9,20 +9,16 @@ A simple REST API server for providing runtime configurations for applications a
 
 Clone this repository
 
-Install dependencies:
-
+- Install dependencies:
 `$VENV/bin/pip install -e .`
 
-Initialize database:
-
+- Initialize database:
 `$VENV/bin/initialize_Experiment-server_db development.ini`
 
-Start the local server:
-
+- Start the local server:
 `$VENV/bin/pserve development.ini`
 
-Install hooks (from the project root):
-
+- Install hooks (from the project root):
 `./scripts/install-precommit-hooks.sh`
 
 
