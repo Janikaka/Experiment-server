@@ -1,6 +1,5 @@
 from sqlalchemy import (
     Column,
-    Index,
     Integer,
     Text,
     ForeignKey,
@@ -8,7 +7,7 @@ from sqlalchemy import (
     PickleType
 )
 from .meta import Base
-from sqlalchemy.orm import relationship
+
 
 class DataItem(Base):
     __tablename__ = 'dataitems'
