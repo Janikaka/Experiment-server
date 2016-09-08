@@ -5,11 +5,11 @@ from sqlalchemy import (
     Text,
     DateTime
 )
-
+from .DictionaryCreator import DictionaryCreator
 from .meta import Base
 from sqlalchemy.orm import relationship
 
-class Experiment(Base):
+class Experiment(Base,DictionaryCreator):
     __tablename__ = 'experiments'
     id = Column(Integer, primary_key=True)
     name = Column(Text, unique=True, index=True)
@@ -18,11 +18,4 @@ class Experiment(Base):
     experimentgroups = relationship("ExperimentGroup", backref="experiment", cascade="delete")
     size = Column(Integer)
 
-    def as_dict(self):
-        result = {}
-        for c in self.__table__.columns:
-            if c.name == 'startDatetime' or c.name == 'endDatetime':
-                result[c.name] = str(getattr(self, c.name))
-            else:
-                result[c.name] = getattr(self, c.name)
-        return result
+
