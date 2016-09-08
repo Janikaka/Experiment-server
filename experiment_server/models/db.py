@@ -41,7 +41,7 @@ class DatabaseInterface(object): # this is New-style class naming rule
             return False
         experimentgroups = experiment.experimentgroups
         for experimentgroup in experimentgroups:
-            self.delete_experiment_group_in_users(experimentgroup.id)
+            self.delete_experimentgroup_in_users(experimentgroup.id)
         self.dbsession.delete(experiment)
         return [] == self.dbsession.query(Experiment).filter_by(id=id).all()
 
@@ -55,17 +55,17 @@ class DatabaseInterface(object): # this is New-style class naming rule
         waiting = 'waiting'
 
         experiment = self.get_experiment(id)
-        dateTimeNow = datetime.datetime.now()
-        startDatetime = experiment.startDatetime
-        endDatetime = experiment.endDatetime
-        if startDatetime >= endDatetime:
+        date_time_now = datetime.datetime.now()
+        start_datetime = experiment.startDatetime
+        end_datetime = experiment.endDatetime
+        if start_datetime >= end_datetime:
             # validate this earlier
             return None
-        if startDatetime <= dateTimeNow and dateTimeNow <= endDatetime:
+        if start_datetime <= date_time_now and date_time_now <= end_datetime:
             return running
-        elif dateTimeNow > endDatetime:
+        elif date_time_now > end_datetime:
             return finished
-        elif dateTimeNow < startDatetime:
+        elif date_time_now < start_datetime:
             return waiting
         return None
 
@@ -79,7 +79,7 @@ class DatabaseInterface(object): # this is New-style class naming rule
                  dateTimeNow <= Experiment.endDatetime)).all()
 
     def get_experiments_user_participates(self, id):
-        experimentgroups = self.getExperimentgroupsForUser(id)
+        experimentgroups = self.get_experimentgroups_for_user(id)
         experiments = []
         for experimentgroup in experimentgroups:
             experiments.append(experimentgroup.experiment)
@@ -89,23 +89,23 @@ class DatabaseInterface(object): # this is New-style class naming rule
     #                                 ExperimentGroups
     # ---------------------------------------------------------------------------------
 
-    def create_experiment_group(self, data):
+    def create_experimentgroup(self, data):
         name = data['name']
         experimentgroup = ExperimentGroup(name=name)
         self.dbsession.add(experimentgroup)
         return self.dbsession.query(ExperimentGroup).order_by(ExperimentGroup.id.desc()).first()
 
-    def delete_experiment_group(self, id):
+    def delete_experimentgroup(self, id):
         experimentgroup = self.dbsession.query(ExperimentGroup).filter_by(id=id).first()
         if experimentgroup is None:
             return False
-        self.delete_experiment_group_in_users(id)
+        self.delete_experimentgroup_in_users(id)
         experimentgroup.experiment.experimentgroups.remove(experimentgroup)
         self.dbsession.delete(experimentgroup)
         return [] == self.dbsession.query(ExperimentGroup).filter_by(id=id).all()
 
-    def delete_experiment_group_in_users(self, experimentgroupId):
-        experimentgroup = self.get_experimentgroup(experimentgroupId)
+    def delete_experimentgroup_in_users(self, experimentgroup_id):
+        experimentgroup = self.get_experimentgroup(experimentgroup_id)
         if experimentgroup is None:
             return False
         for user in experimentgroup.users:
@@ -118,14 +118,14 @@ class DatabaseInterface(object): # this is New-style class naming rule
         return self.dbsession.query(ExperimentGroup).filter_by(experiment_id=id).all()
 
     def get_experimentgroup_for_user_in_experiment(self, userId, experimentId):
-        expgroups = self.getExperimentgroupsForUser(userId)
+        expgroups = self.get_experimentgroups_for_user(userId)
         if expgroups is None:
             return None
         for expgroup in expgroups:
             if expgroup.experiment_id == experimentId:
                 return expgroup
 
-    def getExperimentgroupsForUser(self, id):
+    def get_experimentgroups_for_user(self, id):
         user = self.dbsession.query(User).filter_by(id=id).first()
         if user is None:
             return None
@@ -135,7 +135,7 @@ class DatabaseInterface(object): # this is New-style class naming rule
     #                                      Users
     # ---------------------------------------------------------------------------------
 
-    def createUser(self, data):
+    def create_user(self, data):
         keys = ['username', 'password', 'experimentgroups', 'dataitems']
         for key in keys:
             try:
@@ -148,16 +148,16 @@ class DatabaseInterface(object): # this is New-style class naming rule
         self.dbsession.add(user)
         return self.dbsession.query(User).order_by(User.id.desc()).first()
 
-    def getUserById(self, id):
+    def get_user_by_id(self, id):
         return self.dbsession.query(User).filter_by(id=id).first()
 
-    def getUserByUsername(self, username):
+    def get_user_by_username(self, username):
         return self.dbsession.query(User).filter_by(username=username).first()
 
-    def getAllUsers(self):
+    def get_all_users(self):
         return self.dbsession.query(User).all()
 
-    def deleteUser(self, id):
+    def delete_user(self, id):
         user = self.dbsession.query(User).filter_by(id=id).first()
         if user is None:
             return False
@@ -166,24 +166,24 @@ class DatabaseInterface(object): # this is New-style class naming rule
         self.dbsession.delete(user)
         return [] == self.dbsession.query(User).filter_by(id=id).all()
 
-    def getUser(self, username):
+    def get_user(self, username):
         user = self.dbsession.query(User).filter_by(username=username).all()
         if user == []:
-            return self.createUser({'username': username})
+            return self.create_user({'username': username})
         else:
             return user[0]
 
-    def assignUserToExperiment(self, userId, experimentId):
-        experimentgroups = self.get_experimentgroups(experimentId)
+    def assign_user_to_experiment(self, user_id, experiment_id):
+        experimentgroups = self.get_experimentgroups(experiment_id)
         if len(experimentgroups) == 1:
             experimentgroup = experimentgroups[0]
         else:
             experimentgroup = experimentgroups[random.randint(0, len(experimentgroups) - 1)]
         self.dbsession.query(User)\
-            .filter_by(id=userId).first()\
+            .filter_by(id=user_id).first()\
             .experimentgroups.append(experimentgroup)
 
-    def assignUserToExperiments(self, id):
+    def assign_user_to_experiments(self, id):
         # We are (now) assigning users only for running experiments
         allExperiments = self.get_all_running_experiments()
         experimentsUserParticipates = self.get_experiments_user_participates(id)
@@ -193,9 +193,9 @@ class DatabaseInterface(object): # this is New-style class naming rule
                 experimentsUserDoesNotParticipate.append(experiment)
         experimentsUserShouldParticipate = experimentsUserDoesNotParticipate
         for experiment in experimentsUserShouldParticipate:
-            self.assignUserToExperiment(id, experiment.id)
+            self.assign_user_to_experiment(id, experiment.id)
 
-    def getUsersForExperiment(self, id):
+    def get_users_for_experiment(self, id):
         experiment = self.get_experiment(id)
         if experiment is None:
             return None
@@ -204,9 +204,9 @@ class DatabaseInterface(object): # this is New-style class naming rule
             users.extend(experimentgroup.users)
         return users
 
-    def deleteUserFromExperiment(self, userId, experimentId):
+    def delete_user_from_experiment(self, userId, experimentId):
         expgroup = self.get_experimentgroup_for_user_in_experiment(userId, experimentId)
-        user = self.getUserById(userId)
+        user = self.get_user_by_id(userId)
         if expgroup is None or user is None:
             return None
         user.experimentgroups.remove(expgroup)
@@ -214,14 +214,14 @@ class DatabaseInterface(object): # this is New-style class naming rule
             id=userId).first().experimentgroups and user not in expgroup.users
         return result
 
-    def getUsersForExperimentgroup(self, experimentgroupId):
+    def get_users_for_experimentgroup(self, experimentgroupId):
         return self.dbsession.query(ExperimentGroup).filter_by(id=experimentgroupId).first().users
 
     # ---------------------------------------------------------------------------------
     #                                    Dataitems
     # ---------------------------------------------------------------------------------
 
-    def createDataitem(self, data):
+    def create_dataitem(self, data):
         user = data['user']
         value = data['value']
         key = data['key']
@@ -236,61 +236,61 @@ class DatabaseInterface(object): # this is New-style class naming rule
         self.dbsession.add(dataitem)
         return self.dbsession.query(DataItem).order_by(DataItem.id.desc()).first()
 
-    def getTotalDataitemsForExperiment(self, experimentId):
+    def get_total_dataitems_for_experiment(self, experimentId):
         count = 0
         experiment = self.get_experiment(experimentId)
         for expgroup in experiment.experimentgroups:
-            count += self.getTotalDataitemsForExpgroup(expgroup.id)
+            count += self.get_total_dataitems_for_expgroup(expgroup.id)
         return count
 
-    def getTotalDataitemsForExpgroup(self, experimentgroupId):
+    def get_total_dataitems_for_expgroup(self, experimentgroupId):
         count = 0
         expgroup = self.get_experimentgroup(experimentgroupId)
         for user in expgroup.users:
-            count += self.getTotalDataitemsForUserInExperiment(user.id, expgroup.experiment_id)
+            count += self.get_total_dataitems_for_user_in_experiment(user.id, expgroup.experiment_id)
         return count
 
-    def getTotalDataitemsForUserInExperiment(self, userId, expId):
-        experiment = self.get_experiment(expId)
-        startDatetime = experiment.startDatetime
-        endDatetime = experiment.endDatetime
+    def get_total_dataitems_for_user_in_experiment(self, user_id, exp_id):
+        experiment = self.get_experiment(exp_id)
+        start_datetime = experiment.startDatetime
+        end_datetime = experiment.endDatetime
         count = self.dbsession.query(DataItem.id).filter(
-            and_(DataItem.user_id == userId,
-                 startDatetime <= DataItem.startDatetime,
-                 DataItem.endDatetime <= endDatetime)).count()
+            and_(DataItem.user_id == user_id,
+                 start_datetime <= DataItem.startDatetime,
+                 DataItem.endDatetime <= end_datetime)).count()
         return count
 
-    def getDataitemsForUser(self, id):
+    def get_dataitems_for_user(self, id):
         return self.dbsession.query(DataItem).filter_by(user_id=id)
 
-    def getDataitemsForUserOnPeriod(self, id, startDatetime, endDatetime):
+    def get_dataitems_for_user_on_period(self, id, start_datetime, endDatetime):
         return self.dbsession.query(DataItem).filter(
             and_(DataItem.user_id == id,
-                 startDatetime <= DataItem.startDatetime,
+                 start_datetime <= DataItem.startDatetime,
                  DataItem.endDatetime <= endDatetime)).all()
 
-    def getDataitemsForUserInExperiment(self, userId, expId):
-        experiment = self.get_experiment(expId)
-        startDatetime = experiment.startDatetime
-        endDatetime = experiment.endDatetime
-        return self.getDataitemsForUserOnPeriod(userId, startDatetime, endDatetime)
+    def get_dataitems_for_user_in_experiment(self, user_id, exp_id):
+        experiment = self.get_experiment(exp_id)
+        start_datetime = experiment.startDatetime
+        end_datetime = experiment.endDatetime
+        return self.get_dataitems_for_user_on_period(user_id, start_datetime, end_datetime)
 
-    def getDataitemsForExperimentgroup(self, id):
+    def get_dataitems_for_experimentgroup(self, id):
         expgroup = self.get_experimentgroup(id)
         experiment = expgroup.experiment
         dataitems = []
         for user in expgroup.users:
-            dataitems.extend(self.getDataitemsForUserInExperiment(user.id, experiment.id))
+            dataitems.extend(self.get_dataitems_for_user_in_experiment(user.id, experiment.id))
         return dataitems
 
-    def getDataitemsForExperiment(self, id):
+    def get_dataitems_for_experiment(self, id):
         experiment = self.get_experiment(id)
         dataitems = []
         for expgroup in experiment.experimentgroups:
-            dataitems.extend(self.getDataitemsForExperimentgroup(expgroup.id))
+            dataitems.extend(self.get_dataitems_for_experimentgroup(expgroup.id))
         return dataitems
 
-    def deleteDataitem(self, id):
+    def delete_dataitem(self, id):
         dataitem = self.dbsession.query(DataItem).filter_by(id=id).first()
         dataitem.user.dataitems.remove(dataitem)
         self.dbsession.delete(dataitem)
@@ -299,7 +299,7 @@ class DatabaseInterface(object): # this is New-style class naming rule
     #                                 Configurations
     # ---------------------------------------------------------------------------------
 
-    def createConfiguration(self, data):
+    def create_configuration(self, data):
         key = data['key']
         value = data['value']
         experimentgroup = data['experimentgroup']
@@ -307,17 +307,17 @@ class DatabaseInterface(object): # this is New-style class naming rule
         self.dbsession.add(configuration)
         return self.dbsession.query(Configuration).order_by(Configuration.id.desc()).first()
 
-    def deleteConfiguration(self, id):
+    def delete_configuration(self, id):
         conf = self.dbsession.query(Configuration).filter_by(id=id).first()
         conf.experimentgroup.configurations.remove(conf)
         self.dbsession.delete(conf)
 
-    def getConfsForExperimentgroup(self, experimentgroupId):
+    def get_confs_for_experimentgroup(self, experimentgroupId):
         return self.dbsession.query(ExperimentGroup)\
             .filter_by(id=experimentgroupId).first().configurations
 
-    def getTotalConfigurationForUser(self, id):
-        expgroups = self.getExperimentgroupsForUser(id)
+    def get_total_configuration_for_user(self, id):
+        expgroups = self.get_experimentgroups_for_user(id)
         confs = []
         for expgroup in expgroups:
             for conf in expgroup.configurations:

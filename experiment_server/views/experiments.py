@@ -40,13 +40,13 @@ class Experiments:
         size = int(data['size'])
         expgroups = []
         for i in range(len(experimentgroups)):
-            expgroup = self.DB.create_experiment_group({'name': experimentgroups[i]['name']})
+            expgroup = self.DB.create_experimentgroup({'name': experimentgroups[i]['name']})
             expgroups.append(expgroup)
             confs = experimentgroups[i]['configurations']
             for j in range(len(confs)):
                 key = confs[j]['key']
                 value = confs[j]['value']
-                self.DB.createConfiguration({'key': key, 'value': value, 'experimentgroup': expgroup})
+                self.DB.create_configuration({'key': key, 'value': value, 'experimentgroup': expgroup})
         experiment = self.DB.create_experiment(
             {'name': name,
              'startDatetime': startDatetime,
@@ -92,12 +92,12 @@ class Experiments:
                      'Show specific experiment metadata', None)
             return createResponse(None, 400)
         experimentAsJSON = experiment.as_dict()
-        totalDataitems = self.DB.getTotalDataitemsForExperiment(id)
+        totalDataitems = self.DB.get_total_dataitems_for_experiment(id)
         experimentgroups = []
         for i in range(len(experiment.experimentgroups)):
             expgroup = experiment.experimentgroups[i]
             expgroupAsJSON = expgroup.as_dict()
-            totalDataitemsForExpgroup = self.DB.getTotalDataitemsForExpgroup(expgroup.id)
+            totalDataitemsForExpgroup = self.DB.get_total_dataitems_for_expgroup(expgroup.id)
             confs = expgroup.configurations
             users = []
             for i in range(len(expgroup.users)):
@@ -145,7 +145,7 @@ class Experiments:
     @view_config(route_name='users_for_experiment', request_method="GET")
     def users_for_experiment_GET(self):
         id = int(self.request.matchdict['id'])
-        users = self.DB.getUsersForExperiment(id)
+        users = self.DB.get_users_for_experiment(id)
         if users is None:
             printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
                      'List all users for specific experiment', None)
@@ -155,7 +155,7 @@ class Experiments:
             user = users[i].as_dict()
             experimentgroup = self.DB.get_experimentgroup_for_user_in_experiment(users[i].id, id)
             user['experimentgroup'] = experimentgroup.as_dict()
-            user['totalDataitems'] = self.DB.getTotalDataitemsForUserInExperiment(users[i].id, id)
+            user['totalDataitems'] = self.DB.get_total_dataitems_for_user_in_experiment(users[i].id, id)
             usersJSON.append(user)
         result = {'data': usersJSON}
         printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
@@ -184,7 +184,7 @@ class Experiments:
             for user in expgroup.users:
                 userAsJSON = user.as_dict()
                 dataitemsForUser = []
-                for dataitem in self.DB.getDataitemsForUserInExperiment(user.id, expId):
+                for dataitem in self.DB.get_dataitems_for_user_in_experiment(user.id, expId):
                     dataitemsForUser.append(dataitem.as_dict())
                 userAsJSON['dataitems'] = dataitemsForUser
                 users.append(userAsJSON)
@@ -224,7 +224,7 @@ class Experiments:
         experimentgroup = expgroup.as_dict()
         experimentgroup['configurations'] = configurations
         experimentgroup['users'] = users
-        experimentgroup['totalDataitems'] = self.DB.getTotalDataitemsForExpgroup(expgroup.id)
+        experimentgroup['totalDataitems'] = self.DB.get_total_dataitems_for_expgroup(expgroup.id)
         result = {'data': experimentgroup}
         printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                  'Show specific experimentgroup metadata', result)
@@ -237,7 +237,7 @@ class Experiments:
         experimentgroup = self.DB.get_experimentgroup(expgroupid)
         experiment_id = experimentgroup.experiment_id
         expid = int(self.request.matchdict['expid'])
-        result = self.DB.delete_experiment_group(expgroupid)
+        result = self.DB.delete_experimentgroup(expgroupid)
         if not result or experiment_id != expid:
             printLog(datetime.datetime.now(), 'DELETE',
                      '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid), 'Delete experimentgroup',
@@ -260,7 +260,7 @@ class Experiments:
     def user_for_experiment_DELETE(self):
         expid = int(self.request.matchdict['expid'])
         userid = int(self.request.matchdict['userid'])
-        result = self.DB.deleteUserFromExperiment(userid, expid)
+        result = self.DB.delete_user_from_experiment(userid, expid)
         if not result:
             printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
                      'Delete user from specific experiment', 'Failed')

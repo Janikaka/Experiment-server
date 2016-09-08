@@ -44,29 +44,29 @@ class BaseTest(unittest.TestCase):
     def init_databaseData(self):
         self.DB = DatabaseInterface(self.dbsession)
 
-        expgroup1 = self.DB.create_experiment_group(
+        expgroup1 = self.DB.create_experimentgroup(
             {'name': 'Group A'
             })
-        expgroup2 = self.DB.create_experiment_group(
+        expgroup2 = self.DB.create_experimentgroup(
             {'name': 'Group B'
             })
 
-        conf1 = self.DB.createConfiguration(
+        conf1 = self.DB.create_configuration(
             {'key': 'v1',
              'value': 0.5,
              'experimentgroup': expgroup1
             })
-        conf2 = self.DB.createConfiguration(
+        conf2 = self.DB.create_configuration(
             {'key': 'v2',
              'value': True,
              'experimentgroup': expgroup1
             })
-        conf3 = self.DB.createConfiguration(
+        conf3 = self.DB.create_configuration(
             {'key': 'v1',
              'value': 1.0,
              'experimentgroup': expgroup2
             })
-        conf4 = self.DB.createConfiguration(
+        conf4 = self.DB.create_configuration(
             {'key': 'v2',
              'value': False,
              'experimentgroup': expgroup2
@@ -80,37 +80,37 @@ class BaseTest(unittest.TestCase):
              'experimentgroups': [expgroup1, expgroup2]
             })
 
-        user1 = self.DB.createUser(
+        user1 = self.DB.create_user(
             {'username': 'First user',
              'experimentgroups': [expgroup1]
             })
-        user2 = self.DB.createUser(
+        user2 = self.DB.create_user(
             {'username': 'Second user',
              'experimentgroups': [expgroup2]
             })
 
-        dt1 = self.DB.createDataitem(
+        dt1 = self.DB.create_dataitem(
             {'key': 'key1',
              'value': 10,
              'startDatetime': '2016-01-01 00:00:00',
              'endDatetime': '2016-01-01 01:01:01',
              'user': user1
             })
-        dt2 = self.DB.createDataitem(
+        dt2 = self.DB.create_dataitem(
             {'key': 'key2',
              'value': 0.5,
              'startDatetime': '2016-02-02 01:01:02',
              'endDatetime': '2016-02-02 02:02:02',
              'user': user1
             })
-        dt3 = self.DB.createDataitem(
+        dt3 = self.DB.create_dataitem(
             {'key': 'key3',
              'value': 'liked',
              'startDatetime': '2016-03-03 00:00:00',
              'endDatetime': '2016-03-03 03:03:03',
              'user': user2
             })
-        dt4 = self.DB.createDataitem(
+        dt4 = self.DB.create_dataitem(
             {'key': 'key4',
              'value': False,
              'startDatetime': '2016-04-04 03:03:04',
@@ -224,7 +224,7 @@ class TestExperimentgroups(BaseTest):
                 assert getattr(expgroupsFromDB[i], key) == expgroups[i][key]
 
     def test_deleteExperimentgroup(self):
-        self.DB.delete_experiment_group(1)
+        self.DB.delete_experimentgroup(1)
 
         expgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
         experimentsFromDB = self.dbsession.query(Experiment).all()
@@ -280,7 +280,7 @@ class TestUsers(BaseTest):
                 assert getattr(usersFromDB[i], key) == users[i][key]
 
     def test_deleteUser(self):
-        self.DB.deleteUser(1)
+        self.DB.delete_user(1)
         usersFromDB = self.dbsession.query(User).all()
         experimentgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
         dataitemsFromDB = self.dbsession.query(DataItem).all()
@@ -296,16 +296,16 @@ class TestUsers(BaseTest):
     def getUser(self):
         usernames = self.dbsession.query(User.username).all()
         assert 'Example user' not in usernames
-        exampleUser = self.DB.getUser('Example user')
+        exampleUser = self.DB.get_user('Example user')
         assert exampleUser.id == 3 and exampleUser.username == 'Example user'
-        user1 = self.DB.getUser('First user')
-        user2 = self.DB.getUser('Second user')
+        user1 = self.DB.get_user('First user')
+        user2 = self.DB.get_user('Second user')
         assert user1.id == 1 and user1.username == 'First user'
         assert user2.id == 2 and user2.username == 'Second user'
 
     def test_assignUserToExperiment(self):
         user = self.dbsession.query(User).filter_by(id=1).one()
-        self.DB.create_experiment_group({'name': 'Example group'})
+        self.DB.create_experimentgroup({'name': 'Example group'})
         expgroup = self.dbsession.query(ExperimentGroup).filter_by(id=3).one()
         self.DB.create_experiment(
             {'name': 'Example experiment',
@@ -315,22 +315,22 @@ class TestUsers(BaseTest):
              'experimentgroups': [expgroup]
             })
         experiment = self.dbsession.query(Experiment).filter_by(id=2).one()
-        self.DB.assignUserToExperiment(user.id, experiment.id)
+        self.DB.assign_user_to_experiment(user.id, experiment.id)
 
         assert expgroup.users == [user]
         assert expgroup in user.experimentgroups 
 
     def test_assignUserToExperiments(self):
-        self.DB.createUser({'username': 'Test user'})
+        self.DB.create_user({'username': 'Test user'})
         user = self.dbsession.query(User).filter_by(username='Test user').one()
         assert user.experimentgroups == []
-        self.DB.assignUserToExperiments(3)
+        self.DB.assign_user_to_experiments(3)
         expgroup1 = self.dbsession.query(ExperimentGroup).filter_by(id=1).one()
         expgroup2 = self.dbsession.query(ExperimentGroup).filter_by(id=2).one()
         assert expgroup1 in user.experimentgroups or expgroup2 in user.experimentgroups
 
     def test_getUsersForExperiment(self):
-        usersForExperiment = self.DB.getUsersForExperiment(1)
+        usersForExperiment = self.DB.get_users_for_experiment(1)
         user1 = self.dbsession.query(User).filter_by(id=1).one()
         user2 = self.dbsession.query(User).filter_by(id=2).one()
 
@@ -342,11 +342,11 @@ class TestUsers(BaseTest):
         experiment = experimentgroup.experiment
 
         assert user in experimentgroup.users and experimentgroup in user.experimentgroups
-        self.DB.deleteUserFromExperiment(user.id, experiment.id)
+        self.DB.delete_user_from_experiment(user.id, experiment.id)
         assert user not in experimentgroup.users and experimentgroup not in user.experimentgroups
 
     def test_getUsersForExperimentgroup(self):
-        users = self.DB.getUsersForExperimentgroup(1)
+        users = self.DB.get_users_for_experimentgroup(1)
         user1 = self.dbsession.query(User).filter_by(id=1).one()
 
         assert users == [user1]
@@ -389,20 +389,20 @@ class TestDataitems(BaseTest):
                 assert getattr(dataitemsFromDB[i], key) == dataitems[i][key]
 
     def test_getTotalDataitemsForExperiment(self):
-        totalDataitemsForExperiment = self.DB.getTotalDataitemsForExperiment(1)
+        totalDataitemsForExperiment = self.DB.get_total_dataitems_for_experiment(1)
 
         assert totalDataitemsForExperiment == 4
 
     def test_getTotalDataitemsForExpgroup(self):
-        totalDataitemsForExpgroup1 = self.DB.getTotalDataitemsForExpgroup(1)
-        totalDataitemsForExpgroup2 = self.DB.getTotalDataitemsForExpgroup(2)
+        totalDataitemsForExpgroup1 = self.DB.get_total_dataitems_for_expgroup(1)
+        totalDataitemsForExpgroup2 = self.DB.get_total_dataitems_for_expgroup(2)
 
         assert totalDataitemsForExpgroup1 == 2
         assert totalDataitemsForExpgroup2 == 2
 
     def test_getTotalDataitemsForUserInExperiment(self):
-        totalDataitemsForUser1InExperiment = self.DB.getTotalDataitemsForUserInExperiment(1, 1)
-        totalDataitemsForUser2InExperiment = self.DB.getTotalDataitemsForUserInExperiment(2, 1)
+        totalDataitemsForUser1InExperiment = self.DB.get_total_dataitems_for_user_in_experiment(1, 1)
+        totalDataitemsForUser2InExperiment = self.DB.get_total_dataitems_for_user_in_experiment(2, 1)
 
         assert totalDataitemsForUser1InExperiment == 2
         assert totalDataitemsForUser2InExperiment == 2
@@ -412,7 +412,7 @@ class TestDataitems(BaseTest):
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
         startDatetime = strToDatetime('2016-01-01 00:00:00')
         endDatetime = strToDatetime('2016-01-01 02:01:01')
-        dataitems = self.DB.getDataitemsForUserOnPeriod(user1.id, startDatetime, endDatetime)
+        dataitems = self.DB.get_dataitems_for_user_on_period(user1.id, startDatetime, endDatetime)
 
         assert dataitems == [dt1]
 
@@ -420,7 +420,7 @@ class TestDataitems(BaseTest):
         user1 = self.dbsession.query(User).filter_by(id=1).one()
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
         dt2 = self.dbsession.query(DataItem).filter_by(id=2).one()
-        dataitems = self.DB.getDataitemsForUserInExperiment(1, 1)
+        dataitems = self.DB.get_dataitems_for_user_in_experiment(1, 1)
 
         assert dataitems == [dt1, dt2]
 
@@ -428,7 +428,7 @@ class TestDataitems(BaseTest):
     def test_getDataitemsForExperimentgroup(self):
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
         dt2 = self.dbsession.query(DataItem).filter_by(id=2).one()
-        dataitems = self.DB.getDataitemsForExperimentgroup(1)
+        dataitems = self.DB.get_dataitems_for_experimentgroup(1)
 
         assert dataitems == [dt1, dt2]
 
@@ -437,7 +437,7 @@ class TestDataitems(BaseTest):
         dt2 = self.dbsession.query(DataItem).filter_by(id=2).one()
         dt3 = self.dbsession.query(DataItem).filter_by(id=3).one()
         dt4 = self.dbsession.query(DataItem).filter_by(id=4).one()
-        dataitems = self.DB.getDataitemsForExperiment(1)
+        dataitems = self.DB.get_dataitems_for_experiment(1)
 
         assert dataitems == [dt1, dt2, dt3, dt4]
 
@@ -445,7 +445,7 @@ class TestDataitems(BaseTest):
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
         user1 = self.dbsession.query(User).filter_by(id=1).one()
         assert dt1 in user1.dataitems
-        self.DB.deleteDataitem(dt1.id)
+        self.DB.delete_dataitem(dt1.id)
         assert dt1 not in user1.dataitems
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).all()
         assert [] == dt1
@@ -488,20 +488,20 @@ class TestConfigurations(BaseTest):
         conf1 = self.dbsession.query(Configuration).filter_by(id=1).one()
         expgroup = conf1.experimentgroup
         assert conf1 in expgroup.configurations
-        self.DB.deleteConfiguration(conf1.id)
+        self.DB.delete_configuration(conf1.id)
         assert conf1 not in expgroup.configurations
         conf1 = self.dbsession.query(Configuration).filter_by(id=1).all()
         assert [] == conf1
 
     def test_getConfsForExperimentgroup(self):
-        configurations = self.DB.getConfsForExperimentgroup(1)
+        configurations = self.DB.get_confs_for_experimentgroup(1)
         conf1 = self.dbsession.query(Configuration).filter_by(id=1).one()
         conf2 = self.dbsession.query(Configuration).filter_by(id=2).one()
 
         assert configurations == [conf1, conf2]
 
     def test_getTotalConfigurationForUser(self):
-        configurations = self.DB.getTotalConfigurationForUser(1)
+        configurations = self.DB.get_total_configuration_for_user(1)
         conf1 = self.dbsession.query(Configuration).filter_by(id=1).one()
         conf2 = self.dbsession.query(Configuration).filter_by(id=2).one()
         

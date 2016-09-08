@@ -34,12 +34,12 @@ class Users:
     def configurations_GET(self):
         # Also adds the user to the DB if doesn't exist
         username = self.request.headers.get('username')
-        user = self.DB.getUser(username)
+        user = self.DB.get_user(username)
         if user is None:
             printLog(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
             return createResponse(None, 400)
-        self.DB.assignUserToExperiments(user.id)
-        confs = self.DB.getTotalConfigurationForUser(user.id)
+        self.DB.assign_user_to_experiments(user.id)
+        confs = self.DB.get_total_configuration_for_user(user.id)
         configurations = []
         for conf in confs:
             configurations.append({'key': conf.key, 'value': conf.value})
@@ -57,7 +57,7 @@ class Users:
     # List all users
     @view_config(route_name='users', request_method="GET")
     def users_GET(self):
-        users = self.DB.getAllUsers()
+        users = self.DB.get_all_users()
         usersJSON = []
         for i in range(len(users)):
             usersJSON.append(users[i].as_dict())
@@ -105,11 +105,11 @@ class Users:
         startDatetime = json['startDatetime']
         endDatetime = json['endDatetime']
         username = self.request.headers['username']
-        user = self.DB.getUserByUsername(username)
+        user = self.DB.get_user_by_username(username)
         if user is None:
             printLog(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', None)
             return createResponse(None, 400)
-        result = {'data': self.DB.createDataitem(
+        result = {'data': self.DB.create_dataitem(
             {'user': user,
              'value': value,
              'key': key,
@@ -130,7 +130,7 @@ class Users:
     @view_config(route_name='user', request_method="DELETE")
     def user_DELETE(self):
         id = int(self.request.matchdict['id'])
-        result = self.DB.deleteUser(id)
+        result = self.DB.delete_user(id)
         if not result:
             printLog(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
             return createResponse(None, 400)
