@@ -1,9 +1,11 @@
 class DictionaryCreator:
     def as_dict(self):
+        """ transfer data to dictionary """
         result = {}
-        for c in self.__table__.columns:
-            if c.name == 'startDatetime' or c.name == 'endDatetime':
-                result[c.name] = str(getattr(self, c.name))
+        for col in self.__table__.columns:
+            if col.name == 'startDatetime' or col.name == 'endDatetime':
+                # col.name means data from column
+                result[col.name] = str(getattr(self, col.name))
             else:
-                result[c.name] = getattr(self, c.name)
+                result[col.name] = getattr(self, col.name)
         return result

@@ -1,3 +1,4 @@
+""" import modules """
 from .experimentgroups import ExperimentGroup
 from .experiments import Experiment
 from .users import User
@@ -9,49 +10,51 @@ from sqlalchemy import and_
 from sqlalchemy import func
 
 
-class DatabaseInterface:
+class DatabaseInterface(object): # this is New-style class naming rule
+    """This interface is used for creating data for database and getting data from database"""
     def __init__(self, dbsession):
         self.dbsession = dbsession
 
     # ---------------------------------------------------------------------------------
     #                                   Experiments
     # ---------------------------------------------------------------------------------
-    def createExperiment(self, data):
+    def create_experiment(self, data):
+        """create experiment"""
         name = data['name']
         experimentgroups = data['experimentgroups']
-        startDatetime = datetime.datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
-        endDatetime = datetime.datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
+        start_datetime = datetime.datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
+        end_datetime = datetime.datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
         size = data['size']
         experiment = Experiment(
             name=name,
-            startDatetime=startDatetime,
-            endDatetime=endDatetime,
+            startDatetime=start_datetime,
+            endDatetime=end_datetime,
             size=size,
             experimentgroups=experimentgroups)
         self.dbsession.add(experiment)
         return self.dbsession.query(Experiment).filter(
             Experiment.id == self.dbsession.query(func.max(Experiment.id))).first()
 
-    def deleteExperiment(self, id):
+    def delete_experiment(self, id):
         experiment = self.dbsession.query(Experiment).filter_by(id=id).first()
         if experiment is None:
             return False
         experimentgroups = experiment.experimentgroups
         for experimentgroup in experimentgroups:
-            self.deleteExperimentgroupInUsers(experimentgroup.id)
+            self.delete_experiment_group_in_users(experimentgroup.id)
         self.dbsession.delete(experiment)
         return [] == self.dbsession.query(Experiment).filter_by(id=id).all()
 
-    def getAllExperiments(self):
+    def get_all_experiments(self):
         return self.dbsession.query(Experiment).all()
 
-    def getStatusForExperiment(self, id):
+    def get_status_for_experiment(self, id):
         # open = 'open'
         running = 'running'
         finished = 'finished'
         waiting = 'waiting'
 
-        experiment = self.getExperiment(id)
+        experiment = self.get_experiment(id)
         dateTimeNow = datetime.datetime.now()
         startDatetime = experiment.startDatetime
         endDatetime = experiment.endDatetime
@@ -66,16 +69,16 @@ class DatabaseInterface:
             return waiting
         return None
 
-    def getExperiment(self, id):
+    def get_experiment(self, id):
         return self.dbsession.query(Experiment).filter_by(id=id).first()
 
-    def getAllRunningExperiments(self):
+    def get_all_running_experiments(self):
         dateTimeNow = datetime.datetime.now()
         return self.dbsession.query(Experiment).filter(
             and_(Experiment.startDatetime <= dateTimeNow,
                  dateTimeNow <= Experiment.endDatetime)).all()
 
-    def getExperimentsUserParticipates(self, id):
+    def get_experiments_user_participates(self, id):
         experimentgroups = self.getExperimentgroupsForUser(id)
         experiments = []
         for experimentgroup in experimentgroups:
@@ -86,35 +89,35 @@ class DatabaseInterface:
     #                                 ExperimentGroups
     # ---------------------------------------------------------------------------------
 
-    def createExperimentgroup(self, data):
+    def create_experiment_group(self, data):
         name = data['name']
         experimentgroup = ExperimentGroup(name=name)
         self.dbsession.add(experimentgroup)
         return self.dbsession.query(ExperimentGroup).order_by(ExperimentGroup.id.desc()).first()
 
-    def deleteExperimentgroup(self, id):
+    def delete_experiment_group(self, id):
         experimentgroup = self.dbsession.query(ExperimentGroup).filter_by(id=id).first()
         if experimentgroup is None:
             return False
-        self.deleteExperimentgroupInUsers(id)
+        self.delete_experiment_group_in_users(id)
         experimentgroup.experiment.experimentgroups.remove(experimentgroup)
         self.dbsession.delete(experimentgroup)
         return [] == self.dbsession.query(ExperimentGroup).filter_by(id=id).all()
 
-    def deleteExperimentgroupInUsers(self, experimentgroupId):
-        experimentgroup = self.getExperimentgroup(experimentgroupId)
+    def delete_experiment_group_in_users(self, experimentgroupId):
+        experimentgroup = self.get_experimentgroup(experimentgroupId)
         if experimentgroup is None:
             return False
         for user in experimentgroup.users:
             user.experimentgroups.remove(experimentgroup)
 
-    def getExperimentgroup(self, id):
+    def get_experimentgroup(self, id):
         return self.dbsession.query(ExperimentGroup).filter_by(id=id).first()
 
-    def getExperimentgroups(self, id):
+    def get_experimentgroups(self, id):
         return self.dbsession.query(ExperimentGroup).filter_by(experiment_id=id).all()
 
-    def getExperimentgroupForUserInExperiment(self, userId, experimentId):
+    def get_experimentgroup_for_user_in_experiment(self, userId, experimentId):
         expgroups = self.getExperimentgroupsForUser(userId)
         if expgroups is None:
             return None
@@ -139,7 +142,9 @@ class DatabaseInterface:
                 data[key]
             except KeyError:
                 data[key] = []
-        user = User(username=data['username'], experimentgroups=data['experimentgroups'], dataitems=data['dataitems'])
+        user = User(username=data['username'],
+                    experimentgroups=data['experimentgroups'],
+                    dataitems=data['dataitems'])
         self.dbsession.add(user)
         return self.dbsession.query(User).order_by(User.id.desc()).first()
 
@@ -169,17 +174,19 @@ class DatabaseInterface:
             return user[0]
 
     def assignUserToExperiment(self, userId, experimentId):
-        experimentgroups = self.getExperimentgroups(experimentId)
+        experimentgroups = self.get_experimentgroups(experimentId)
         if len(experimentgroups) == 1:
             experimentgroup = experimentgroups[0]
         else:
             experimentgroup = experimentgroups[random.randint(0, len(experimentgroups) - 1)]
-        self.dbsession.query(User).filter_by(id=userId).first().experimentgroups.append(experimentgroup)
+        self.dbsession.query(User)\
+            .filter_by(id=userId).first()\
+            .experimentgroups.append(experimentgroup)
 
     def assignUserToExperiments(self, id):
         # We are (now) assigning users only for running experiments
-        allExperiments = self.getAllRunningExperiments()
-        experimentsUserParticipates = self.getExperimentsUserParticipates(id)
+        allExperiments = self.get_all_running_experiments()
+        experimentsUserParticipates = self.get_experiments_user_participates(id)
         experimentsUserDoesNotParticipate = []
         for experiment in allExperiments:
             if experiment not in experimentsUserParticipates:
@@ -189,7 +196,7 @@ class DatabaseInterface:
             self.assignUserToExperiment(id, experiment.id)
 
     def getUsersForExperiment(self, id):
-        experiment = self.getExperiment(id)
+        experiment = self.get_experiment(id)
         if experiment is None:
             return None
         users = []
@@ -198,7 +205,7 @@ class DatabaseInterface:
         return users
 
     def deleteUserFromExperiment(self, userId, experimentId):
-        expgroup = self.getExperimentgroupForUserInExperiment(userId, experimentId)
+        expgroup = self.get_experimentgroup_for_user_in_experiment(userId, experimentId)
         user = self.getUserById(userId)
         if expgroup is None or user is None:
             return None
@@ -231,20 +238,20 @@ class DatabaseInterface:
 
     def getTotalDataitemsForExperiment(self, experimentId):
         count = 0
-        experiment = self.getExperiment(experimentId)
+        experiment = self.get_experiment(experimentId)
         for expgroup in experiment.experimentgroups:
             count += self.getTotalDataitemsForExpgroup(expgroup.id)
         return count
 
     def getTotalDataitemsForExpgroup(self, experimentgroupId):
         count = 0
-        expgroup = self.getExperimentgroup(experimentgroupId)
+        expgroup = self.get_experimentgroup(experimentgroupId)
         for user in expgroup.users:
             count += self.getTotalDataitemsForUserInExperiment(user.id, expgroup.experiment_id)
         return count
 
     def getTotalDataitemsForUserInExperiment(self, userId, expId):
-        experiment = self.getExperiment(expId)
+        experiment = self.get_experiment(expId)
         startDatetime = experiment.startDatetime
         endDatetime = experiment.endDatetime
         count = self.dbsession.query(DataItem.id).filter(
@@ -263,13 +270,13 @@ class DatabaseInterface:
                  DataItem.endDatetime <= endDatetime)).all()
 
     def getDataitemsForUserInExperiment(self, userId, expId):
-        experiment = self.getExperiment(expId)
+        experiment = self.get_experiment(expId)
         startDatetime = experiment.startDatetime
         endDatetime = experiment.endDatetime
         return self.getDataitemsForUserOnPeriod(userId, startDatetime, endDatetime)
 
     def getDataitemsForExperimentgroup(self, id):
-        expgroup = self.getExperimentgroup(id)
+        expgroup = self.get_experimentgroup(id)
         experiment = expgroup.experiment
         dataitems = []
         for user in expgroup.users:
@@ -277,7 +284,7 @@ class DatabaseInterface:
         return dataitems
 
     def getDataitemsForExperiment(self, id):
-        experiment = self.getExperiment(id)
+        experiment = self.get_experiment(id)
         dataitems = []
         for expgroup in experiment.experimentgroups:
             dataitems.extend(self.getDataitemsForExperimentgroup(expgroup.id))
@@ -306,7 +313,8 @@ class DatabaseInterface:
         self.dbsession.delete(conf)
 
     def getConfsForExperimentgroup(self, experimentgroupId):
-        return self.dbsession.query(ExperimentGroup).filter_by(id=experimentgroupId).first().configurations
+        return self.dbsession.query(ExperimentGroup)\
+            .filter_by(id=experimentgroupId).first().configurations
 
     def getTotalConfigurationForUser(self, id):
         expgroups = self.getExperimentgroupsForUser(id)

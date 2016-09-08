@@ -1,3 +1,4 @@
+""" This is a schema """
 from sqlalchemy import (
     Column,
     Integer,
@@ -7,10 +8,10 @@ from sqlalchemy import (
 )
 
 from .meta import Base
-from sqlalchemy.orm import relationship
 
 
 class Configuration(Base):
+    """ This is definition of class configuration """
     __tablename__ = 'configurations'
     id = Column(Integer, primary_key=True)
     experimentgroup_id = Column(Integer, ForeignKey('experimentgroups.id'))
@@ -18,4 +19,5 @@ class Configuration(Base):
     value = Column(PickleType)
 
     def as_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        """ transfer data to dictionary """
+        return {col.name: getattr(self, col.name) for col in self.__table__.columns} # col.name means data from column

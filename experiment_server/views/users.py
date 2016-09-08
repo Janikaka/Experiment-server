@@ -76,10 +76,10 @@ class Users:
     @view_config(route_name='experiments_for_user', request_method="GET")
     def experiments_for_user_GET(self):
         id = int(self.request.matchdict['id'])
-        experiments = self.DB.getExperimentsUserParticipates(id)
+        experiments = self.DB.get_experiments_user_participates(id)
         experimentsJSON = []
         for i in range(len(experiments)):
-            expgroup = self.DB.getExperimentgroupForUserInExperiment(id, experiments[i].id)
+            expgroup = self.DB.get_experimentgroup_for_user_in_experiment(id, experiments[i].id)
             exp = experiments[i].as_dict()
             exp['experimentgroup'] = expgroup.as_dict()
             experimentsJSON.append(exp)

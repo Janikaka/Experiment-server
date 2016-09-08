@@ -44,10 +44,10 @@ class BaseTest(unittest.TestCase):
     def init_databaseData(self):
         self.DB = DatabaseInterface(self.dbsession)
 
-        expgroup1 = self.DB.createExperimentgroup(
+        expgroup1 = self.DB.create_experiment_group(
             {'name': 'Group A'
             })
-        expgroup2 = self.DB.createExperimentgroup(
+        expgroup2 = self.DB.create_experiment_group(
             {'name': 'Group B'
             })
 
@@ -72,7 +72,7 @@ class BaseTest(unittest.TestCase):
              'experimentgroup': expgroup2
             })
 
-        experiment = self.DB.createExperiment(
+        experiment = self.DB.create_experiment(
             {'name': 'Test experiment',
              'startDatetime': '2016-01-01 00:00:00',
              'endDatetime': '2017-01-01 00:00:00',
@@ -151,7 +151,7 @@ class TestExperiments(BaseTest):
                 assert getattr(experimentsFromDB[i], key) == experiments[i][key]
 
     def test_deleteExperiment(self):
-        self.DB.deleteExperiment(1)
+        self.DB.delete_experiment(1)
         experimentsFromDB = self.dbsession.query(Experiment).all()
         experimentgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
         configurationsFromDB = self.dbsession.query(Configuration).all()
@@ -164,28 +164,28 @@ class TestExperiments(BaseTest):
         assert usersFromDB[1].experimentgroups == []
 
     def test_getStatusForExperiment(self):
-        status = self.DB.getStatusForExperiment(1)
+        status = self.DB.get_status_for_experiment(1)
         assert status == 'running'
         newEndDatetime = strToDatetime('2016-06-01 00:00:00')
         self.dbsession.query(Experiment).filter_by(id=1).one().endDatetime = newEndDatetime
-        status = self.DB.getStatusForExperiment(1)
+        status = self.DB.get_status_for_experiment(1)
         assert status == 'finished'
         newStartDatetime = strToDatetime('2017-01-01 00:00:00')
         newEndDatetime = strToDatetime('2017-06-01 00:00:00')
         self.dbsession.query(Experiment).filter_by(id=1).one().startDatetime = newStartDatetime
         self.dbsession.query(Experiment).filter_by(id=1).one().endDatetime = newEndDatetime
-        status = self.DB.getStatusForExperiment(1)
+        status = self.DB.get_status_for_experiment(1)
         assert status == 'waiting'
 
     def test_getAllRunningExperiments(self):
-        experiments = self.DB.getAllRunningExperiments()
+        experiments = self.DB.get_all_running_experiments()
         experimentsFromDB = self.dbsession.query(Experiment).all()
 
         assert experiments == experimentsFromDB
 
     def test_getExperimentsUserParticipates(self):
-        expForUser1 = self.DB.getExperimentsUserParticipates(1)
-        expForUser2 = self.DB.getExperimentsUserParticipates(2)
+        expForUser1 = self.DB.get_experiments_user_participates(1)
+        expForUser2 = self.DB.get_experiments_user_participates(2)
         experimentsFromDB = self.dbsession.query(Experiment).all()
 
         assert expForUser1 == [experimentsFromDB[0]]
@@ -224,7 +224,7 @@ class TestExperimentgroups(BaseTest):
                 assert getattr(expgroupsFromDB[i], key) == expgroups[i][key]
 
     def test_deleteExperimentgroup(self):
-        self.DB.deleteExperimentgroup(1)
+        self.DB.delete_experiment_group(1)
 
         expgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
         experimentsFromDB = self.dbsession.query(Experiment).all()
@@ -242,8 +242,8 @@ class TestExperimentgroups(BaseTest):
         assert usersFromDB[1].experimentgroups == experimentgroups 
 
     def test_getExperimentgroupForUserInExperiment(self):
-        expgroupInExperimentForUser1 = self.DB.getExperimentgroupForUserInExperiment(1, 1)
-        expgroupInExperimentForUser2 = self.DB.getExperimentgroupForUserInExperiment(2, 1)
+        expgroupInExperimentForUser1 = self.DB.get_experimentgroup_for_user_in_experiment(1, 1)
+        expgroupInExperimentForUser2 = self.DB.get_experimentgroup_for_user_in_experiment(2, 1)
 
         expgroup1 = self.dbsession.query(ExperimentGroup).filter_by(id=1).one()
         expgroup2 = self.dbsession.query(ExperimentGroup).filter_by(id=2).one()
@@ -305,9 +305,9 @@ class TestUsers(BaseTest):
 
     def test_assignUserToExperiment(self):
         user = self.dbsession.query(User).filter_by(id=1).one()
-        self.DB.createExperimentgroup({'name': 'Example group'})
+        self.DB.create_experiment_group({'name': 'Example group'})
         expgroup = self.dbsession.query(ExperimentGroup).filter_by(id=3).one()
-        self.DB.createExperiment(
+        self.DB.create_experiment(
             {'name': 'Example experiment',
              'startDatetime': '2016-01-01 00:00:00',
              'endDatetime': '2017-01-01 00:00:00',
