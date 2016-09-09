@@ -4,7 +4,7 @@ from ..models import DatabaseInterface
 from pyramid.httpexceptions import HTTPFound
 import json
 import datetime
-from ..utils.log import printLog
+from ..utils.log import print_log
 
 
 def createResponse(output, status_code):
@@ -55,11 +55,11 @@ class Experiments:
              'size': size
              });
         if experiment is None:
-            printLog(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', None)
+            print_log(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', None)
             return createResponse(None, 200)
         result = {'data': experiment.as_dict()}
         # Experimenter sends double request?!
-        printLog(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', result)
+        print_log(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', result)
         return createResponse(result, 200)
 
     # List all experiments
@@ -72,7 +72,7 @@ class Experiments:
             experiment['status'] = self.DB.get_status_for_experiment(experiments[i].id)
             experimentsJSON.append(experiment)
         result = {'data': experimentsJSON}
-        printLog(datetime.datetime.now(), 'GET', '/experiments', 'List all experiments', result)
+        print_log(datetime.datetime.now(), 'GET', '/experiments', 'List all experiments', result)
         return createResponse(result, 200)
 
     @view_config(route_name='experiment_metadata', request_method="OPTIONS")
@@ -88,7 +88,7 @@ class Experiments:
         id = int(self.request.matchdict['id'])
         experiment = self.DB.get_experiment(id)
         if experiment is None:
-            printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
+            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
                      'Show specific experiment metadata', None)
             return createResponse(None, 400)
         experimentAsJSON = experiment.as_dict()
@@ -112,7 +112,7 @@ class Experiments:
         experimentAsJSON['totalDataitems'] = totalDataitems
         experimentAsJSON['status'] = self.DB.get_status_for_experiment(experiment.id)
         result = {'data': experimentAsJSON}
-        printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
+        print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
                  'Show specific experiment metadata', result)
         return createResponse(result, 200)
 
@@ -129,9 +129,9 @@ class Experiments:
         id = int(self.request.matchdict['id'])
         result = self.DB.delete_experiment(id)
         if not result:
-            printLog(datetime.datetime.now(), 'DELETE', '/experiments/' + str(id), 'Delete experiment', 'Failed')
+            print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(id), 'Delete experiment', 'Failed')
             return createResponse(None, 400)
-        printLog(datetime.datetime.now(), 'DELETE', '/experiments/' + str(id), 'Delete experiment', 'Succeeded')
+        print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(id), 'Delete experiment', 'Succeeded')
         return createResponse(None, 200)
 
     @view_config(route_name='users_for_experiment', request_method="OPTIONS")
@@ -147,7 +147,7 @@ class Experiments:
         id = int(self.request.matchdict['id'])
         users = self.DB.get_users_for_experiment(id)
         if users is None:
-            printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
+            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
                      'List all users for specific experiment', None)
             return createResponse(None, 400)
         usersJSON = []
@@ -158,7 +158,7 @@ class Experiments:
             user['totalDataitems'] = self.DB.get_total_dataitems_for_user_in_experiment(users[i].id, id)
             usersJSON.append(user)
         result = {'data': usersJSON}
-        printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
+        print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
                  'List all users for specific experiment', result)
         return createResponse(result, 200)
 
@@ -192,7 +192,7 @@ class Experiments:
             experimentgroup['users'] = users
             experimentgroups.append(experimentgroup)
         result = {'data': {'experiment': experimentAsJSON, 'experimentgroups': experimentgroups}}
-        printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/data', 'Show specific experiment data',
+        print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/data', 'Show specific experiment data',
                  result)
         return createResponse(result, 200)
 
@@ -210,7 +210,7 @@ class Experiments:
         expid = int(self.request.matchdict['expid'])
         expgroup = self.DB.get_experimentgroup(expgroupid)
         if expgroup is None or expgroup.experiment.id != expid:
-            printLog(datetime.datetime.now(), 'GET',
+            print_log(datetime.datetime.now(), 'GET',
                      '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                      'Show specific experimentgroup metadata', None)
             return createResponse(None, 400)
@@ -226,7 +226,7 @@ class Experiments:
         experimentgroup['users'] = users
         experimentgroup['totalDataitems'] = self.DB.get_total_dataitems_for_expgroup(expgroup.id)
         result = {'data': experimentgroup}
-        printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
+        print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                  'Show specific experimentgroup metadata', result)
         return createResponse(result, 200)
 
@@ -239,11 +239,11 @@ class Experiments:
         expid = int(self.request.matchdict['expid'])
         result = self.DB.delete_experimentgroup(expgroupid)
         if not result or experiment_id != expid:
-            printLog(datetime.datetime.now(), 'DELETE',
+            print_log(datetime.datetime.now(), 'DELETE',
                      '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid), 'Delete experimentgroup',
                      'Failed')
             return createResponse(None, 400)
-        printLog(datetime.datetime.now(), 'DELETE',
+        print_log(datetime.datetime.now(), 'DELETE',
                  '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid), 'Delete experimentgroup',
                  'Succeeded')
         return createResponse(None, 200)
@@ -262,9 +262,9 @@ class Experiments:
         userid = int(self.request.matchdict['userid'])
         result = self.DB.delete_user_from_experiment(userid, expid)
         if not result:
-            printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
+            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
                      'Delete user from specific experiment', 'Failed')
             return createResponse(None, 400)
-        printLog(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
+        print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
                  'Delete user from specific experiment', 'Succeeded')
         return createResponse(None, 200)

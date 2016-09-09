@@ -3,7 +3,7 @@ from pyramid.response import Response
 from ..models import DatabaseInterface
 import json
 import datetime
-from experiment_server.utils.log import printLog
+from experiment_server.utils.log import print_log
 
 
 def createResponse(output, status_code):
@@ -36,7 +36,7 @@ class Users:
         username = self.request.headers.get('username')
         user = self.DB.get_user(username)
         if user is None:
-            printLog(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
+            print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
             return createResponse(None, 400)
         self.DB.assign_user_to_experiments(user.id)
         confs = self.DB.get_total_configuration_for_user(user.id)
@@ -44,7 +44,7 @@ class Users:
         for conf in confs:
             configurations.append({'key': conf.key, 'value': conf.value})
         result = {'data': configurations}
-        printLog(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', result)
+        print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', result)
         return createResponse(result, 200)
 
     @view_config(route_name='users', request_method="OPTIONS")
@@ -62,7 +62,7 @@ class Users:
         for i in range(len(users)):
             usersJSON.append(users[i].as_dict())
         result = {'data': usersJSON}
-        printLog(datetime.datetime.now(), 'GET', '/users', 'List all users', result)
+        print_log(datetime.datetime.now(), 'GET', '/users', 'List all users', result)
         return createResponse(result, 200)
 
     @view_config(route_name='experiments_for_user', request_method="OPTIONS")
@@ -84,7 +84,7 @@ class Users:
             exp['experimentgroup'] = expgroup.as_dict()
             experimentsJSON.append(exp)
         result = {'data': experimentsJSON}
-        printLog(datetime.datetime.now(), 'GET', '/users/' + str(id) + '/experiments',
+        print_log(datetime.datetime.now(), 'GET', '/users/' + str(id) + '/experiments',
                  'List all experiments for specific user', result)
         return createResponse(result, 200)
 
@@ -107,7 +107,7 @@ class Users:
         username = self.request.headers['username']
         user = self.DB.get_user_by_username(username)
         if user is None:
-            printLog(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', None)
+            print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', None)
             return createResponse(None, 400)
         result = {'data': self.DB.create_dataitem(
             {'user': user,
@@ -116,7 +116,7 @@ class Users:
              'startDatetime': startDatetime,
              'endDatetime': endDatetime
              }).as_dict()}
-        printLog(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', result)
+        print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', result)
         return createResponse(result, 200)
 
     @view_config(route_name='user', request_method="OPTIONS")
@@ -132,7 +132,7 @@ class Users:
         id = int(self.request.matchdict['id'])
         result = self.DB.delete_user(id)
         if not result:
-            printLog(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
+            print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
             return createResponse(None, 400)
-        printLog(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
+        print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
         return createResponse(None, 200)
