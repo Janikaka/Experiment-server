@@ -1,23 +1,12 @@
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
 from ..models import DatabaseInterface
-from pyramid.httpexceptions import HTTPFound
-import json
 import datetime
 from ..utils.log import print_log
-
-
-def createResponse(output, status_code):
-    outputJson = json.dumps(output)
-    headers = ()
-    res = Response(outputJson)
-    res.status_code = status_code
-    res.headers.add('Access-Control-Allow-Origin', '*')
-    return res
-
+from .webutils import WebUtils
 
 @view_defaults(renderer='json')
-class Experiments:
+class Experiments(WebUtils):
     def __init__(self, request):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
@@ -56,11 +45,11 @@ class Experiments:
              });
         if experiment is None:
             print_log(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', None)
-            return createResponse(None, 200)
+            return self.createResponse(None, 200)
         result = {'data': experiment.as_dict()}
         # Experimenter sends double request?!
         print_log(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', result)
-        return createResponse(result, 200)
+        return self.createResponse(result, 200)
 
     # List all experiments
     @view_config(route_name='experiments', request_method="GET")
@@ -73,7 +62,7 @@ class Experiments:
             experimentsJSON.append(experiment)
         result = {'data': experimentsJSON}
         print_log(datetime.datetime.now(), 'GET', '/experiments', 'List all experiments', result)
-        return createResponse(result, 200)
+        return self.createResponse(result, 200)
 
     @view_config(route_name='experiment_metadata', request_method="OPTIONS")
     def experiment_metadata_OPTIONS(self):
@@ -90,7 +79,7 @@ class Experiments:
         if experiment is None:
             print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
                      'Show specific experiment metadata', None)
-            return createResponse(None, 400)
+            return self.createResponse(None, 400)
         experimentAsJSON = experiment.as_dict()
         totalDataitems = self.DB.get_total_dataitems_for_experiment(id)
         experimentgroups = []
@@ -114,7 +103,7 @@ class Experiments:
         result = {'data': experimentAsJSON}
         print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
                  'Show specific experiment metadata', result)
-        return createResponse(result, 200)
+        return self.createResponse(result, 200)
 
     @view_config(route_name='experiment', request_method="OPTIONS")
     def experiment_OPTIONS(self):
@@ -130,9 +119,9 @@ class Experiments:
         result = self.DB.delete_experiment(id)
         if not result:
             print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(id), 'Delete experiment', 'Failed')
-            return createResponse(None, 400)
+            return self.createResponse(None, 400)
         print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(id), 'Delete experiment', 'Succeeded')
-        return createResponse(None, 200)
+        return self.createResponse(None, 200)
 
     @view_config(route_name='users_for_experiment', request_method="OPTIONS")
     def users_for_experiment_OPTIONS(self):
@@ -149,7 +138,7 @@ class Experiments:
         if users is None:
             print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
                      'List all users for specific experiment', None)
-            return createResponse(None, 400)
+            return self.createResponse(None, 400)
         usersJSON = []
         for i in range(len(users)):
             user = users[i].as_dict()
@@ -160,7 +149,7 @@ class Experiments:
         result = {'data': usersJSON}
         print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
                  'List all users for specific experiment', result)
-        return createResponse(result, 200)
+        return self.createResponse(result, 200)
 
     @view_config(route_name='experiment_data', request_method="OPTIONS")
     def experiment_data_OPTIONS(self):
@@ -194,7 +183,7 @@ class Experiments:
         result = {'data': {'experiment': experimentAsJSON, 'experimentgroups': experimentgroups}}
         print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/data', 'Show specific experiment data',
                  result)
-        return createResponse(result, 200)
+        return self.createResponse(result, 200)
 
     @view_config(route_name='experimentgroup', request_method="OPTIONS")
     def experimentgroup_OPTIONS(self):
@@ -213,7 +202,7 @@ class Experiments:
             print_log(datetime.datetime.now(), 'GET',
                      '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                      'Show specific experimentgroup metadata', None)
-            return createResponse(None, 400)
+            return self.createResponse(None, 400)
         confs = expgroup.configurations
         configurations = []
         for i in range(len(confs)):
@@ -228,7 +217,7 @@ class Experiments:
         result = {'data': experimentgroup}
         print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                  'Show specific experimentgroup metadata', result)
-        return createResponse(result, 200)
+        return self.createResponse(result, 200)
 
     # Delete experimentgroup
     @view_config(route_name='experimentgroup', request_method="DELETE")
@@ -242,11 +231,11 @@ class Experiments:
             print_log(datetime.datetime.now(), 'DELETE',
                      '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid), 'Delete experimentgroup',
                      'Failed')
-            return createResponse(None, 400)
+            return self.createResponse(None, 400)
         print_log(datetime.datetime.now(), 'DELETE',
                  '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid), 'Delete experimentgroup',
                  'Succeeded')
-        return createResponse(None, 200)
+        return self.createResponse(None, 200)
 
     @view_config(route_name='user_for_experiment', request_method="OPTIONS")
     def user_for_experiment_OPTIONS(self):
@@ -264,7 +253,7 @@ class Experiments:
         if not result:
             print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
                      'Delete user from specific experiment', 'Failed')
-            return createResponse(None, 400)
+            return self.createResponse(None, 400)
         print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
                  'Delete user from specific experiment', 'Succeeded')
-        return createResponse(None, 200)
+        return self.createResponse(None, 200)
