@@ -41,20 +41,16 @@ Deleting an experiment:
 
 ###Work flow
 
-When starting a new task:
-- pull latest master
-- make a local branch 
-
-    $ git branch -b [task name]
-
-- after committed your changes push them 
-
-    $ git push origin [task name]
-
-- remember to delete the branch
-
-    $ git branch -d [task name] && git push origin :[task name]
-
-- make a pull request: https://help.github.com/articles/creating-a-pull-request/
+1) Take a task from Trello (card)
+2) Create a new branch for it `git branch <task_name>`
+3) Start working only that branch
+4) Rebase often with the master `git checkout master` `git pull` `git checkout <task_name>`
+	`git rebase master`
+5) Fix all the conflicts
+6) TEST!
+7) When rebasing is done. Save your work globally `git push origin <task_name>`
+8) When you feel that you would like the whole team get your code: Make a pull-request
+9) Assign somebody to code review your work
+10) When the code review is done merge the branch to master via GitHub.com
 
 
