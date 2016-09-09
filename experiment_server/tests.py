@@ -184,8 +184,8 @@ class TestExperiments(BaseTest):
         assert experiments == experimentsFromDB
 
     def test_getExperimentsUserParticipates(self):
-        expForUser1 = self.DB.get_experiments_user_participates(1)
-        expForUser2 = self.DB.get_experiments_user_participates(2)
+        expForUser1 = self.DB.get_user_experiments_list(1)
+        expForUser2 = self.DB.get_user_experiments_list(2)
         experimentsFromDB = self.dbsession.query(Experiment).all()
 
         assert expForUser1 == [experimentsFromDB[0]]
