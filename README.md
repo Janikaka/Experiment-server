@@ -9,6 +9,9 @@ A simple REST API server for providing runtime configurations for applications a
 
 Clone this repository
 
+- export a virtual env
+`export VENV=~/env`
+
 - Setup the environment (from the project root folder):
 `./scripts/setup-environment.sh`
 

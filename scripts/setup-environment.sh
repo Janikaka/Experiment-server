@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export VENV=~/env
 python3 -m venv $VENV
 # TODO: change to 'pip install -r requirements.txt'
 $VENV/bin/pip install -e .
