@@ -9,6 +9,10 @@ A simple REST API server for providing runtime configurations for applications a
 
 Clone this repository
 
+- Create virtual environment for python
+`export VENV=~/env` (you can change the default directory if you want)
+`python3 -m venv $VENV`
+
 - Install dependencies:
 `$VENV/bin/pip install -e .`
 
