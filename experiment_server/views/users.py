@@ -1,22 +1,12 @@
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
 from ..models import DatabaseInterface
-import json
 import datetime
 from experiment_server.utils.log import print_log
-
-
-def createResponse(output, status_code):
-    outputJson = json.dumps(output)
-    headers = ()
-    res = Response(outputJson)
-    res.status_code = status_code
-    res.headers.add('Access-Control-Allow-Origin', '*')
-    return res
-
+from .webutils import WebUtils
 
 @view_defaults(renderer='json')
-class Users:
+class Users(WebUtils):
     def __init__(self, request):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
@@ -37,7 +27,7 @@ class Users:
         user = self.DB.get_user(username)
         if user is None:
             print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
-            return createResponse(None, 400)
+            return self.createResponse(None, 400)
         self.DB.assign_user_to_experiments(user.id)
         confs = self.DB.get_total_configuration_for_user(user.id)
         configurations = []
@@ -45,7 +35,7 @@ class Users:
             configurations.append({'key': conf.key, 'value': conf.value})
         result = {'data': configurations}
         print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', result)
-        return createResponse(result, 200)
+        return self.createResponse(result, 200)
 
     @view_config(route_name='users', request_method="OPTIONS")
     def users_OPTIONS(self):
@@ -63,7 +53,7 @@ class Users:
             usersJSON.append(users[i].as_dict())
         result = {'data': usersJSON}
         print_log(datetime.datetime.now(), 'GET', '/users', 'List all users', result)
-        return createResponse(result, 200)
+        return self.createResponse(result, 200)
 
     @view_config(route_name='experiments_for_user', request_method="OPTIONS")
     def experiments_for_user_OPTIONS(self):
@@ -86,7 +76,7 @@ class Users:
         result = {'data': experimentsJSON}
         print_log(datetime.datetime.now(), 'GET', '/users/' + str(id) + '/experiments',
                  'List all experiments for specific user', result)
-        return createResponse(result, 200)
+        return self.createResponse(result, 200)
 
     @view_config(route_name='events', request_method="OPTIONS")
     def events_OPTIONS(self):
@@ -108,7 +98,7 @@ class Users:
         user = self.DB.get_user_by_username(username)
         if user is None:
             print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', None)
-            return createResponse(None, 400)
+            return self.createResponse(None, 400)
         result = {'data': self.DB.create_dataitem(
             {'user': user,
              'value': value,
@@ -117,7 +107,7 @@ class Users:
              'endDatetime': endDatetime
              }).as_dict()}
         print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', result)
-        return createResponse(result, 200)
+        return self.createResponse(result, 200)
 
     @view_config(route_name='user', request_method="OPTIONS")
     def user_OPTIONS(self):
@@ -133,6 +123,6 @@ class Users:
         result = self.DB.delete_user(id)
         if not result:
             print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
-            return createResponse(None, 400)
+            return self.createResponse(None, 400)
         print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
-        return createResponse(None, 200)
+        return self.createResponse(None, 200)
