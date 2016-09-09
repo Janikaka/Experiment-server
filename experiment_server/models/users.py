@@ -1,6 +1,6 @@
+""" This is a schema """
 from sqlalchemy import (
     Column,
-    Index,
     Integer,
     Text,
 )
@@ -10,6 +10,8 @@ from .meta import Base
 from .users_experimentgroups import users_experimentgroups
 
 class User(Base):
+    """ This is definition of class User. """
+    # TODO Too few public methods (1/2) and "id" is an invalid class attribute name.
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     username = Column(Text, unique=True, index=True)
@@ -21,5 +23,5 @@ class User(Base):
     )
 
     def as_dict(self):
+        """ Transfer data to dictionary """
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-        
