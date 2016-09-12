@@ -1,20 +1,30 @@
 from sqlalchemy import engine_from_config
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import configure_mappers
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker
 import zope.sqlalchemy
 
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
-from .experiments import Experiment
-from .users import User
-from .dataitems import DataItem
-from .experimentgroups import ExperimentGroup
-from .db import DatabaseInterface
-from .configurations import Configuration
+from experiment_server.models.experiments import Experiment
+from experiment_server.models.users import User
+from experiment_server.models.dataitems import DataItem
+from experiment_server.models.experimentgroups import ExperimentGroup
+from experiment_server.models.db import DatabaseInterface
+from experiment_server.models.configurations import Configuration
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
 configure_mappers()
+
+DBSession = scoped_session(sessionmaker())
+Base = declarative_base()
+
+def initialize_sql(engine):
+    DBSession.configure(bind=engine)
+    Base.metadata.bind = engine
+    Base.metadata.create_all(engine)
+
 
 def get_engine(settings, prefix='sqlalchemy.'):
     return engine_from_config(settings, prefix)

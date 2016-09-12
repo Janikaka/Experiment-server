@@ -7,8 +7,8 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.orm import relationship
-from .DictionaryCreator import DictionaryCreator
-from .meta import Base
+from experiment_server.models.DictionaryCreator import DictionaryCreator
+from experiment_server.models.meta import Base
 
 class Experiment(Base, DictionaryCreator):
     """ This is definition of class Experiment. """

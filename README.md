@@ -4,6 +4,23 @@
 
 A simple REST API server for providing runtime configurations for applications and receiving usage-related event data.
 
+###Environment setup
+
+We use virtualenv to virtualize the python installation. This will create need for a venv-directory which should be located at project root.
+
+#### Configuring virtualenv
+
+Using
+
+`virtualenv --no-site-packages -p /usr/bin/python3 venv`
+
+`source venv/bin/activate`
+
+Deactivating
+
+`deactivate`
+
+
 ###Getting Started
 ---------------
 

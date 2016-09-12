@@ -1,9 +1,9 @@
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
-from ..models import DatabaseInterface
+from experiment_server.models import DatabaseInterface
 import datetime
-from ..utils.log import print_log
-from .webutils import WebUtils
+from experiment_server.utils.log import print_log
+from experiment_server.views.webutils import WebUtils
 
 @view_defaults(renderer='json')
 class Experiments(WebUtils):
@@ -42,7 +42,7 @@ class Experiments(WebUtils):
              'endDatetime': endDatetime,
              'experimentgroups': expgroups,
              'size': size
-             });
+            })
         if experiment is None:
             print_log(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', None)
             return self.createResponse(None, 200)
