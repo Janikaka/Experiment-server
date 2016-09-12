@@ -3,7 +3,6 @@ import datetime
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
 from experiment_server.models import DatabaseInterface
-import datetime
 from experiment_server.utils.log import print_log
 from experiment_server.views.webutils import WebUtils
 

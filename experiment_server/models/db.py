@@ -187,7 +187,7 @@ class DatabaseInterface(object): # this is New-style class naming rule
     def get_user(self, username):
         """ get user by username """
         user = self.dbsession.query(User).filter_by(username=username).all()
-        if user == []:
+        if not user:
             return self.create_user({'username': username})
         else:
             return user[0]
