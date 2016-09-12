@@ -66,7 +66,7 @@ class Users(WebUtils):
     @view_config(route_name='experiments_for_user', request_method="GET")
     def experiments_for_user_GET(self):
         id = int(self.request.matchdict['id'])
-        experiments = self.DB.get_experiments_user_participates(id)
+        experiments = self.DB.get_user_experiments_list(id)
         experimentsJSON = []
         for i in range(len(experiments)):
             expgroup = self.DB.get_experimentgroup_for_user_in_experiment(id, experiments[i].id)
