@@ -8,15 +8,7 @@ A simple REST API server for providing runtime configurations for applications a
 
 We use virtualenv to virtualize the python installation. This will create need for a venv-directory which should be located at project root.
 
-#### Configuring virtualenv
-
-Using
-
-`virtualenv --no-site-packages -p /usr/bin/python3 venv`
-
-`source venv/bin/activate`
-
-Deactivating
+Deactivating virtualenv
 
 `deactivate`
 
@@ -26,17 +18,21 @@ Deactivating
 
 Clone this repository
 
-- export a virtual env
-`export VENV=~/env`
 
 - Setup the environment (from the project root folder):
 `./scripts/setup-environment.sh`
 
+- Start virtualenv
+`source venv/bin/activate`
+
+- Install dependencies to virtual env (venv-fold)
+`pip install -r requirements.txt`
+
 - Initialize database:
-`$VENV/bin/initialize_Experiment-server_db development.ini`
+`initialize_Experiment-server_db development.ini`
 
 - Start the local server:
-`$VENV/bin/pserve development.ini`
+`pserve development.ini`
 
 - Install hooks (from the project root folder):
 `./scripts/install-precommit-hooks.sh`
