@@ -1,5 +1,6 @@
 [![Code Climate](https://codeclimate.com/github/TheSoftwareFactory/experiment-server/badges/gpa.svg)](https://codeclimate.com/github/TheSoftwareFactory/experiment-server)
-
+[![Test Coverage](https://codeclimate.com/github/TheSoftwareFactory/experiment-server/badges/coverage.svg)](https://codeclimate.com/github/TheSoftwareFactory/experiment-server/coverage)
+[![Issue Count](https://codeclimate.com/github/TheSoftwareFactory/experiment-server/badges/issue_count.svg)](https://codeclimate.com/github/TheSoftwareFactory/experiment-server)
 # Experiment-server
 
 A simple REST API server for providing runtime configurations for applications and receiving usage-related event data.
