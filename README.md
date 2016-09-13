@@ -40,7 +40,7 @@ Clone this repository
 
 Run tests:
 
-`$VENV/bin/py.test experiment_server/tests.py`
+`pytest experiment_server/tests.py`
 
 ###Trying the REST API using `curl`
 
