@@ -18,6 +18,8 @@ Deactivating virtualenv
 
 Clone this repository
 
+- Install projects only external dependency
+`pip install virtualenv`
 
 - Setup the environment (from the project root folder):
 `./scripts/setup-environment.sh`

@@ -1,4 +1,4 @@
 #!/bin/bash
 
 
-virtualenv --no-site-packages -p /usr/bin/python3 ./venv
+virtualenv --no-site-packages -p $(which python3) ./venv
