@@ -13,6 +13,8 @@ from experiment_server.models.experimentgroups import ExperimentGroup
 from experiment_server.models.db import DatabaseInterface
 from experiment_server.models.configurations import Configuration
 from experiment_server.database.orm import ORM
+from experiment_server.models.constraints import Constraint
+
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
