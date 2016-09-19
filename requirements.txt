@@ -33,3 +33,4 @@ wrapt==1.10.8
 zope.deprecation==4.1.2
 zope.interface==4.3.2
 zope.sqlalchemy==0.7.7
+-e git+git@github.com:TheSoftwareFactory/experiment-server.git@c1e047414a298624c9191dd0644ba78026850726#egg=Experiment_server
