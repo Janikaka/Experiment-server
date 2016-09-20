@@ -2,6 +2,8 @@ astroid==1.4.8
 autopep8==1.2.4
 codeclimate-test-reporter==0.1.2
 coverage==4.2
+-e git+git@github.com:TheSoftwareFactory/experiment-server.git@c1e047414a298624c9191dd0644ba78026850726#egg=Experiment_server
+fn==0.4.3
 isort==4.2.5
 Jinja2==2.8
 lazy-object-proxy==1.2.2
@@ -20,6 +22,7 @@ pyramid-mako==1.0.2
 pyramid-tm==0.12.1
 pytest==3.0.2
 pytest-cov==2.3.1
+python-editor==1.0.1
 repoze.lru==0.6
 requests==2.11.1
 six==1.10.0
@@ -33,4 +36,3 @@ wrapt==1.10.8
 zope.deprecation==4.1.2
 zope.interface==4.3.2
 zope.sqlalchemy==0.7.7
--e git+git@github.com:TheSoftwareFactory/experiment-server.git@c1e047414a298624c9191dd0644ba78026850726#egg=Experiment_server
