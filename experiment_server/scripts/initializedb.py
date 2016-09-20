@@ -15,7 +15,7 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration, Constraint)
+from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration, Application)
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -134,8 +134,6 @@ def main(argv=sys.argv):
         dbsession.add(conf7)
         dbsession.add(conf8)
 
-        cons1 = Constraint(main_configuration= conf1, configuration= conf2, value=True)
-        cons2 = Constraint(main_configuration=conf3, configuration=conf4, value=True)
+        app1 = Application(name='Math Game')
 
-        dbsession.add(cons1)
-        dbsession.add(cons2)
+        dbsession.add(app1)

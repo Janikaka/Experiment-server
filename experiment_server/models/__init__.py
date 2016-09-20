@@ -4,6 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 import zope.sqlalchemy
 
+from experiment_server.database.orm import ORM
+
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
 from experiment_server.models.experiments import Experiment
@@ -12,8 +14,7 @@ from experiment_server.models.dataitems import DataItem
 from experiment_server.models.experimentgroups import ExperimentGroup
 from experiment_server.models.db import DatabaseInterface
 from experiment_server.models.configurations import Configuration
-from experiment_server.database.orm import ORM
-from experiment_server.models.constraints import Constraint
+from experiment_server.models.applications import Application
 
 
 # run configure_mappers after defining all of the models to ensure

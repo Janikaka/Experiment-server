@@ -8,7 +8,7 @@ from .experiments import Experiment
 from .users import User
 from .dataitems import DataItem
 from .configurations import Configuration
-from .constraints import Constraint
+from .applications import Application
 
 
 class DatabaseInterface(object): # this is New-style class naming rule
@@ -364,23 +364,11 @@ class DatabaseInterface(object): # this is New-style class naming rule
         return confs
 
     # ---------------------------------------------------------------------------------
-    #                                 Constraints
+    #                                 Applications
     # ---------------------------------------------------------------------------------
 
-
-    def create_constraint(self, data): # This isn't tested and may be totally wrong solution...
-        """ create constraint
-        main_configuration = data['configuration']
-        configuration = data['configuration']
-        value = data['value']
-        constraint = Constraint(main_configuration=main_configuration,
-                                configuration=configuration,
-                                value=value)
-        self.dbsession.add(constraint)
-        return self.dbsession.query(Constraint).order_by(Constraint.id.desc()).first()
-        """
+    def get_all_applications(self):
+        """ get all applications """
+        return self.dbsession.query(Application).all()
 
 
-    def get_all_constraints(self):
-        """ get all constraints """
-        return self.dbsession.query(Constraint).all()
