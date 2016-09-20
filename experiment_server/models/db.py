@@ -371,4 +371,13 @@ class DatabaseInterface(object): # this is New-style class naming rule
         """ get all applications """
         return self.dbsession.query(Application).all()
 
+    def create_application(self, data):
+        """ create new application """
+        name = data['name']
+        application = Application(
+            name=name
+            )
+        self.dbsession.add(application)
+        return self.dbsession.query(Application).filter(
+            Application.id == self.dbsession.query(func.max(Application.id))).first()
 

@@ -29,3 +29,18 @@ class Applications(WebUtils):
         result = {'data': applicationsJSON}
         print_log(datetime.datetime.now(), 'GET', '/applications', 'List all applications', result)
         return self.createResponse(result, 200)
+
+    @view_config(route_name='applications', request_method="POST")
+    def applications_POST(self):
+        """ create applications """
+        data = self.request.json_body
+        name = data['name']
+
+        application = self.DB.create_application(
+            {
+                'name': name
+            })
+
+        result = {'data': application.as_dict()}
+        print_log(name,'POST','/applications', 'Create new application', result)
+        return self.createResponse(result, 200)

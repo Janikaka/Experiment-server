@@ -4,8 +4,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 import zope.sqlalchemy
 
-from experiment_server.database.orm import ORM
-
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
 from experiment_server.models.experiments import Experiment
@@ -22,7 +20,7 @@ from experiment_server.models.applications import Application
 configure_mappers()
 
 DBSession = scoped_session(sessionmaker())
-Base = declarative_base(cls=ORM)
+Base = declarative_base()
 
 
 def initialize_sql(engine):
