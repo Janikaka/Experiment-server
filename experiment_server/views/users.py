@@ -5,6 +5,9 @@ import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 
+from models.users import User
+
+
 @view_defaults(renderer='json')
 class Users(WebUtils):
     def __init__(self, request):
@@ -45,15 +48,9 @@ class Users(WebUtils):
         return res
 
     # List all users
-    @view_config(route_name='users', request_method="GET")
+    @view_config(route_name='users', request_method="GET", renderer='json')
     def users_GET(self):
-        users = self.DB.get_all_users()
-        usersJSON = []
-        for i in range(len(users)):
-            usersJSON.append(users[i].as_dict())
-        result = {'data': usersJSON}
-        print_log(datetime.datetime.now(), 'GET', '/users', 'List all users', result)
-        return self.createResponse(result, 200)
+        return User.all()
 
     @view_config(route_name='experiments_for_user', request_method="OPTIONS")
     def experiments_for_user_OPTIONS(self):

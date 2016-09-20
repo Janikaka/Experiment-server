@@ -12,13 +12,15 @@ from experiment_server.models.dataitems import DataItem
 from experiment_server.models.experimentgroups import ExperimentGroup
 from experiment_server.models.db import DatabaseInterface
 from experiment_server.models.configurations import Configuration
+from experiment_server.database.orm import ORM
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
 configure_mappers()
 
 DBSession = scoped_session(sessionmaker())
-Base = declarative_base()
+Base = declarative_base(cls=ORM)
+
 
 def initialize_sql(engine):
     DBSession.configure(bind=engine)
