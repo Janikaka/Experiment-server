@@ -1,4 +1,4 @@
-from models import DBSession
+from experiment_server.models import DBSession
 
 """
 Used as a base class for every model to ensure ORM-style.

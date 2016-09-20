@@ -17,3 +17,4 @@ def includeme(config):
     config.add_route('events', '/events')
     config.add_route('user', '/users/{id}')
     config.add_route('experiment_data', '/experiments/{id}/data')
+    config.add_route('applications', '/applications')

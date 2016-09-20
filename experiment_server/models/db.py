@@ -8,6 +8,7 @@ from .experiments import Experiment
 from .users import User
 from .dataitems import DataItem
 from .configurations import Configuration
+from .applications import Application
 
 
 class DatabaseInterface(object): # this is New-style class naming rule
@@ -361,3 +362,22 @@ class DatabaseInterface(object): # this is New-style class naming rule
             for conf in expgroup.configurations:
                 confs.append(conf)
         return confs
+
+    # ---------------------------------------------------------------------------------
+    #                                 Applications
+    # ---------------------------------------------------------------------------------
+
+    def get_all_applications(self):
+        """ get all applications """
+        return self.dbsession.query(Application).all()
+
+    def create_application(self, data):
+        """ create new application """
+        name = data['name']
+        application = Application(
+            name=name
+            )
+        self.dbsession.add(application)
+        return self.dbsession.query(Application).filter(
+            Application.id == self.dbsession.query(func.max(Application.id))).first()
+

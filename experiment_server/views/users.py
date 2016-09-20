@@ -5,7 +5,7 @@ import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 
-from models.users import User
+from experiment_server.models.users import User
 
 
 @view_defaults(renderer='json')
