@@ -15,7 +15,8 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration, Application, ConfigurationKey)
+from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration,
+                      Application, ConfigurationKey, Operator)
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -145,3 +146,26 @@ def main(argv=sys.argv):
         dbsession.add(confk1)
         dbsession.add(confk2)
         dbsession.add(confk3)
+
+        op1 = Operator(math_value='=', human_value='equals')
+        op2 = Operator(math_value='<=', human_value='less or equal than')
+        op3 = Operator(math_value='<', human_value='less than')
+        op4 = Operator(math_value='>=', human_value='greater or equal than')
+        op5 = Operator(math_value='>', human_value='greater than')
+        op6 = Operator(math_value='!=', human_value='not equal')
+        op7 = Operator(math_value='[]', human_value='inclusive')
+        op8 = Operator(math_value='()', human_value='exclusive')
+        op9 = Operator(math_value='def', human_value='must define')
+        op10 = Operator(math_value='ndef', human_value='must not define')
+
+        dbsession.add(op1)
+        dbsession.add(op2)
+        dbsession.add(op3)
+        dbsession.add(op4)
+        dbsession.add(op5)
+        dbsession.add(op6)
+        dbsession.add(op7)
+        dbsession.add(op8)
+        dbsession.add(op9)
+        dbsession.add(op10)
+
