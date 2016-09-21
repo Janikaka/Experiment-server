@@ -21,7 +21,7 @@ class Applications(WebUtils):
 
     @view_config(route_name='application', request_method="GET")
     def applications_GET_one(self):
-        """ get one application """
+        """ Find and return one application by id with GET method """
         app_id = int(self.request.matchdict['id'])
         application =self.DB.get_application_by_id(app_id)
         result = {'data': application.as_dict()}
@@ -30,7 +30,7 @@ class Applications(WebUtils):
 
     @view_config(route_name='applications', request_method="GET")
     def applications_GET(self):
-        """ List all applications in route /applications """
+        """ List all applications with GET method """
         applications = self.DB.get_all_applications()
         applicationsJSON = []
         for i in range(len(applications)):
@@ -41,7 +41,7 @@ class Applications(WebUtils):
 
     @view_config(route_name='applications', request_method="POST")
     def applications_POST(self):
-        """ create applications """
+        """ Create new application with POST method """
         data = self.request.json_body
         name = data['name']
 

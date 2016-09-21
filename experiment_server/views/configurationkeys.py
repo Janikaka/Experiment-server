@@ -14,7 +14,7 @@ class ConfigurationKeys(WebUtils):
 
     @view_config(route_name='configurationkeys', request_method="GET")
     def configurationkeys_GET(self):
-        """ List all applications in route /configurationkeys """
+        """ List all configurationkeys with GET method """
         configurationkeys = self.DB.get_all_configurationkeys()
         configurationkeysJSON = []
         for i in range(len(configurationkeys)):
@@ -25,7 +25,9 @@ class ConfigurationKeys(WebUtils):
 
     @view_config(route_name='configurationkeys_for_app', request_method="POST")
     def configurationkeys_POST(self):
-        """ create configurationkeys """
+        """ Create new configurationkey to application.
+            request.matchdict['id'] takes the id and DB.get_application_by_id(id) returns the application by id.
+        """
         data = self.request.json_body
         id = int(self.request.matchdict['id'])
         application = self.DB.get_application_by_id(id)

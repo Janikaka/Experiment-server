@@ -369,11 +369,11 @@ class DatabaseInterface(object): # this is New-style class naming rule
     # ---------------------------------------------------------------------------------
 
     def get_all_applications(self):
-        """ get all applications """
+        """ get all applications from database """
         return self.dbsession.query(Application).all()
 
     def get_application_by_id(self, id):
-        """ get application by id and return it"""
+        """ get application by id and return it """
         return self.dbsession.query(Application).filter_by(id=id).first()
 
     def create_application(self, data):
@@ -391,11 +391,11 @@ class DatabaseInterface(object): # this is New-style class naming rule
     # ---------------------------------------------------------------------------------
 
     def get_all_configurationkeys(self):
-        """ get all configurationkeys """
+        """ get all configurationkeys from database and return them """
         return self.dbsession.query(ConfigurationKey).all()
 
     def create_configurationkey(self, data):
-        """ create new configurationkeys """
+        """ create new configurationkey to database """
         application = data['application']
         name = data['name']
         type = data['type']
