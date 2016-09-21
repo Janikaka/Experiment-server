@@ -6,8 +6,10 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.orm import relationship
+
 from .meta import Base
 from .users_experimentgroups import users_experimentgroups
+
 
 class User(Base):
     """ This is definition of class User. """

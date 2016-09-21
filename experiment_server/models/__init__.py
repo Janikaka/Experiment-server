@@ -1,9 +1,7 @@
 from sqlalchemy import engine_from_config
 from sqlalchemy.orm import configure_mappers
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 import zope.sqlalchemy
-
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
 from experiment_server.models.experiments import Experiment
@@ -18,15 +16,6 @@ from experiment_server.models.applications import Application
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
 configure_mappers()
-
-DBSession = scoped_session(sessionmaker())
-Base = declarative_base()
-
-
-def initialize_sql(engine):
-    DBSession.configure(bind=engine)
-    Base.metadata.bind = engine
-    Base.metadata.create_all(engine)
 
 
 def get_engine(settings, prefix='sqlalchemy.'):
@@ -71,17 +60,19 @@ def includeme(config):
 
     """
     settings = config.get_settings()
-
     # use pyramid_tm to hook the transaction lifecycle to the request
     config.include('pyramid_tm')
 
-    session_factory = get_session_factory(get_engine(settings))
+    engine = get_engine(settings)
+    session_factory = get_session_factory(engine)
     config.registry['dbsession_factory'] = session_factory
+
+    import experiment_server.database.orm as A
 
     # make request.dbsession available for use in Pyramid
     config.add_request_method(
         # r.tm is the transaction manager used by pyramid_tm
-        lambda r: get_tm_session(session_factory, r.tm),
+        lambda r: A.DBSession,
         'dbsession',
         reify=True
     )
