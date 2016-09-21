@@ -15,7 +15,7 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration, Application)
+from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration, Application, ConfigurationKey)
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -137,3 +137,11 @@ def main(argv=sys.argv):
         app1 = Application(name='Math Game')
 
         dbsession.add(app1)
+
+        confk1 = ConfigurationKey(application=app1, name='highscore', type='boolean')
+        confk2 = ConfigurationKey(application=app1, name='difficulty', type='integer')
+        confk3 = ConfigurationKey(application=app1, name='speed', type='double')
+
+        dbsession.add(confk1)
+        dbsession.add(confk2)
+        dbsession.add(confk3)

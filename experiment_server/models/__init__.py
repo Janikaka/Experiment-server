@@ -11,6 +11,7 @@ from experiment_server.models.experimentgroups import ExperimentGroup
 from experiment_server.models.db import DatabaseInterface
 from experiment_server.models.configurations import Configuration
 from experiment_server.models.applications import Application
+from experiment_server.models.configurationkeys import ConfigurationKey
 
 
 # run configure_mappers after defining all of the models to ensure
