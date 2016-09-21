@@ -1,11 +1,12 @@
 from pyramid.view import view_config, view_defaults
-from pyramid.response import Response
+
 from ..models import DatabaseInterface
 import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
-
+from fn import _
 from experiment_server.models.users import User
+
 
 
 @view_defaults(renderer='json')
@@ -13,14 +14,6 @@ class Users(WebUtils):
     def __init__(self, request):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
-
-    @view_config(route_name='configurations', request_method="OPTIONS")
-    def configurations_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
-        res.headers.add('Access-Control-Allow-Headers', 'username')
-        return res
 
     # List configurations for specific user
     @view_config(route_name='configurations', request_method="GET")
@@ -40,24 +33,15 @@ class Users(WebUtils):
         print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', result)
         return self.createResponse(result, 200)
 
-    @view_config(route_name='users', request_method="OPTIONS")
-    def users_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
-        return res
-
     # List all users
     @view_config(route_name='users', request_method="GET", renderer='json')
     def users_GET(self):
-        return User.all()
-
-    @view_config(route_name='experiments_for_user', request_method="OPTIONS")
-    def experiments_for_user_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
-        return res
+        """
+            Explanation: maps as_dict() -function to every User-object (this is returned by User.all())
+            Creates a list and returns it. In future we might would like general json-serialization to make this even
+            more simpler.
+        """
+        return list(map(lambda _: _.as_dict(), User.all()))
 
     # List all experiments for specific user
     @view_config(route_name='experiments_for_user', request_method="GET")
@@ -74,14 +58,6 @@ class Users(WebUtils):
         print_log(datetime.datetime.now(), 'GET', '/users/' + str(id) + '/experiments',
                  'List all experiments for specific user', result)
         return self.createResponse(result, 200)
-
-    @view_config(route_name='events', request_method="OPTIONS")
-    def events_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
-        res.headers.add('Access-Control-Allow-Headers', 'username')
-        return res
 
     # Save experiment data
     @view_config(route_name='events', request_method="POST")
@@ -105,13 +81,6 @@ class Users(WebUtils):
              }).as_dict()}
         print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', result)
         return self.createResponse(result, 200)
-
-    @view_config(route_name='user', request_method="OPTIONS")
-    def user_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
-        return res
 
     # Delete user
     @view_config(route_name='user', request_method="DELETE")
