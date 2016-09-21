@@ -17,3 +17,7 @@ class ConfigurationKey(Base):
     application_id = Column(Integer, ForeignKey('applications.id'))
     name = Column(Text)
     type = Column(Text)
+
+    def as_dict(self):
+        """ transfer data to dictionary """
+        return {col.name: getattr(self, col.name) for col in self.__table__.columns}  # col.name means data from column

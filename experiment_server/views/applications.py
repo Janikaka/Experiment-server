@@ -19,6 +19,15 @@ class Applications(WebUtils):
         res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
         return res
 
+    @view_config(route_name='application', request_method="GET")
+    def applications_GET_one(self):
+        """ get one application """
+        app_id = int(self.request.matchdict['id'])
+        application =self.DB.get_one_application(app_id)
+        result = {'data': application.as_dict()}
+        print_log(datetime.datetime.now(), 'GET', '/applications/{id}', 'Get one application', result)
+        return self.createResponse(result, 200)
+
     @view_config(route_name='applications', request_method="GET")
     def applications_GET(self):
         """ List all applications in route /applications """
