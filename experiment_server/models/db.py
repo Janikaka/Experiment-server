@@ -9,6 +9,7 @@ from .users import User
 from .dataitems import DataItem
 from .configurations import Configuration
 from .applications import Application
+from .configurationkeys import ConfigurationKey
 
 
 class DatabaseInterface(object): # this is New-style class naming rule
@@ -371,9 +372,9 @@ class DatabaseInterface(object): # this is New-style class naming rule
         """ get all applications """
         return self.dbsession.query(Application).all()
 
-    def get_one_application(self, app_id):
-        """ get one application """
-        return self.dbsession.query(Application).filter(Application.id==app_id).first()
+    def get_application_by_id(self, id):
+        """ get application by id and return it"""
+        return self.dbsession.query(Application).filter_by(id=id).first()
 
     def create_application(self, data):
         """ create new application """
@@ -385,3 +386,23 @@ class DatabaseInterface(object): # this is New-style class naming rule
         return self.dbsession.query(Application).filter(
             Application.id == self.dbsession.query(func.max(Application.id))).first()
 
+    # ---------------------------------------------------------------------------------
+    #                                 configurationkeys
+    # ---------------------------------------------------------------------------------
+
+    def get_all_configurationkeys(self):
+        """ get all configurationkeys """
+        return self.dbsession.query(ConfigurationKey).all()
+
+    def create_configurationkey(self, data):
+        """ create new configurationkeys """
+        application = data['application']
+        name = data['name']
+        type = data['type']
+        configurationkey = ConfigurationKey(
+            application=application,
+            name = name,
+            type = type
+        )
+        self.dbsession.add(configurationkey)
+        return self.dbsession.query(ConfigurationKey).order_by(ConfigurationKey.id.desc()).first()

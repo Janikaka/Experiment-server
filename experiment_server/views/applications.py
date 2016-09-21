@@ -23,7 +23,7 @@ class Applications(WebUtils):
     def applications_GET_one(self):
         """ get one application """
         app_id = int(self.request.matchdict['id'])
-        application =self.DB.get_one_application(app_id)
+        application =self.DB.get_application_by_id(app_id)
         result = {'data': application.as_dict()}
         print_log(datetime.datetime.now(), 'GET', '/applications/{id}', 'Get one application', result)
         return self.createResponse(result, 200)
