@@ -16,7 +16,7 @@ from ..models import (
     get_tm_session,
     )
 from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration,
-                      Application, ConfigurationKey, Operator)
+                      Application, ConfigurationKey, Operator, RangeConstraint)
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -169,3 +169,14 @@ def main(argv=sys.argv):
         dbsession.add(op9)
         dbsession.add(op10)
 
+        us1 =User(username='Julio')
+
+        dbsession.add(us1)
+
+        rc1 = RangeConstraint(configurationkey=confk2, operator=op4, value=1)
+        rc2 = RangeConstraint(configurationkey=confk2, operator=op2, value=5)
+        rc3 = RangeConstraint(configurationkey=confk3, operator=op5, value=0)
+
+        dbsession.add(rc1)
+        dbsession.add(rc2)
+        dbsession.add(rc3)

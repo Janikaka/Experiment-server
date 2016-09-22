@@ -13,6 +13,7 @@ from experiment_server.models.configurations import Configuration
 from experiment_server.models.applications import Application
 from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.operators import Operator
+from experiment_server.models.rangeconstraints import RangeConstraint
 
 
 # run configure_mappers after defining all of the models to ensure

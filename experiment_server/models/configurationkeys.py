@@ -6,7 +6,7 @@ from sqlalchemy import (
     Text
 )
 
-
+from sqlalchemy.orm import relationship
 from .meta import Base
 
 
@@ -17,6 +17,7 @@ class ConfigurationKey(Base):
     application_id = Column(Integer, ForeignKey('applications.id'))
     name = Column(Text)
     type = Column(Text)
+    rangeconstraints = relationship("RangeConstraint", backref="configurationkey")
 
     def as_dict(self):
         """ transfer data to dictionary """
