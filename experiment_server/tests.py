@@ -36,6 +36,8 @@ class BaseTest(unittest.TestCase):
         self.engine = get_engine(settings)
         session_factory = get_session_factory(self.engine)
         self.dbsession = get_tm_session(session_factory, transaction.manager)
+        import experiment_server.database.orm as orm_config
+        orm_config.DBSession = self.dbsession
 
     def init_database(self):
         from .models.meta import Base
@@ -713,11 +715,9 @@ class TestUsersREST(BaseTest):
     def test_users_GET(self):
         httpUsers = Users(self.req)
         response = httpUsers.users_GET()
-        result = response.json['data']
+        result = response
         users = [{"id": 1, "username": "First user"}, 
         {"id": 2, "username": "Second user"}]
-
-        assert response.status_code == 200
         assert result == users
 
     def test_experiments_for_user_GET(self):

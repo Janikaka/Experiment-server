@@ -67,12 +67,12 @@ def includeme(config):
     session_factory = get_session_factory(engine)
     config.registry['dbsession_factory'] = session_factory
 
-    import experiment_server.database.orm as A
+    import experiment_server.database.orm as orm_config
 
     # make request.dbsession available for use in Pyramid
     config.add_request_method(
         # r.tm is the transaction manager used by pyramid_tm
-        lambda r: A.DBSession,
+        lambda r: orm_config.DBSession,
         'dbsession',
         reify=True
     )
