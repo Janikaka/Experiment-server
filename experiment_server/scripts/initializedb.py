@@ -51,7 +51,13 @@ def main(argv=sys.argv):
                 dt.minute,
                 dt.second)
 
-        experiment1 = Experiment(name='High score', 
+        app1 = Application(name='Math Game')
+
+        dbsession.add(app1)
+
+        experiment1 = Experiment(
+            name='High score',
+            application=app1,
             startDatetime=dateTimeNow, 
             endDatetime=datetime.datetime(
                 dateTimeNow.year+1, 
@@ -61,7 +67,9 @@ def main(argv=sys.argv):
                 dateTimeNow.minute,
                 dateTimeNow.second),
             size=100)
-        experiment2 = Experiment(name='Game level', 
+        experiment2 = Experiment(
+            name='Game level',
+            application=app1,
             startDatetime=datetime.datetime(
                 dateTimeNow.year-1, 
                 dateTimeNow.month, 
@@ -71,7 +79,9 @@ def main(argv=sys.argv):
                 dateTimeNow.second),
             endDatetime=dateTimeNow,
             size=100)
-        experiment3 = Experiment(name='Operators', 
+        experiment3 = Experiment(
+            name='Operators',
+            application=app1,
             startDatetime=datetime.datetime(
                 dateTimeNow.year+1, 
                 dateTimeNow.month, 
@@ -134,10 +144,6 @@ def main(argv=sys.argv):
         dbsession.add(conf6)
         dbsession.add(conf7)
         dbsession.add(conf8)
-
-        app1 = Application(name='Math Game')
-
-        dbsession.add(app1)
 
         confk1 = ConfigurationKey(application=app1, name='highscore', type='boolean')
         confk2 = ConfigurationKey(application=app1, name='difficulty', type='integer')

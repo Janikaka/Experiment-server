@@ -14,6 +14,7 @@ class Application(Base):
     __tablename__ = 'applications'
     id = Column(Integer, primary_key=True)
     name = Column(Text)
+    experiments = relationship("Experiment", backref="application", cascade="delete")
     configurationkeys = relationship("ConfigurationKey", backref="application")
 
     def as_dict(self):

@@ -4,7 +4,8 @@ from ..models import DatabaseInterface
 import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
-
+from experiment_server.models.applications import Application
+import sqlalchemy.orm.exc
 
 @view_defaults(renderer='json')
 class Applications(WebUtils):
@@ -23,21 +24,12 @@ class Applications(WebUtils):
     def applications_GET_one(self):
         """ Find and return one application by id with GET method """
         app_id = int(self.request.matchdict['id'])
-        application =self.DB.get_application_by_id(app_id)
-        result = {'data': application.as_dict()}
-        print_log(datetime.datetime.now(), 'GET', '/applications/{id}', 'Get one application', result)
-        return self.createResponse(result, 200)
+        return Application.get(app_id).as_dict()
 
     @view_config(route_name='applications', request_method="GET")
     def applications_GET(self):
         """ List all applications with GET method """
-        applications = self.DB.get_all_applications()
-        applicationsJSON = []
-        for i in range(len(applications)):
-            applicationsJSON.append(applications[i].as_dict())
-        result = {'data': applicationsJSON}
-        print_log(datetime.datetime.now(), 'GET', '/applications', 'List all applications', result)
-        return self.createResponse(result, 200)
+        return list(map(lambda _: _.as_dict(), Application.all()))
 
     @view_config(route_name='applications', request_method="POST")
     def applications_POST(self):
@@ -53,3 +45,14 @@ class Applications(WebUtils):
         result = {'data': application.as_dict()}
         print_log(name,'POST','/applications', 'Create new application', result)
         return self.createResponse(result, 200)
+
+    @view_config(route_name='application', request_method="DELETE")
+    def applications_DELETE_one(self):
+        """ Find and delete one application by id with destroy method """
+        app_id = int(self.request.matchdict['id'])
+        try:
+            if(Application.destroy(Application.get(app_id)) == None):
+                return "Delete completed."
+        except (sqlalchemy.orm.exc.UnmappedInstanceError):
+            pass
+            return "Delete failed."

@@ -2,6 +2,7 @@
 from sqlalchemy import (
     Column,
     Integer,
+    ForeignKey,
     Text,
     DateTime
 )
@@ -16,6 +17,7 @@ class Experiment(Base, DictionaryCreator):
     __tablename__ = 'experiments'
     # FIXME "id" is an invalid class attribute name
     id = Column(Integer, primary_key=True)
+    application_id = Column(Integer, ForeignKey('applications.id'))
     name = Column(Text, unique=True, index=True)
     startDatetime = Column(DateTime)
     endDatetime = Column(DateTime)
