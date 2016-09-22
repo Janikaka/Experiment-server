@@ -16,7 +16,7 @@ from ..models import (
     get_tm_session,
     )
 from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration,
-                      Application, ConfigurationKey, Operator, RangeConstraint)
+                      Application, ConfigurationKey, Operator, RangeConstraint, ExclusionConstraint)
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -180,3 +180,10 @@ def main(argv=sys.argv):
         dbsession.add(rc1)
         dbsession.add(rc2)
         dbsession.add(rc3)
+
+        exc1 = ExclusionConstraint(first_configurationkey=confk1, first_operator=op9,
+                                   first_value_a=None, first_value_b=None,
+                                   second_configurationkey=confk2, second_operator=None,
+                                   second_value_a=None, second_value_b=None)
+
+        dbsession.add(exc1)
