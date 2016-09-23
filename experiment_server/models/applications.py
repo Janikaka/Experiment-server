@@ -15,7 +15,7 @@ class Application(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Text)
     experiments = relationship("Experiment", backref="application", cascade="delete")
-    configurationkeys = relationship("ConfigurationKey", backref="application")
+    configurationkeys = relationship("ConfigurationKey", backref="application", cascade="delete")
 
     def as_dict(self):
         """ transfer data to dictionary """

@@ -17,7 +17,7 @@ class ConfigurationKey(Base):
     application_id = Column(Integer, ForeignKey('applications.id'))
     name = Column(Text)
     type = Column(Text)
-    rangeconstraints = relationship("RangeConstraint", backref="configurationkey")
+    rangeconstraints = relationship("RangeConstraint", backref="configurationkey", cascade="delete")
 
     def as_dict(self):
         """ transfer data to dictionary """

@@ -15,4 +15,4 @@ class Operator(Base):
     id = Column(Integer, primary_key=True)
     math_value = Column(Text)
     human_value = Column(Text)
-    rangeconstraints = relationship("RangeConstraint", backref="operator")
+    rangeconstraints = relationship("RangeConstraint", backref="operator", cascade="delete")

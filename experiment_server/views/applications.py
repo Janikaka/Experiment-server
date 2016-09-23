@@ -56,3 +56,9 @@ class Applications(WebUtils):
         except (sqlalchemy.orm.exc.UnmappedInstanceError):
             pass
             return "Delete failed."
+
+    @view_config(route_name='configurationkeys_for_app', request_method="GET")
+    def configurationkeys_for_application_GET(self):
+        """ List all configurationkeys of specific application """
+        id = int(self.request.matchdict['id'])
+        return list(map(lambda _: _.as_dict(), Application.get(id).configurationkeys))
