@@ -8,7 +8,7 @@ from sqlalchemy import (
     PickleType
 )
 from .meta import Base
-from .DictionaryCreator import DictionaryCreator
+from .dictionary_creator import DictionaryCreator
 
 
 class DataItem(Base, DictionaryCreator):

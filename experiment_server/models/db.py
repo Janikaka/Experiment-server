@@ -10,6 +10,7 @@ from .dataitems import DataItem
 from .configurations import Configuration
 from .applications import Application
 from .configurationkeys import ConfigurationKey
+from .rangeconstraints import RangeConstraint
 
 
 class DatabaseInterface(object): # this is New-style class naming rule
@@ -406,3 +407,20 @@ class DatabaseInterface(object): # this is New-style class naming rule
         )
         self.dbsession.add(configurationkey)
         return self.dbsession.query(ConfigurationKey).order_by(ConfigurationKey.id.desc()).first()
+
+    # ---------------------------------------------------------------------------------
+    #                                 constraints
+    # ---------------------------------------------------------------------------------
+
+    def create_rangeconstraint(self, data):
+        """ create new rangeconstraint to database """
+        ck = data['configurationkey']
+        o = data['operator']
+        value = data['value']
+        rc = RangeConstraint(
+            configurationkey=ck,
+            operator = o,
+            value = value
+        )
+        self.dbsession.add(rc)
+        return self.dbsession.query(RangeConstraint).order_by(RangeConstraint.id.desc()).first()

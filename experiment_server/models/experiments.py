@@ -8,7 +8,7 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.orm import relationship
-from experiment_server.models.DictionaryCreator import DictionaryCreator
+from experiment_server.models.dictionary_creator import DictionaryCreator
 from experiment_server.models.meta import Base
 
 class Experiment(Base, DictionaryCreator):
