@@ -525,6 +525,7 @@ class TestExperimentsREST(BaseTest):
 
     def test_experiments_POST(self):
         json_body = {'name': 'Example Experiment',
+                     'application_id': None,
                     'startDatetime': '2016-01-01 00:00:00',
                     'endDatetime':'2017-01-01 00:00:00',
                     'size':100,
@@ -538,6 +539,7 @@ class TestExperimentsREST(BaseTest):
         response = httpExperiments.experiments_POST()
         result = response.json['data']
         experiment =  {'id': 2,
+                    'application_id': None,
                     'name': 'Example Experiment', 
                     'size': 100, 
                     'startDatetime': '2016-01-01 00:00:00', 
@@ -567,7 +569,8 @@ class TestExperimentsREST(BaseTest):
         response = httpExperiments.experiment_metadata_GET()
         result = response.json['data']
         experiment = {'id': 1, 
-        'name': 'Test experiment', 
+        'name': 'Test experiment',
+        'application_id': None,
         'startDatetime': '2016-01-01 00:00:00',  
         'endDatetime': '2017-01-01 00:00:00', 
         'status': 'running',
@@ -726,7 +729,8 @@ class TestUsersREST(BaseTest):
         response = httpUsers.experiments_for_user_GET()
         result = response.json['data']
         experiments = [
-        {"id": 1, 
+        {"id": 1,
+         'application_id': None,
         "name": "Test experiment",
         "size": 100, 
         "startDatetime": "2016-01-01 00:00:00", 
