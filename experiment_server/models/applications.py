@@ -5,6 +5,7 @@ from sqlalchemy import (
     Text
 )
 
+from sqlalchemy.orm import relationship
 from .meta import Base
 
 
@@ -13,6 +14,8 @@ class Application(Base):
     __tablename__ = 'applications'
     id = Column(Integer, primary_key=True)
     name = Column(Text)
+    experiments = relationship("Experiment", backref="application", cascade="delete")
+    configurationkeys = relationship("ConfigurationKey", backref="application", cascade="delete")
 
     def as_dict(self):
         """ transfer data to dictionary """

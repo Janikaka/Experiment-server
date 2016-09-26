@@ -26,5 +26,4 @@ class ORM:
 
     @classmethod
     def destroy(cls, data):
-        DBSession.delete(data)
-        return DBSession.commit()
+        return DBSession.delete(data)

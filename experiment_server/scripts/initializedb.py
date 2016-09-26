@@ -15,7 +15,8 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration, Application)
+from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration,
+                      Application, ConfigurationKey, Operator, RangeConstraint, ExclusionConstraint)
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -50,7 +51,13 @@ def main(argv=sys.argv):
                 dt.minute,
                 dt.second)
 
-        experiment1 = Experiment(name='High score', 
+        app1 = Application(name='Math Game')
+
+        dbsession.add(app1)
+
+        experiment1 = Experiment(
+            name='High score',
+            application=app1,
             startDatetime=dateTimeNow, 
             endDatetime=datetime.datetime(
                 dateTimeNow.year+1, 
@@ -60,7 +67,9 @@ def main(argv=sys.argv):
                 dateTimeNow.minute,
                 dateTimeNow.second),
             size=100)
-        experiment2 = Experiment(name='Game level', 
+        experiment2 = Experiment(
+            name='Game level',
+            application=app1,
             startDatetime=datetime.datetime(
                 dateTimeNow.year-1, 
                 dateTimeNow.month, 
@@ -70,7 +79,9 @@ def main(argv=sys.argv):
                 dateTimeNow.second),
             endDatetime=dateTimeNow,
             size=100)
-        experiment3 = Experiment(name='Operators', 
+        experiment3 = Experiment(
+            name='Operators',
+            application=app1,
             startDatetime=datetime.datetime(
                 dateTimeNow.year+1, 
                 dateTimeNow.month, 
@@ -134,6 +145,51 @@ def main(argv=sys.argv):
         dbsession.add(conf7)
         dbsession.add(conf8)
 
-        app1 = Application(name='Math Game')
+        confk1 = ConfigurationKey(application=app1, name='highscore', type='boolean')
+        confk2 = ConfigurationKey(application=app1, name='difficulty', type='integer')
+        confk3 = ConfigurationKey(application=app1, name='speed', type='double')
 
-        dbsession.add(app1)
+        dbsession.add(confk1)
+        dbsession.add(confk2)
+        dbsession.add(confk3)
+
+        op1 = Operator(math_value='=', human_value='equals')
+        op2 = Operator(math_value='<=', human_value='less or equal than')
+        op3 = Operator(math_value='<', human_value='less than')
+        op4 = Operator(math_value='>=', human_value='greater or equal than')
+        op5 = Operator(math_value='>', human_value='greater than')
+        op6 = Operator(math_value='!=', human_value='not equal')
+        op7 = Operator(math_value='[]', human_value='inclusive')
+        op8 = Operator(math_value='()', human_value='exclusive')
+        op9 = Operator(math_value='def', human_value='must define')
+        op10 = Operator(math_value='ndef', human_value='must not define')
+
+        dbsession.add(op1)
+        dbsession.add(op2)
+        dbsession.add(op3)
+        dbsession.add(op4)
+        dbsession.add(op5)
+        dbsession.add(op6)
+        dbsession.add(op7)
+        dbsession.add(op8)
+        dbsession.add(op9)
+        dbsession.add(op10)
+
+        us1 =User(username='Julio')
+
+        dbsession.add(us1)
+
+        rc1 = RangeConstraint(configurationkey=confk2, operator=op4, value=1)
+        rc2 = RangeConstraint(configurationkey=confk2, operator=op2, value=5)
+        rc3 = RangeConstraint(configurationkey=confk3, operator=op5, value=0)
+
+        dbsession.add(rc1)
+        dbsession.add(rc2)
+        dbsession.add(rc3)
+
+        exc1 = ExclusionConstraint(first_configurationkey=confk1, first_operator=op9,
+                                   first_value_a=None, first_value_b=None,
+                                   second_configurationkey=confk2, second_operator=None,
+                                   second_value_a=None, second_value_b=None)
+
+        dbsession.add(exc1)
