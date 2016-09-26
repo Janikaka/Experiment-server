@@ -3,7 +3,7 @@ from sqlalchemy import orm
 from zope.sqlalchemy import ZopeTransactionExtension
 from sqlalchemy import engine_from_config
 
-import experiment_server.database.orm as A
+import experiment_server.database.orm as orm_config
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -12,9 +12,9 @@ def main(global_config, **settings):
 
     settings = config.get_settings()
     engine = engine_from_config(settings, 'sqlalchemy.')
-    A.DBSession = orm.scoped_session(
+    orm_config.DBSession = orm.scoped_session(
         orm.sessionmaker(extension=ZopeTransactionExtension()))
-    A.DBSession.configure(bind=engine)
+    orm_config.DBSession.configure(bind=engine)
 
 
     config.include('pyramid_jinja2')
