@@ -5,7 +5,8 @@ import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 from experiment_server.models.configurationkeys import ConfigurationKey
-
+from experiment_server.models.applications import Application
+import sqlalchemy.orm.exc
 
 @view_defaults(renderer='json')
 class ConfigurationKeys(WebUtils):
@@ -17,6 +18,15 @@ class ConfigurationKeys(WebUtils):
     def configurationkeys_GET(self):
         """ List all configurationkeys with GET method """
         return list(map(lambda _: _.as_dict(), ConfigurationKey.all()))
+
+    @view_config(route_name='configurationkey', request_method="GET")
+    def configurationkeys_GET_one(self):
+        """ Find and return one configurationkey by id with GET method """
+        id = int(self.request.matchdict['id'])
+        if (ConfigurationKey.get(id) == None):
+            return "There's no id:" +str(id)+ " in configurationkeys table."
+        else:
+            return ConfigurationKey.get(id).as_dict()
 
     @view_config(route_name='configurationkeys_for_app', request_method="POST")
     def configurationkeys_POST(self):
@@ -39,3 +49,23 @@ class ConfigurationKeys(WebUtils):
         print_log(name, 'POST', '/applications/{id}/configurationkeys', 'Create new configurationkey', result)
         return self.createResponse(result, 200)
 
+    @view_config(route_name='configurationkeys_for_app', request_method="DELETE")
+    def configurationkeys_for_application_DELETE(self):
+        """ Delete all configurationkeys for one specific application """
+        id = int(self.request.matchdict['id'])
+        is_empty_list = list(map(lambda _: ConfigurationKey.destroy(_), Application.get(id).configurationkeys))
+        for i in is_empty_list:
+            if i != None:
+                return "Delete all configurationkeys for application ID:" + str(id) + " failed."
+        return "Delete all configurationkeys for application ID:" +str(id)+" completed."
+
+    @view_config(route_name='configurationkey', request_method="DELETE")
+    def configurationkeys_DELETE_one(self):
+        """ Find and delete one configurationkey by id with destroy method """
+        id = int(self.request.matchdict['id'])
+        try:
+            if(ConfigurationKey.destroy(ConfigurationKey.get(id)) == None):
+                return "Delete configurationkey ID:" +str(id)+ " completed."
+        except (sqlalchemy.orm.exc.UnmappedInstanceError):
+            pass
+            return "Delete configurationkey ID:" +str(id)+ " failed."
