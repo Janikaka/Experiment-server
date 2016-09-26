@@ -62,3 +62,33 @@ class Applications(WebUtils):
         """ List all configurationkeys of specific application """
         id = int(self.request.matchdict['id'])
         return list(map(lambda _: _.as_dict(), Application.get(id).configurationkeys))
+
+    @view_config(route_name='app_data', request_method="GET")
+    def data_for_app_GET(self):
+        """ List all configurationkeys and rangeconstraints of specific application.
+            Returns application with configurationkeys, rangeconstraints of conf.keys,
+            operator of rangeconstraints
+        """
+        id = int(self.request.matchdict['id'])
+        application = Application.get(id)
+        if application is None:
+            return self.createResponse(None, 400)
+        appAsJSON = application.as_dict()
+        configurationkeys = []
+        for i in range(len(application.configurationkeys)):
+            ckey = application.configurationkeys[i]
+            ckeyAsJSON = ckey.as_dict()
+            rconstraints = ckey.rangeconstraints
+            rangeconstraints = []
+            for i in range(len(rconstraints)):
+                rconstraint = rconstraints[i]
+                rconstraintAsJSON = rconstraint.as_dict()
+                operator = rconstraint.operator
+                operatorAsJSON = operator.as_dict()
+                rconstraintAsJSON['operator'] = operatorAsJSON
+                rangeconstraints.append(rconstraintAsJSON)
+            ckeyAsJSON['rangeconstraints'] = rangeconstraints
+            configurationkeys.append(ckeyAsJSON)
+        appAsJSON['configurationkeys'] = configurationkeys
+        result = {'application': appAsJSON}
+        return self.createResponse(result, 200)
