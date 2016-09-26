@@ -5,7 +5,6 @@ from .webutils import WebUtils
 from experiment_server.models.rangeconstraints import RangeConstraint
 from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.operators import Operator
-from experiment_server.models.exclusionconstraints import ExclusionConstraint
 from experiment_server.models.dictionary_creator import DictionaryCreator
 import sqlalchemy.orm.exc
 
@@ -20,11 +19,6 @@ class Applications(WebUtils):
     def rangeconstraints_GET(self):
         """ List all rangeconstraints with GET method """
         return list(map(lambda _: _.as_dict(), RangeConstraint.all()))
-
-    @view_config(route_name='exclusionconstraints', request_method="GET")
-    def exclusionconstraints_GET(self):
-        """ List all exclusionconstraints with GET method """
-        return list(map(lambda _: _.as_dict(), ExclusionConstraint.all()))
 
     @view_config(route_name='rangeconstraints_for_configurationkey', request_method="POST")
     def rangecontraints_POST(self):
@@ -62,13 +56,3 @@ class Applications(WebUtils):
             pass
             return "Delete rangecontraint ID:" + str(id) + " failed."
 
-    @view_config(route_name='exclusionconstraint', request_method="DELETE")
-    def exclusioncontraints_DELETE_one(self):
-        """ Find and delete one exclusionconstraint by id with destroy method """
-        id = int(self.request.matchdict['id'])
-        try:
-            if (ExclusionConstraint.destroy(ExclusionConstraint.get(id)) == None):
-                return "Delete exclusionconstraint ID:" + str(id) + " completed."
-        except (sqlalchemy.orm.exc.UnmappedInstanceError):
-            pass
-            return "Delete exclusionconstraint ID:" + str(id) + " failed."
