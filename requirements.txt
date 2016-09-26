@@ -2,7 +2,6 @@ astroid==1.4.8
 autopep8==1.2.4
 codeclimate-test-reporter==0.1.2
 coverage==4.2
--e git+git@github.com:TheSoftwareFactory/experiment-server.git@c1e047414a298624c9191dd0644ba78026850726#egg=Experiment_server
 fn==0.4.3
 isort==4.2.5
 Jinja2==2.8
