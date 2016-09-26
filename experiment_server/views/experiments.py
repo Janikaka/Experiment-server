@@ -12,13 +12,6 @@ class Experiments(WebUtils):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
 
-    @view_config(route_name='experiments', request_method="OPTIONS")
-    def experiments_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS')
-        return res
-
     @view_config(route_name='experiments', request_method="POST")
     def experiments_POST(self):
         """ Create new experiment """
@@ -67,13 +60,6 @@ class Experiments(WebUtils):
         print_log(datetime.datetime.now(), 'GET', '/experiments', 'List all experiments', result)
         return self.createResponse(result, 200)
 
-    @view_config(route_name='experiment_metadata', request_method="OPTIONS")
-    def experiment_metadata_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
-        return res
-
     @view_config(route_name='experiment_metadata', request_method="GET")
     def experiment_metadata_GET(self):
         """ Show specific experiment metadata """
@@ -108,13 +94,6 @@ class Experiments(WebUtils):
                   'Show specific experiment metadata', result)
         return self.createResponse(result, 200)
 
-    @view_config(route_name='experiment', request_method="OPTIONS")
-    def experiment_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
-        return res
-
     @view_config(route_name='experiment', request_method="DELETE")
     def experiment_DELETE(self):
         """ Delete experiment """
@@ -125,13 +104,6 @@ class Experiments(WebUtils):
             return self.createResponse(None, 400)
         print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(id), 'Delete experiment', 'Succeeded')
         return self.createResponse(None, 200)
-
-    @view_config(route_name='users_for_experiment', request_method="OPTIONS")
-    def users_for_experiment_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
-        return res
 
     @view_config(route_name='users_for_experiment', request_method="GET")
     def users_for_experiment_GET(self):
@@ -153,13 +125,6 @@ class Experiments(WebUtils):
         print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
                   'List all users for specific experiment', result)
         return self.createResponse(result, 200)
-
-    @view_config(route_name='experiment_data', request_method="OPTIONS")
-    def experiment_data_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
-        return res
 
     @view_config(route_name='experiment_data', request_method="GET")
     def experiment_data_GET(self):
@@ -188,13 +153,6 @@ class Experiments(WebUtils):
                   '/experiments/' + str(id) + '/data', 'Show specific experiment data',
                   result)
         return self.createResponse(result, 200)
-
-    @view_config(route_name='experimentgroup', request_method="OPTIONS")
-    def experimentgroup_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'GET,DELETE,OPTIONS')
-        return res
 
     @view_config(route_name='experimentgroup', request_method="GET")
     def experimentgroup_GET(self):
@@ -243,13 +201,6 @@ class Experiments(WebUtils):
                   'Delete experimentgroup',
                   'Succeeded')
         return self.createResponse(None, 200)
-
-    @view_config(route_name='user_for_experiment', request_method="OPTIONS")
-    def user_for_experiment_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
-        return res
 
     @view_config(route_name='user_for_experiment', request_method="DELETE")
     def user_for_experiment_DELETE(self):

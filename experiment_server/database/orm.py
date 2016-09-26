@@ -14,6 +14,13 @@ class ORM:
     def get(class_, id):
         return DBSession.query(class_).get(id)
 
+    """
+        Get by wanted field: value
+    """
+    @classmethod
+    def get_by(cls, field, value):
+        return DBSession.query(cls).filter(cls[field] == value)
+
     @classmethod
     def all(class_):
         return DBSession.query(class_).all()
@@ -27,3 +34,10 @@ class ORM:
     @classmethod
     def destroy(cls, data):
         return DBSession.delete(data)
+
+    """
+        Update via primary id
+    """
+    @classmethod
+    def update(cls, primary_id, key, new_value):
+        return DBSession.query(cls).filter(cls.id == primary_id).update({key: new_value})
