@@ -26,9 +26,9 @@ class ExclusionConstraint(Base):
     second_value_b = Column(Text)
 
     first_configurationkey = relationship("ConfigurationKey", foreign_keys=[first_configurationkey_id], cascade="delete")
-    first_operator = relationship("Operator", foreign_keys=[first_operator_id], cascade="delete")
+    first_operator = relationship("Operator", foreign_keys=[first_operator_id])
     second_configurationkey = relationship("ConfigurationKey", foreign_keys=[second_configurationkey_id], cascade="delete")
-    second_operator = relationship("Operator", foreign_keys=[second_operator_id], cascade="delete")
+    second_operator = relationship("Operator", foreign_keys=[second_operator_id])
 
 
 
