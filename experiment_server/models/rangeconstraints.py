@@ -15,3 +15,7 @@ class RangeConstraint(Base):
     configurationkey_id = Column(Integer, ForeignKey('configurationkeys.id'))
     operator_id = Column(Integer, ForeignKey('operators.id'))
     value = Column(Integer)
+
+    def as_dict(self):
+        """ transfer data to dictionary """
+        return {col.name: getattr(self, col.name) for col in self.__table__.columns}

@@ -28,6 +28,12 @@ class ConfigurationKeys(WebUtils):
         else:
             return ConfigurationKey.get(id).as_dict()
 
+    @view_config(route_name='rangeconstraints_for_configurationkey', request_method="GET")
+    def rangeconstraints_for_confkey_GET(self):
+        """ List all rangeconstraints of specific conf.key """
+        id = int(self.request.matchdict['id'])
+        return list(map(lambda _: _.as_dict(), ConfigurationKey.get(id).rangeconstraints))
+
     @view_config(route_name='configurationkeys_for_app', request_method="POST")
     def configurationkeys_POST(self):
         """ Create new configurationkey to application.
