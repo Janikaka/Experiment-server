@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/TheSoftwareFactory/experiment-server.svg?branch=master)](https://travis-ci.org/TheSoftwareFactory/experiment-server)
 [![Code Climate](https://codeclimate.com/github/TheSoftwareFactory/experiment-server/badges/gpa.svg)](https://codeclimate.com/github/TheSoftwareFactory/experiment-server)
 [![Test Coverage](https://codeclimate.com/github/TheSoftwareFactory/experiment-server/badges/coverage.svg)](https://codeclimate.com/github/TheSoftwareFactory/experiment-server/coverage)
 [![Issue Count](https://codeclimate.com/github/TheSoftwareFactory/experiment-server/badges/issue_count.svg)](https://codeclimate.com/github/TheSoftwareFactory/experiment-server)
