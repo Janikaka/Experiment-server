@@ -30,6 +30,61 @@
           }
         }
       }
+    },
+    "/users/{id}" : {
+      "get" : {
+        "summary" : "Get one user",
+        "parameters" : [ {
+          "name" : "id",
+          "description" : "id of the user",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete one user",
+        "parameters" : [ {
+          "name" : "id",
+          "description" : "id of the user to be deleted",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        }
+      }
+    },
+    "/users/{id}/experiments" : {
+      "get" : {
+        "summary" : "Get users experiments",
+        "parameters" : [ {
+          "name" : "id",
+          "description" : "id of the user to be deleted",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Experiment"
+            }
+          }
+        }
+      }
     }
   },
   "definitions" : {
@@ -51,7 +106,6 @@
       }
     },
     "DataItem" : {
-      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
@@ -74,7 +128,6 @@
       }
     },
     "ExperimentGroup" : {
-      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
@@ -88,7 +141,6 @@
       }
     },
     "Experiment" : {
-      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
@@ -99,149 +151,21 @@
         "name" : {
           "type" : "string"
         },
-        "startDatetime" : {
-          "type" : "string"
+        "startDateTime" : {
+          "type" : "string",
+          "format" : "date-time"
         },
-        "endDatetime" : {
-          "type" : "string"
+        "endDateTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "size" : {
+          "type" : "integer"
         },
         "experimentgroups" : {
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/ExperimentGroup"
-          }
-        },
-        "size" : {
-          "type" : "integer"
-        }
-      }
-    },
-    "Application" : {
-      "required" : [ "id" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "experiments" : {
-          "type" : "array",
-          "items" : ""
-        },
-        "configurationkeys" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/ConfigurationKey"
-          }
-        }
-      }
-    },
-    "ConfigurationKey" : {
-      "required" : [ "id" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer"
-        },
-        "application_id" : {
-          "type" : "integer"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "type" : {
-          "type" : "string"
-        },
-        "rangeconstraints" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/RangeConstraint"
-          }
-        }
-      }
-    },
-    "Configuration" : {
-      "required" : [ "id" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer"
-        },
-        "experimentgroup_id" : {
-          "type" : "integer"
-        },
-        "key" : {
-          "type" : "string"
-        },
-        "value" : {
-          "type" : "object"
-        }
-      }
-    },
-    "RangeConstraint" : {
-      "required" : [ "id" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer"
-        },
-        "configurationkey_id" : {
-          "type" : "integer"
-        },
-        "operator_id" : {
-          "type" : "integer"
-        },
-        "value" : {
-          "type" : "integer"
-        }
-      }
-    },
-    "ExclusionConstraint" : {
-      "required" : [ "id" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer"
-        },
-        "first_configurationkey_id" : {
-          "type" : "integer"
-        },
-        "first_operator_id" : {
-          "type" : "integer"
-        },
-        "first_value_a" : {
-          "type" : "string"
-        },
-        "first_value_b" : {
-          "type" : "string"
-        },
-        "second_configurationkey_id" : {
-          "type" : "integer"
-        },
-        "second_operator_id" : {
-          "type" : "integer"
-        },
-        "second_value_a" : {
-          "type" : "string"
-        },
-        "second_value_b" : {
-          "type" : "string"
-        }
-      }
-    },
-    "Operator" : {
-      "required" : [ "id" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer"
-        },
-        "math_value" : {
-          "type" : "string"
-        },
-        "human_value" : {
-          "type" : "string"
-        },
-        "rangeconstraints" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/RangeConstraint"
           }
         }
       }
