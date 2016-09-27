@@ -41,12 +41,12 @@ class Users(WebUtils):
             print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
             return self.createResponse(None, 400)
 
-        print(user.experimentgroups)
+        current_groups = user.experimentgroups
+        configs = list(map(lambda _: _.configurations, current_groups))
+        print(list(map(lambda _: _[0].as_dict(), configs)))
+        return []
 
-        confs = self.DB.get_total_configuration_for_user(user.id)
-        return confs
-
-    # Delete user
+        # Delete user
     @view_config(route_name='user', request_method="DELETE")
     def user_DELETE(self):
         id = int(self.request.matchdict['id'])
