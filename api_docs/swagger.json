@@ -30,40 +30,6 @@
           }
         }
       }
-    },
-    "/user/{id}" : {
-      "get" : {
-        "summary" : "",
-        "parameters" : [ {
-          "name" : "id",
-          "description" : "id of the user",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/User"
-            }
-          }
-        }
-      },
-      "delete" : {
-        "parameters" : [ {
-          "name" : "id",
-          "description" : "id of the user to be deleted",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK"
-          }
-        }
-      }
     }
   },
   "definitions" : {
@@ -116,6 +82,159 @@
         },
         "name" : {
           "type" : "string"
+        }
+      }
+    },
+    "Experiment" : {
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "application_id" : {
+          "type" : "integer"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "startDatetime" : {
+          "type" : "string"
+        },
+        "endDatetime" : {
+          "type" : "string"
+        },
+        "experimentgroups" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ExperimentGroup"
+          }
+        },
+        "size" : {
+          "type" : "integer"
+        }
+      }
+    },
+    "Application" : {
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "experiments" : {
+          "type" : "array",
+          "items" : ""
+        },
+        "configurationkeys" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ConfigurationKey"
+          }
+        }
+      }
+    },
+    "ConfigurationKey" : {
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "application_id" : {
+          "type" : "integer"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "rangeconstraints" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RangeConstraint"
+          }
+        }
+      }
+    },
+    "Configuration" : {
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "experimentgroup_id" : {
+          "type" : "integer"
+        },
+        "key" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "object"
+        }
+      }
+    },
+    "RangeConstraint" : {
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "configurationkey_id" : {
+          "type" : "integer"
+        },
+        "operator_id" : {
+          "type" : "integer"
+        },
+        "value" : {
+          "type" : "integer"
+        }
+      }
+    },
+    "ExclusionConstraint" : {
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "first_configurationkey_id" : {
+          "type" : "integer"
+        },
+        "first_operator_id" : {
+          "type" : "integer"
+        },
+        "first_value_a" : {
+          "type" : "string"
+        },
+        "first_value_b" : {
+          "type" : "string"
+        },
+        "second_configurationkey_id" : {
+          "type" : "integer"
+        },
+        "second_operator_id" : {
+          "type" : "integer"
+        },
+        "second_value_a" : {
+          "type" : "string"
+        },
+        "second_value_b" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Operator" : {
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "math_value" : {
+          "type" : "string"
+        },
+        "human_value" : {
+          "type" : "string"
+        },
+        "rangeconstraints" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RangeConstraint"
+          }
         }
       }
     }
