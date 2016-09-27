@@ -4,7 +4,6 @@
     "version" : "1.0.0",
     "title" : "Experiment server",
     "description" : "API for experiments",
-    "termsOfService" : "Apache",
     "license" : {
       "name" : "MIT",
       "url" : "http://opensource.org/licenses/MIT"
@@ -21,7 +20,13 @@
         "description" : "Gets all users from the database",
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/User"
+              }
+            }
           }
         }
       }
@@ -29,6 +34,7 @@
   },
   "definitions" : {
     "User" : {
+      "required" : [ "id", "username" ],
       "properties" : {
         "id" : {
           "type" : "integer"
