@@ -135,6 +135,7 @@
       }
     },
     "ConfigurationKey" : {
+      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
@@ -157,6 +158,7 @@
       }
     },
     "Configuration" : {
+      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
@@ -173,6 +175,7 @@
       }
     },
     "RangeConstraint" : {
+      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
@@ -189,6 +192,7 @@
       }
     },
     "ExclusionConstraint" : {
+      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
@@ -220,6 +224,7 @@
       }
     },
     "Operator" : {
+      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
