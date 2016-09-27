@@ -15,23 +15,6 @@ class Users(WebUtils):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
 
-    # List configurations for specific user
-    @view_config(route_name='configurations', request_method="GET")
-    def configurations_GET(self):
-        # Also adds the user to the DB if doesn't exist
-        username = self.request.headers.get('username')
-        user = self.DB.get_user(username)
-        if user is None:
-            print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
-            return self.createResponse(None, 400)
-        self.DB.assign_user_to_experiments(user.id)
-        confs = self.DB.get_total_configuration_for_user(user.id)
-        configurations = []
-        for conf in confs:
-            configurations.append({'key': conf.key, 'value': conf.value})
-        result = {'data': configurations}
-        print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', result)
-        return self.createResponse(result, 200)
 
     # List all users
     @view_config(route_name='users', request_method="GET", renderer='json')
@@ -42,6 +25,37 @@ class Users(WebUtils):
             more simpler.
         """
         return list(map(lambda _: _.as_dict(), User.all()))
+
+    # Get one user
+    @view_config(route_name='user', request_method="GET", renderer='json')
+    def user_GET(self):
+        id = int(self.request.matchdict['id'])
+        return User.get(id).as_dict()
+
+    # List configurations for specific user
+    @view_config(route_name='configurations', request_method="GET")
+    def configurations_GET(self):
+        id = int(self.request.matchdict['id'])
+        user = User.get(id)
+        if user is None:
+            print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
+            return self.createResponse(None, 400)
+
+        current_groups = user.experimentgroups
+        configs = list(map(lambda _: _.configurations, current_groups))
+        print(list(map(lambda _: _[0].as_dict(), configs)))
+        return []
+
+        # Delete user
+    @view_config(route_name='user', request_method="DELETE")
+    def user_DELETE(self):
+        id = int(self.request.matchdict['id'])
+        result = self.DB.delete_user(id)
+        if not result:
+            print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
+            return self.createResponse(None, 400)
+        print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
+        return self.createResponse(None, 200)
 
     # List all experiments for specific user
     @view_config(route_name='experiments_for_user', request_method="GET")
@@ -82,13 +96,3 @@ class Users(WebUtils):
         print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', result)
         return self.createResponse(result, 200)
 
-    # Delete user
-    @view_config(route_name='user', request_method="DELETE")
-    def user_DELETE(self):
-        id = int(self.request.matchdict['id'])
-        result = self.DB.delete_user(id)
-        if not result:
-            print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
-            return self.createResponse(None, 400)
-        print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
-        return self.createResponse(None, 200)
