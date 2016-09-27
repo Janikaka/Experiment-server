@@ -51,6 +51,7 @@
       }
     },
     "DataItem" : {
+      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
@@ -73,6 +74,7 @@
       }
     },
     "ExperimentGroup" : {
+      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
@@ -86,6 +88,7 @@
       }
     },
     "Experiment" : {
+      "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
