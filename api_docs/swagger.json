@@ -30,6 +30,26 @@
           }
         }
       }
+    },
+    "/user/{id}" : {
+      "get" : {
+        "summary" : "Get one user",
+        "parameters" : [ {
+          "name" : "id",
+          "type" : "integer",
+          "description" : "id of the user",
+          "in" : "path",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          }
+        }
+      }
     }
   },
   "definitions" : {
