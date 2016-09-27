@@ -19,7 +19,7 @@ class ORM:
     """
     @classmethod
     def get_by(cls, field, value):
-        return DBSession.query(cls).filter(cls[field] == value)
+        return DBSession.query(cls).filter(getattr(cls, field) == value).first()
 
     @classmethod
     def all(class_):
@@ -40,4 +40,5 @@ class ORM:
     """
     @classmethod
     def update(cls, primary_id, key, new_value):
-        return DBSession.query(cls).filter(cls.id == primary_id).update({key: new_value})
+        return DBSession.query(cls).filter(getattr(cls, id) == primary_id)\
+                                   .update({key: new_value})

@@ -7,7 +7,7 @@ def includeme(config):
     config.add_route('home', '/')
     config.add_route('users', '/users')
     config.add_route('user', '/users/{id}')
-    config.add_route('configurations', 'users/{username}/configurations')
+    config.add_route('configurations', 'users/{id}/configurations')
 
     config.add_route('experiments', '/experiments')
     config.add_route('experiment_metadata', '/experiments/{id}/metadata')
