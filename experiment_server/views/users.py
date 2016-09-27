@@ -43,6 +43,23 @@ class Users(WebUtils):
         """
         return list(map(lambda _: _.as_dict(), User.all()))
 
+    # Get one user
+    @view_config(route_name='user', request_method="GET", renderer='json')
+    def user_GET(self):
+        id = int(self.request.matchdict['id'])
+        return User.get(id).as_dict()
+
+    # Delete user
+    @view_config(route_name='user', request_method="DELETE")
+    def user_DELETE(self):
+        id = int(self.request.matchdict['id'])
+        result = self.DB.delete_user(id)
+        if not result:
+            print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
+            return self.createResponse(None, 400)
+        print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
+        return self.createResponse(None, 200)
+
     # List all experiments for specific user
     @view_config(route_name='experiments_for_user', request_method="GET")
     def experiments_for_user_GET(self):
@@ -82,13 +99,3 @@ class Users(WebUtils):
         print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', result)
         return self.createResponse(result, 200)
 
-    # Delete user
-    @view_config(route_name='user', request_method="DELETE")
-    def user_DELETE(self):
-        id = int(self.request.matchdict['id'])
-        result = self.DB.delete_user(id)
-        if not result:
-            print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
-            return self.createResponse(None, 400)
-        print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
-        return self.createResponse(None, 200)
