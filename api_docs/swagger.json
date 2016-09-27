@@ -71,6 +71,19 @@
           "type" : "string"
         }
       }
+    },
+    "ExperimentGroup" : {
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "experiment_id" : {
+          "type" : "integer"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      }
     }
   }
 }
