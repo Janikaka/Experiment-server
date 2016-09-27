@@ -33,89 +33,6 @@
     }
   },
   "definitions" : {
-    "User" : {
-      "required" : [ "id", "username" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer"
-        },
-        "username" : {
-          "type" : "string"
-        },
-        "dataitems" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/DataItem"
-          }
-        }
-      }
-    },
-    "DataItem" : {
-      "required" : [ "id" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer"
-        },
-        "user_id" : {
-          "type" : "integer"
-        },
-        "key" : {
-          "type" : "string"
-        },
-        "value" : {
-          "type" : "object"
-        },
-        "startDateTime" : {
-          "type" : "string"
-        },
-        "endDateTime" : {
-          "type" : "string"
-        }
-      }
-    },
-    "ExperimentGroup" : {
-      "required" : [ "id" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer"
-        },
-        "experiment_id" : {
-          "type" : "integer"
-        },
-        "name" : {
-          "type" : "string"
-        }
-      }
-    },
-    "Experiment" : {
-      "required" : [ "id" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer"
-        },
-        "application_id" : {
-          "type" : "integer"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "startDatetime" : {
-          "type" : "string"
-        },
-        "endDatetime" : {
-          "type" : "string"
-        },
-        "experimentgroups" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/ExperimentGroup"
-          }
-        },
-        "size" : {
-          "type" : "integer"
-        }
-      }
-    },
     "Application" : {
       "required" : [ "id" ],
       "properties" : {
@@ -179,20 +96,26 @@
         }
       }
     },
-    "RangeConstraint" : {
+    "DataItem" : {
       "required" : [ "id" ],
       "properties" : {
         "id" : {
           "type" : "integer"
         },
-        "configurationkey_id" : {
+        "user_id" : {
           "type" : "integer"
         },
-        "operator_id" : {
-          "type" : "integer"
+        "key" : {
+          "type" : "string"
         },
         "value" : {
-          "type" : "integer"
+          "type" : "object"
+        },
+        "startDateTime" : {
+          "type" : "string"
+        },
+        "endDateTime" : {
+          "type" : "string"
         }
       }
     },
@@ -228,6 +151,49 @@
         }
       }
     },
+    "ExperimentGroup" : {
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "experiment_id" : {
+          "type" : "integer"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Experiment" : {
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "application_id" : {
+          "type" : "integer"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "startDatetime" : {
+          "type" : "string"
+        },
+        "endDatetime" : {
+          "type" : "string"
+        },
+        "experimentgroups" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ExperimentGroup"
+          }
+        },
+        "size" : {
+          "type" : "integer"
+        }
+      }
+    },
     "Operator" : {
       "required" : [ "id" ],
       "properties" : {
@@ -244,6 +210,40 @@
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/RangeConstraint"
+          }
+        }
+      }
+    },
+    "RangeConstraint" : {
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "configurationkey_id" : {
+          "type" : "integer"
+        },
+        "operator_id" : {
+          "type" : "integer"
+        },
+        "value" : {
+          "type" : "integer"
+        }
+      }
+    },
+    "User" : {
+      "required" : [ "id", "username" ],
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "username" : {
+          "type" : "string"
+        },
+        "dataitems" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DataItem"
           }
         }
       }
