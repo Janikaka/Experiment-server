@@ -1,0 +1,9 @@
+import json
+import sqlalchemy.types
+
+
+class JSONType(sqlalchemy.types.PickleType):
+    impl = sqlalchemy.types.UnicodeText
+
+    def __init__(self):
+        sqlalchemy.types.PickleType.__init__(self, pickler=json)

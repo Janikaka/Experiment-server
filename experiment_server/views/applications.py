@@ -13,13 +13,6 @@ class Applications(WebUtils):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
 
-    @view_config(route_name='applications', request_method="OPTIONS")
-    def applications_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
-        return res
-
     @view_config(route_name='application', request_method="GET")
     def applications_GET_one(self):
         """ Find and return one application by id with GET method """

@@ -19,7 +19,7 @@ class Users(WebUtils):
     @view_config(route_name='configurations', request_method="GET")
     def configurations_GET(self):
         # Also adds the user to the DB if doesn't exist
-        username = self.request.headers.get('username')
+        username = self.request.matchdict['username']
         user = self.DB.get_user(username)
         if user is None:
             print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
