@@ -4,11 +4,11 @@ from sqlalchemy import (
     Integer,
     Text,
     ForeignKey,
-    DateTime,
-    PickleType
+    DateTime
 )
 from .meta import Base
 from .dictionary_creator import DictionaryCreator
+from .extension_types.sqltypes import JSONType
 
 
 class DataItem(Base, DictionaryCreator):
@@ -17,6 +17,6 @@ class DataItem(Base, DictionaryCreator):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     key = Column(Text)
-    value = Column(PickleType)
+    value = Column(JSONType())
     startDatetime = Column(DateTime)
     endDatetime = Column(DateTime)

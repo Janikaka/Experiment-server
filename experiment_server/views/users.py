@@ -44,6 +44,7 @@ class Users(WebUtils):
         current_groups = user.experimentgroups
         configs = list(map(lambda _: _.configurations, current_groups))
         result = list(map(lambda _: _.as_dict(), list(concat(configs))))
+        print(result)
         return result
 
         # Delete user

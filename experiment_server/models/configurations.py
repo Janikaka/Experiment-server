@@ -3,11 +3,11 @@ from sqlalchemy import (
     Column,
     Integer,
     Text,
-    ForeignKey,
-    PickleType
+    ForeignKey
 )
 
 from .meta import Base
+from .extension_types.sqltypes import JSONType
 
 
 class Configuration(Base):
@@ -17,7 +17,7 @@ class Configuration(Base):
     id = Column(Integer, primary_key=True)
     experimentgroup_id = Column(Integer, ForeignKey('experimentgroups.id'))
     key = Column(Text)
-    value = Column(PickleType)
+    value = Column(JSONType())
 
     def as_dict(self):
         """ transfer data to dictionary """
