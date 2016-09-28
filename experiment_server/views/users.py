@@ -30,7 +30,11 @@ class Users(WebUtils):
     @view_config(route_name='user', request_method="GET", renderer='json')
     def user_GET(self):
         id = int(self.request.matchdict['id'])
-        return User.get(id).as_dict()
+        result = User.get(id)
+        if not result:
+            print_log('/users/%s failed' % id)
+            return self.createResponse(None, 400)
+        return result.as_dict()
 
     # List configurations for specific user
     @view_config(route_name='configurations', request_method="GET")
@@ -44,24 +48,26 @@ class Users(WebUtils):
         current_groups = user.experimentgroups
         configs = list(map(lambda _: _.configurations, current_groups))
         result = list(map(lambda _: _.as_dict(), list(concat(configs))))
-        print(result)
         return result
 
         # Delete user
     @view_config(route_name='user', request_method="DELETE")
     def user_DELETE(self):
         id = int(self.request.matchdict['id'])
-        result = self.DB.delete_user(id)
+        result = User.get(id)
         if not result:
             print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
             return self.createResponse(None, 400)
+        User.destroy(result)
         print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}
 
     # List all experiments for specific user
     @view_config(route_name='experiments_for_user', request_method="GET")
     def experiments_for_user_GET(self):
         id = int(self.request.matchdict['id'])
+        
+        return []
         experiments = self.DB.get_user_experiments_list(id)
         experimentsJSON = []
         for i in range(len(experiments)):
