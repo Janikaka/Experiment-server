@@ -88,6 +88,29 @@
           }
         }
       }
+    },
+    "/users/{id}/experiments" : {
+      "get" : {
+        "summary" : "Get users current experiments",
+        "parameters" : [ {
+          "name" : "id",
+          "type" : "integer",
+          "description" : "id of the current user",
+          "in" : "path",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Experiment"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions" : {
@@ -141,7 +164,7 @@
     },
     "Configuration" : {
       "type" : "object",
-      "required" : [ "id" ],
+      "required" : [ "id", "experimentgroup_id", "key", "value" ],
       "properties" : {
         "id" : {
           "type" : "integer"
@@ -171,7 +194,7 @@
           "type" : "string"
         },
         "value" : {
-          "type" : "object"
+          "type" : [ "integer", "string", "boolean" ]
         },
         "startDateTime" : {
           "type" : "string"
@@ -226,6 +249,18 @@
         },
         "name" : {
           "type" : "string"
+        },
+        "configurations" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Configuration"
+          }
+        },
+        "users" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/User"
+          }
         }
       }
     },
@@ -243,10 +278,12 @@
           "type" : "string"
         },
         "startDatetime" : {
-          "type" : "string"
+          "type" : "string",
+          "format" : "date-time"
         },
         "endDatetime" : {
-          "type" : "string"
+          "type" : "string",
+          "format" : "date-time"
         },
         "experimentgroups" : {
           "type" : "array",
