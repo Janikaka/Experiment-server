@@ -4,10 +4,10 @@ from ..models import DatabaseInterface
 import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
-from fn import _
 from experiment_server.models.users import User
 
-
+from fn import _
+from toolz import concat
 
 @view_defaults(renderer='json')
 class Users(WebUtils):
@@ -43,8 +43,9 @@ class Users(WebUtils):
 
         current_groups = user.experimentgroups
         configs = list(map(lambda _: _.configurations, current_groups))
-        print(list(map(lambda _: _[0].as_dict(), configs)))
-        return []
+        result = list(map(lambda _: _.as_dict(), list(concat(configs))))
+        print(result)
+        return result
 
         # Delete user
     @view_config(route_name='user', request_method="DELETE")
