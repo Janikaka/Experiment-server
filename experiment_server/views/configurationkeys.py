@@ -25,7 +25,8 @@ class ConfigurationKeys(WebUtils):
         confkey_id = self.request.swagger_data['id']
         confkey = ConfigurationKey.get(confkey_id)
         if confkey is None:
-            print_log(datetime.datetime.now(), 'GET', '/configurationkeys/' + str(confkey_id), 'Get one configurationkey', None)
+            print_log(datetime.datetime.now(), 'GET', '/configurationkeys/'
+                      + str(confkey_id), 'Get one configurationkey', None)
             return self.createResponse(None, 400)
         return confkey.as_dict()
 
@@ -60,7 +61,8 @@ class ConfigurationKeys(WebUtils):
             type=type
         )
         ConfigurationKey.save(configurationkey)
-        print_log(name, 'POST', '/applications/{id}/configurationkeys', 'Create new configurationkey', configurationkey)
+        print_log(name, 'POST', '/applications/{id}/configurationkeys', 'Create new configurationkey',
+                  configurationkey)
         return self.createResponse(None, 200)
 
     @view_config(route_name='configurationkeys_for_app', request_method="DELETE")
@@ -69,13 +71,17 @@ class ConfigurationKeys(WebUtils):
         id = self.request.swagger_data['id']
         app = Application.get(id)
         if not app:
-            print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/' + str(id),
+            print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id) + '/configurationkeys',
                       'Delete configurationkeys of application', 'Failed')
             return self.createResponse(None, 400)
         is_empty_list = list(map(lambda _: ConfigurationKey.destroy(_), app.configurationkeys))
         for i in is_empty_list:
             if i != None:
+                print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id) + '/configurationkeys',
+                          'Delete configurationkeys of application', 'Failed')
                 return self.createResponse(None, 400)
+        print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id) + '/configurationkeys'
+                  'Delete configurationkeys of application', 'Succeeded')
         return self.createResponse(None, 200)
 
     @view_config(route_name='configurationkey', request_method="DELETE")
@@ -84,8 +90,10 @@ class ConfigurationKeys(WebUtils):
         confkey_id = self.request.swagger_data['id']
         confkey = ConfigurationKey.get(confkey_id)
         if not confkey:
-            print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/' + str(confkey_id), 'Delete configurationkey', 'Failed')
+            print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/'
+                      + str(confkey_id), 'Delete configurationkey', 'Failed')
             return self.createResponse(None, 400)
         ConfigurationKey.destroy(confkey)
-        print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/' + str(confkey_id), 'Delete configurationkey', 'Succeeded')
+        print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/'
+                  + str(confkey_id), 'Delete configurationkey', 'Succeeded')
         return self.createResponse(None, 200)
