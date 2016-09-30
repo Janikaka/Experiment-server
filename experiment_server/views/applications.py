@@ -57,7 +57,7 @@ class Applications(WebUtils):
     @view_config(route_name='configurationkeys_for_app', request_method="GET")
     def configurationkeys_for_application_GET(self):
         """ List all configurationkeys of specific application """
-        app_id = int(self.request.matchdict['id'])
+        app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
         if app is None:
             print_log(datetime.datetime.now(), 'GET', '/applications', 'Get one application', None)
