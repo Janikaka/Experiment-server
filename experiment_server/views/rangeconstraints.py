@@ -30,8 +30,8 @@ class RangeConstraints(WebUtils):
         conf_key = ConfigurationKey.get(ck_id)
         op_id = self.request.headers.get('operator') # Change this. Now it takes id from header.
         operator = Operator.get(op_id)
-        if operator is None:
-            print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + str(op_id) + '/rangeconstraints',
+        if conf_key is None or operator is None:
+            print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + str(ck_id) + '/rangeconstraints',
                       'Create new rangeconstraint for configurationkey', 'Failed')
             return self.createResponse(None, 400)
         value = data['value']
@@ -41,7 +41,7 @@ class RangeConstraints(WebUtils):
             value=value
         )
         ConfigurationKey.save(rconstraint)
-        print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + str(op_id) + '/rangeconstraints',
+        print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + str(ck_id) + '/rangeconstraints',
                   'Create new rangeconstraint for configurationkey', 'Succeeded')
         return self.createResponse(None, 200)
 

@@ -409,6 +409,42 @@
             "description": "Bad Request"
           }
         }
+      },
+      "post": {
+        "summary": "Create new rangeconstraint",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the conf.key",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "operator",
+            "type": "integer",
+            "description": "id of the operator",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "rangeconstraint",
+            "in": "body",
+            "description": "Rangeconstraint to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewRangeConstraint"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
       }
     },
     "/rangeconstraints": {
@@ -561,14 +597,10 @@
         },
         {
           "required": [
-            "id",
-            "application_id"
+            "id"
           ],
           "properties": {
             "id": {
-              "type": "integer"
-            },
-            "application_id": {
               "type": "integer"
             },
             "rangeconstraints": {
@@ -593,6 +625,9 @@
         },
         "type": {
           "type": "string"
+        },
+        "application_id": {
+          "type": "integer"
         }
       }
     },
@@ -794,13 +829,28 @@
     },
     "RangeConstraint": {
       "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/NewRangeConstraint"
+        },
+        {
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer"
+            }
+          }
+        }
+      ]
+    },
+    "NewRangeConstraint": {
+      "type": "object",
       "required": [
-        "id"
+        "value"
       ],
       "properties": {
-        "id": {
-          "type": "integer"
-        },
         "configurationkey_id": {
           "type": "integer"
         },
