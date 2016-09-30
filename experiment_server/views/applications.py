@@ -2,7 +2,6 @@
 from pyramid.view import view_config, view_defaults
 # from pyramid.response import Response
 from experiment_server.models.applications import Application
-import sqlalchemy.orm.exc
 from experiment_server.utils.log import print_log
 from ..models import DatabaseInterface
 from .webutils import WebUtils
@@ -21,7 +20,7 @@ class Applications(WebUtils):
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
         if app is None:
-            print_log(datetime.datetime.now(), 'GET', '/applications', 'Get one application', None)
+            print_log(datetime.datetime.now(), 'GET', '/applications/' + str(app_id), 'Get one application', None)
             return self.createResponse(None, 400)
         return app.as_dict()
 
@@ -48,10 +47,10 @@ class Applications(WebUtils):
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
         if not app:
-            print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id), 'Delete application', 'Failed')
+            print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(app_id), 'Delete application', 'Failed')
             return self.createResponse(None, 400)
         Application.destroy(app)
-        print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id), 'Delete application', 'Succeeded')
+        print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(app_id), 'Delete application', 'Succeeded')
         return self.createResponse(None, 200)
 
     @view_config(route_name='configurationkeys_for_app', request_method="GET")
@@ -60,7 +59,8 @@ class Applications(WebUtils):
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
         if app is None:
-            print_log(datetime.datetime.now(), 'GET', '/applications', 'Get one application', None)
+            print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/configurationkeys',
+                      'Get configurationkeys of one application', None)
             return self.createResponse(None, 400)
         return list(map(lambda _: _.as_dict(), app.configurationkeys))
 

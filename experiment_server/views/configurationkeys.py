@@ -6,7 +6,6 @@ from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.applications import Application
-import sqlalchemy.orm.exc
 
 @view_defaults(renderer='json')
 class ConfigurationKeys(WebUtils):
@@ -37,7 +36,7 @@ class ConfigurationKeys(WebUtils):
         confkey = ConfigurationKey.get(confkey_id)
         if confkey is None:
             print_log(datetime.datetime.now(), 'GET', '/configurationkeys/' + str(confkey_id) + '/rangeconstraints',
-                      'Get  one application', None)
+                      'Get rangeconstraints of one configurationkey', 'Failed')
             return self.createResponse(None, 400)
         return list(map(lambda _: _.as_dict(), confkey.rangeconstraints))
 
@@ -50,8 +49,8 @@ class ConfigurationKeys(WebUtils):
         app_id = self.request.swagger_data['id']
         application = Application.get(app_id)
         if application is None:
-            print_log(datetime.datetime.now(), 'POST', '/applications/' + str(id) + '/configurationkeys',
-                      'Delete application', 'Failed')
+            print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/configurationkeys',
+                      'Create new configurationkey for application', 'Failed')
             return self.createResponse(None, 400)
         name = data['name']
         type = data['type']
@@ -61,8 +60,8 @@ class ConfigurationKeys(WebUtils):
             type=type
         )
         ConfigurationKey.save(configurationkey)
-        print_log(name, 'POST', '/applications/{id}/configurationkeys', 'Create new configurationkey',
-                  configurationkey)
+        print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/configurationkeys', 'Create new configurationkey',
+                  'Succeeded')
         return self.createResponse(None, 200)
 
     @view_config(route_name='configurationkeys_for_app', request_method="DELETE")
@@ -80,7 +79,7 @@ class ConfigurationKeys(WebUtils):
                 print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id) + '/configurationkeys',
                           'Delete configurationkeys of application', 'Failed')
                 return self.createResponse(None, 400)
-        print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id) + '/configurationkeys'
+        print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id) + '/configurationkeys',
                   'Delete configurationkeys of application', 'Succeeded')
         return self.createResponse(None, 200)
 

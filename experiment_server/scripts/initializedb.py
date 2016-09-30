@@ -191,5 +191,10 @@ def main(argv=sys.argv):
                                    first_value_a=None, first_value_b=None,
                                    second_configurationkey=confk2, second_operator=None,
                                    second_value_a=None, second_value_b=None)
+        exc2 = ExclusionConstraint(first_configurationkey=confk1, first_operator=op9,
+                                   first_value_a=None, first_value_b=None,
+                                   second_configurationkey=confk2, second_operator=op4,
+                                   second_value_a=2, second_value_b=None)
 
         dbsession.add(exc1)
+        dbsession.add(exc2)
