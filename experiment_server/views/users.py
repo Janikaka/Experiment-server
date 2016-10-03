@@ -7,7 +7,7 @@ from .webutils import WebUtils
 from experiment_server.models.users import User
 
 from fn import _
-from toolz import concat
+from toolz import *
 
 @view_defaults(renderer='json')
 class Users(WebUtils):
@@ -30,7 +30,11 @@ class Users(WebUtils):
     @view_config(route_name='user', request_method="GET", renderer='json')
     def user_GET(self):
         id = int(self.request.matchdict['id'])
-        return User.get(id).as_dict()
+        result = User.get(id)
+        if not result:
+            print_log('/users/%s failed' % id)
+            return self.createResponse(None, 400)
+        return result.as_dict()
 
     # List configurations for specific user
     @view_config(route_name='configurations', request_method="GET")
@@ -44,24 +48,31 @@ class Users(WebUtils):
         current_groups = user.experimentgroups
         configs = list(map(lambda _: _.configurations, current_groups))
         result = list(map(lambda _: _.as_dict(), list(concat(configs))))
-        print(result)
         return result
 
-        # Delete user
+    # Delete user
     @view_config(route_name='user', request_method="DELETE")
     def user_DELETE(self):
-        id = int(self.request.matchdict['id'])
-        result = self.DB.delete_user(id)
+        id = self.request.swagger_data['id']
+        result = User.get(id)
         if not result:
             print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
             return self.createResponse(None, 400)
+        User.destroy(result)
         print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}
 
     # List all experiments for specific user
     @view_config(route_name='experiments_for_user', request_method="GET")
     def experiments_for_user_GET(self):
-        id = int(self.request.matchdict['id'])
+        id = self.request.swagger_data['id']
+        user = User.get(id)
+        if not user:
+            return self.createResponse(None, 400)
+        users_experimentgroups = user.experimentgroups
+        experiments = map(lambda _:_.experiment, users_experimentgroups)
+        result = map(lambda _:_.as_dict(), experiments)
+        return list(result)
         experiments = self.DB.get_user_experiments_list(id)
         experimentsJSON = []
         for i in range(len(experiments)):
