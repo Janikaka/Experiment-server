@@ -15,4 +15,8 @@ class Operator(Base):
     id = Column(Integer, primary_key=True)
     math_value = Column(Text)
     human_value = Column(Text)
-    rangeconstraints = relationship("RangeConstraint", backref="operator", cascade="delete")
+    rangeconstraints = relationship("RangeConstraint", backref="operator")
+
+    def as_dict(self):
+        """ transfer data to dictionary """
+        return {col.name: getattr(self, col.name) for col in self.__table__.columns}

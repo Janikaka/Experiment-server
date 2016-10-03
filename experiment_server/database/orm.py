@@ -29,7 +29,7 @@ class ORM:
     def save(cls, data):
         if data.id is None:
             DBSession.add(data)
-        return DBSession.commit()
+        return DBSession.add(data)
 
     @classmethod
     def destroy(cls, data):
