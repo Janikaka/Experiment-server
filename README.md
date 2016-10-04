@@ -6,6 +6,8 @@
 
 A simple REST API server for providing runtime configurations for applications and receiving usage-related event data.
 
+See the current API documentation from [here](https://swaggerhub.com/api/wakr/experiment-server/). Remember to check the newest (highest) version.
+
 ###Environment setup
 
 We use virtualenv to virtualize the python installation. This will create need for a venv-directory which should be located at project root.

@@ -4,6 +4,7 @@ from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 import datetime
 
+
 @view_defaults(renderer='json')
 class Applications(WebUtils):
     def __init__(self, request):
