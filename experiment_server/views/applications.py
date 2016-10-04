@@ -32,14 +32,14 @@ class Applications(WebUtils):
     @view_config(route_name='applications', request_method="POST")
     def applications_POST(self):
         """ Create new application with POST method """
-        data = self.request.json_body
-        name = data['name']
+        req_app = self.request.swagger_data['application']
         app = Application(
-            name=name
+            name=req_app.name
         )
         Application.save(app)
-        print_log(name, 'POST', '/applications', 'Create new application', app)
-        return self.createResponse(None, 200)
+        added = Application.get_by('name', req_app.name)
+        print_log(req_app.name, 'POST', '/applications', 'Create new application', app)
+        return added.as_dict()
 
     @view_config(route_name='application', request_method="DELETE")
     def applications_DELETE_one(self):
