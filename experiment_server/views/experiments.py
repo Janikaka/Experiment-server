@@ -17,37 +17,18 @@ class Experiments(WebUtils):
     @view_config(route_name='experiments', request_method="POST")
     def experiments_POST(self):
         """ Create new experiment """
-        data = self.request.json_body
-        name = data['name']
-        experimentgroups = data['experimentgroups']
-        start_datetime = data['startDatetime']
-        endDatetime = data['endDatetime']
-        size = int(data['size'])
-        expgroups = []
-        for i in range(len(experimentgroups)):
-            expgroup = self.DB.create_experimentgroup({'name': experimentgroups[i]['name']})
-            expgroups.append(expgroup)
-            confs = experimentgroups[i]['configurations']
-            for j in range(len(confs)):
-                key = confs[j]['key']
-                value = confs[j]['value']
-                self.DB.create_configuration({'key': key,
-                                              'value': value,
-                                              'experimentgroup': expgroup})
-        experiment = self.DB.create_experiment(
-            {'name': name,
-             'startDatetime': start_datetime,
-             'endDatetime': endDatetime,
-             'experimentgroups': expgroups,
-             'size': size
-            })
-        if experiment is None:
-            print_log(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', None)
-            return self.createResponse(None, 200)
-        result = {'data': experiment.as_dict()}
-        # Experimenter sends double request?!
-        print_log(datetime.datetime.now(), 'POST', '/experiments', 'Create new experiment', result)
-        return self.createResponse(result, 200)
+        req_exp = self.request.swagger_data['experiment']
+        exp = Experiment(
+            name=req_exp.name,
+            startDatetime = req_exp.startDatetime,
+            endDatetime = req_exp.endDatetime,
+            size = req_exp.size,
+            application_id = req_exp.application_id
+        )
+        Experiment.save(exp)
+        added = Experiment.get_by('name', req_exp.name)
+        print_log(req_exp.name, 'POST', '/experiments', 'Create new experiment', exp)
+        return added.as_dict()
 
     @view_config(route_name='experiments', request_method="GET")
     def experiments_GET(self):

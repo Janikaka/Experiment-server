@@ -60,8 +60,8 @@ class ConfigurationKeys(WebUtils):
             type=type
         )
         ConfigurationKey.save(configurationkey)
-        print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/configurationkeys', 'Create new configurationkey',
-                  'Succeeded')
+        print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/configurationkeys',
+                  'Create new configurationkey', 'Succeeded')
         return self.createResponse(None, 200)
 
     @view_config(route_name='configurationkeys_for_app', request_method="DELETE")
