@@ -43,6 +43,10 @@
     {
       "name": "operators",
       "description": "Operator-related routes"
+    },
+    {
+      "name": "experiments",
+      "description": "Experiment-related routes"
     }
   ],
   "paths": {
@@ -659,6 +663,110 @@
                 "$ref": "#/definitions/Operator"
               }
             }
+          }
+        }
+      }
+    },
+    "/experiments": {
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "List all experiments",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Experiment"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/experiments/{id}": {
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Get one experiment",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Experiment"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Delete one experiment",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/experiments/{id}/users": {
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "List all users for one experiment",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
           }
         }
       }
