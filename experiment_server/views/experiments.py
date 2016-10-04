@@ -6,6 +6,8 @@ from experiment_server.models import DatabaseInterface
 from experiment_server.utils.log import print_log
 from experiment_server.views.webutils import WebUtils
 
+from experiment_server.models.experiments import Experiment
+
 @view_defaults(renderer='json')
 class Experiments(WebUtils):
     def __init__(self, request):
@@ -50,15 +52,29 @@ class Experiments(WebUtils):
     @view_config(route_name='experiments', request_method="GET")
     def experiments_GET(self):
         """ List all experiments """
-        experiments = self.DB.get_all_experiments()
-        experimentsJSON = []
-        for i in range(len(experiments)):
-            experiment = experiments[i].as_dict()
-            experiment['status'] = self.DB.get_status_for_experiment(experiments[i].id)
-            experimentsJSON.append(experiment)
-        result = {'data': experimentsJSON}
-        print_log(datetime.datetime.now(), 'GET', '/experiments', 'List all experiments', result)
-        return self.createResponse(result, 200)
+        return list(map(lambda _: _.as_dict(), Experiment.all()))
+
+    @view_config(route_name='experiment', request_method="GET", renderer='json')
+    def experiments_GET_one(self):
+        """ Find and return one experiment by id with GET method """
+        exp_id = self.request.swagger_data['id']
+        exp = Experiment.get(exp_id)
+        if exp is None:
+            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(exp_id), 'Get one experiment', None)
+            return self.createResponse(None, 400)
+        return exp.as_dict()
+
+    @view_config(route_name='experiment', request_method="DELETE")
+    def experiment_DELETE(self):
+        """ Delete experiment """
+        exp_id = self.request.swagger_data['id']
+        exp = Experiment.get(exp_id)
+        if not exp:
+            print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(exp_id), 'Delete experiment', 'Failed')
+            return self.createResponse(None, 400)
+        Experiment.destroy(exp)
+        print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(exp_id), 'Delete experiment', 'Succeeded')
+        return self.createResponse(None, 200)
 
     @view_config(route_name='experiment_metadata', request_method="GET")
     def experiment_metadata_GET(self):
@@ -94,37 +110,20 @@ class Experiments(WebUtils):
                   'Show specific experiment metadata', result)
         return self.createResponse(result, 200)
 
-    @view_config(route_name='experiment', request_method="DELETE")
-    def experiment_DELETE(self):
-        """ Delete experiment """
-        id = int(self.request.matchdict['id'])
-        result = self.DB.delete_experiment(id)
-        if not result:
-            print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(id), 'Delete experiment', 'Failed')
-            return self.createResponse(None, 400)
-        print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(id), 'Delete experiment', 'Succeeded')
-        return self.createResponse(None, 200)
 
     @view_config(route_name='users_for_experiment', request_method="GET")
     def users_for_experiment_GET(self):
         """ List all users for specific experiment """
-        id = int(self.request.matchdict['id'])
-        users = self.DB.get_users_for_experiment(id)
-        if users is None:
+        id = self.request.swagger_data['id']
+        exp = Experiment.get(id)
+        if exp is None:
             print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
                       'List all users for specific experiment', None)
             return self.createResponse(None, 400)
-        usersJSON = []
-        for i in range(len(users)):
-            user = users[i].as_dict()
-            experimentgroup = self.DB.get_experimentgroup_for_user_in_experiment(users[i].id, id)
-            user['experimentgroup'] = experimentgroup.as_dict()
-            user['totalDataitems'] = self.DB.get_total_dataitems_for_user_in_experiment(users[i].id, id)
-            usersJSON.append(user)
-        result = {'data': usersJSON}
-        print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
-                  'List all users for specific experiment', result)
-        return self.createResponse(result, 200)
+        users=[]
+        for expgroup in exp.experimentgroups:
+            users.extend(map(lambda _: _.as_dict(), expgroup.users))
+        return list(users)
 
     @view_config(route_name='experiment_data', request_method="GET")
     def experiment_data_GET(self):
