@@ -10,6 +10,8 @@ def includeme(config):
     config.add_route('experiments_for_user', '/users/{id}/experiments')
     config.add_route('configurations', 'users/{id}/configurations')
 
+    config.add_route('operators', '/operators')
+
     config.add_route('experiments', '/experiments')
     config.add_route('experiment_metadata', '/experiments/{id}/metadata')
     config.add_route('experiment', '/experiments/{id}')

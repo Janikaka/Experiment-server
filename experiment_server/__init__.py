@@ -13,7 +13,7 @@ def main(global_config, **settings):
     settings = config.get_settings()
     engine = engine_from_config(settings, 'sqlalchemy.')
     orm_config.DBSession = orm.scoped_session(
-        orm.sessionmaker(extension=ZopeTransactionExtension()))
+        orm.sessionmaker(extension=ZopeTransactionExtension(), autoflush=True))
     orm_config.DBSession.configure(bind=engine)
 
 

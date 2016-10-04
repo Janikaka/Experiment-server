@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.1",
+    "version": "1.2",
     "title": "Experiment server",
     "description": "API for experiments",
     "license": {
@@ -39,6 +39,10 @@
     {
       "name": "exclusion-constrains",
       "description": "Exclusion-related routes"
+    },
+    {
+      "name": "operators",
+      "description": "Operator-related routes"
     }
   ],
   "paths": {
@@ -636,6 +640,25 @@
           },
           "400": {
             "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/operators": {
+      "get": {
+        "tags": [
+          "operators"
+        ],
+        "summary": "Get available operators",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Operator"
+              }
+            }
           }
         }
       }

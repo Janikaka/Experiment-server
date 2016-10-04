@@ -27,9 +27,7 @@ class ORM:
 
     @classmethod
     def save(cls, data):
-        if data.id is None:
-            DBSession.add(data)
-        return DBSession.add(data)
+        DBSession.add(data)
 
     @classmethod
     def destroy(cls, data):

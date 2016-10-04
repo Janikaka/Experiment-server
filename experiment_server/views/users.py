@@ -26,6 +26,17 @@ class Users(WebUtils):
         """
         return list(map(lambda _: _.as_dict(), User.all()))
 
+    # Create new user
+    @view_config(route_name='users', request_method="POST", renderer='json')
+    def create_user(self):
+        req_user = self.request.swagger_data['user']
+        user = User(
+            username=req_user.username
+        )
+        User.save(user)
+        added = User.get_by('username', user.username)
+        return added.as_dict()
+
     # Get one user
     @view_config(route_name='user', request_method="GET", renderer='json')
     def user_GET(self):
@@ -35,6 +46,18 @@ class Users(WebUtils):
             print_log('/users/%s failed' % id)
             return self.createResponse(None, 400)
         return result.as_dict()
+
+    # Delete user
+    @view_config(route_name='user', request_method="DELETE")
+    def user_DELETE(self):
+        id = self.request.swagger_data['id']
+        result = User.get(id)
+        if not result:
+            print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
+            return self.createResponse(None, 400)
+        User.destroy(result)
+        print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
+        return {}
 
     # List configurations for specific user
     @view_config(route_name='configurations', request_method="GET")
@@ -49,18 +72,6 @@ class Users(WebUtils):
         configs = list(map(lambda _: _.configurations, current_groups))
         result = list(map(lambda _: _.as_dict(), list(concat(configs))))
         return result
-
-    # Delete user
-    @view_config(route_name='user', request_method="DELETE")
-    def user_DELETE(self):
-        id = self.request.swagger_data['id']
-        result = User.get(id)
-        if not result:
-            print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
-            return self.createResponse(None, 400)
-        User.destroy(result)
-        print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
-        return {}
 
     # List all experiments for specific user
     @view_config(route_name='experiments_for_user', request_method="GET")
