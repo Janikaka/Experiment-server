@@ -429,6 +429,41 @@
           }
         }
       },
+      "put": {
+        "tags": [
+          "configuration-keys"
+        ],
+        "summary": "Modify excisting configuration key",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the configurationkey",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "configurationkey",
+            "in": "body",
+            "description": "Configurationkey to modify",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConfigurationKey"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ConfigurationKey"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
       "delete": {
         "tags": [
           "configuration-keys"

@@ -29,6 +29,14 @@ class ConfigurationKeys(WebUtils):
             return self.createResponse(None, 400)
         return confkey.as_dict()
 
+    @view_config(route_name='configurationkey', request_method="PUT")
+    def configurationkeys_PUT_one(self):
+        """ Updates only the name of configurationkey"""
+        configkey_req = self.request.swagger_data['configurationkey']
+        ConfigurationKey.update(configkey_req.id, "name", configkey_req.name)
+        updated = ConfigurationKey.get(configkey_req.id)
+        return updated.as_dict()
+
     @view_config(route_name='rangeconstraints_for_configurationkey', request_method="GET")
     def rangeconstraints_for_confkey_GET(self):
         """ List all rangeconstraints of specific conf.key """

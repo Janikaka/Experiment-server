@@ -39,5 +39,6 @@ class ORM:
     """
     @classmethod
     def update(cls, primary_id, key, new_value):
-        return DBSession.query(cls).filter(getattr(cls, id) == primary_id)\
+        DBSession.query(cls).filter(getattr(cls, 'id') == primary_id)\
                                    .update({key: new_value})
+        DBSession.flush()
