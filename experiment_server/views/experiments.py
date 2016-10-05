@@ -60,10 +60,7 @@ class Experiments(WebUtils):
     @view_config(route_name='experiment_metadata', request_method="GET")
     def experiment_metadata_GET(self):
         """ Show specific experiment metadata """
-
-
-
-        """id = int(self.request.matchdict['id'])
+        id = int(self.request.matchdict['id'])
         experiment = self.DB.get_experiment(id)
         if experiment is None:
             print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
