@@ -7,6 +7,7 @@ from experiment_server.utils.log import print_log
 from experiment_server.views.webutils import WebUtils
 
 from experiment_server.models.experiments import Experiment
+from experiment_server.models.experimentgroups import ExperimentGroup
 
 @view_defaults(renderer='json')
 class Experiments(WebUtils):
@@ -59,7 +60,10 @@ class Experiments(WebUtils):
     @view_config(route_name='experiment_metadata', request_method="GET")
     def experiment_metadata_GET(self):
         """ Show specific experiment metadata """
-        id = int(self.request.matchdict['id'])
+
+
+
+        """id = int(self.request.matchdict['id'])
         experiment = self.DB.get_experiment(id)
         if experiment is None:
             print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
@@ -164,21 +168,18 @@ class Experiments(WebUtils):
     @view_config(route_name='experimentgroup', request_method="DELETE")
     def experimentgroup_DELETE(self):
         """ Delete experimentgroup """
-        expgroupid = int(self.request.matchdict['expgroupid'])
-        experimentgroup = self.DB.get_experimentgroup(expgroupid)
-        experiment_id = experimentgroup.experiment_id
-        expid = int(self.request.matchdict['expid'])
-        result = self.DB.delete_experimentgroup(expgroupid)
-        if not result or experiment_id != expid:
+        expgroupid = self.request.swagger_data['expgroupid']
+        experimentgroup = ExperimentGroup.get(expgroupid)
+        expid = self.request.swagger_data['expid']
+        if not experimentgroup:
             print_log(datetime.datetime.now(), 'DELETE',
                       '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
-                      'Delete experimentgroup',
-                      'Failed')
+                      'Delete experimentgroup', 'Failed')
             return self.createResponse(None, 400)
+        ExperimentGroup.destroy(experimentgroup)
         print_log(datetime.datetime.now(), 'DELETE',
                   '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
-                  'Delete experimentgroup',
-                  'Succeeded')
+                  'Delete experimentgroup', 'Succeeded')
         return self.createResponse(None, 200)
 
     @view_config(route_name='user_for_experiment', request_method="DELETE")
