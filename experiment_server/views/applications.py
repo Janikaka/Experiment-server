@@ -37,9 +37,8 @@ class Applications(WebUtils):
             name=req_app.name
         )
         Application.save(app)
-        added = Application.get_by('name', req_app.name)
         print_log(req_app.name, 'POST', '/applications', 'Create new application', app)
-        return added.as_dict()
+        return app.as_dict()
 
     @view_config(route_name='application', request_method="DELETE")
     def applications_DELETE_one(self):

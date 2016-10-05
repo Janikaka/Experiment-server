@@ -28,6 +28,7 @@ class ORM:
     @classmethod
     def save(cls, data):
         DBSession.add(data)
+        DBSession.flush()
 
     @classmethod
     def destroy(cls, data):
