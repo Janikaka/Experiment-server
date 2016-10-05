@@ -3,6 +3,7 @@ autopep8==1.2.4
 bravado-core==4.5.0
 codeclimate-test-reporter==0.1.2
 coverage==4.2
+db-psycopg2==0.0.7
 fn==0.4.3
 isort==4.2.5
 Jinja2==2.8
