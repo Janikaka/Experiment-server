@@ -132,7 +132,10 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Application"
+            }
           }
         }
       }
@@ -369,7 +372,10 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ConfigurationKey"
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -680,6 +686,34 @@
               "items": {
                 "$ref": "#/definitions/Experiment"
               }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Create new experiment",
+        "parameters": [
+          {
+            "name": "experiment",
+            "in": "body",
+            "description": "Experiment to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewExperiment"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Experiment"
             }
           },
           "400": {
@@ -1050,6 +1084,35 @@
           "items": {
             "$ref": "#/definitions/ExperimentGroup"
           }
+        },
+        "size": {
+          "type": "integer"
+        }
+      }
+    },
+    "NewExperiment": {
+      "type": "object",
+      "required": [
+        "name",
+        "application_id",
+        "startDatetime",
+        "endDatetime",
+        "size"
+      ],
+      "properties": {
+        "application_id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "startDatetime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDatetime": {
+          "type": "string",
+          "format": "date-time"
         },
         "size": {
           "type": "integer"
