@@ -26,9 +26,8 @@ class Experiments(WebUtils):
             application_id = req_exp.application_id
         )
         Experiment.save(exp)
-        added = Experiment.get_by('name', req_exp.name)
         print_log(req_exp.name, 'POST', '/experiments', 'Create new experiment', exp)
-        return added.as_dict()
+        return exp.as_dict()
 
     @view_config(route_name='experiments', request_method="GET")
     def experiments_GET(self):
