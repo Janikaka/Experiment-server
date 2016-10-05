@@ -6,8 +6,6 @@ from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 from experiment_server.models.rangeconstraints import RangeConstraint
 from experiment_server.models.configurationkeys import ConfigurationKey
-from experiment_server.models.operators import Operator
-from experiment_server.models.dictionary_creator import DictionaryCreator
 
 
 @view_defaults(renderer='json')
@@ -24,26 +22,19 @@ class RangeConstraints(WebUtils):
     @view_config(route_name='rangeconstraints_for_configurationkey', request_method="POST")
     def rangecontraints_POST(self):
         """ Create new rangeconstraint for specific configurationkey """
-        # TODO Decide how to receive operator.id
-        data = self.request.json_body
-        ck_id = self.request.swagger_data['id']
-        conf_key = ConfigurationKey.get(ck_id)
-        op_id = self.request.headers.get('operator') # Change this. Now it takes id from header.
-        operator = Operator.get(op_id)
-        if conf_key is None or operator is None:
-            print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + str(ck_id) + '/rangeconstraints',
-                      'Create new rangeconstraint for configurationkey', 'Failed')
-            return self.createResponse(None, 400)
-        value = data['value']
+        req_rangec = self.request.swagger_data['rangeconstraint']
+        configkey_id = self.request.swagger_data['id']
+
         rconstraint = RangeConstraint(
-            configurationkey=conf_key,
-            operator=operator,
-            value=value
+            configurationkey_id=configkey_id,
+            operator_id=req_rangec.operator_id,
+            value=req_rangec.value
         )
-        ConfigurationKey.save(rconstraint)
-        print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + str(ck_id) + '/rangeconstraints',
+        RangeConstraint.save(rconstraint)
+
+        print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + '{id}' + '/rangeconstraints',
                   'Create new rangeconstraint for configurationkey', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}
 
     @view_config(route_name='rangeconstraint', request_method="DELETE")
     def rangecontraints_DELETE_one(self):
