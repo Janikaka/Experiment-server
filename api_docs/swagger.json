@@ -232,10 +232,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/Application"
-            }
+            "description": "OK"
           }
         }
       }
@@ -346,10 +343,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/ConfigurationKey"
-            }
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
@@ -793,34 +787,6 @@
             "description": "Bad Request"
           }
         }
-      },
-      "post": {
-        "tags": [
-          "experiments"
-        ],
-        "summary": "Create new experiment",
-        "parameters": [
-          {
-            "name": "experiment",
-            "in": "body",
-            "description": "Experiment to create",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/NewExperiment"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/Experiment"
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
       }
     },
     "/experiments/{id}": {
@@ -898,6 +864,38 @@
                 "$ref": "#/definitions/User"
               }
             }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/experiments/{expid}/experimentgroups/{expgroupid}": {
+      "delete": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Delete experimentgroup from one experiment",
+        "parameters": [
+          {
+            "name": "expid",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "expgroupid",
+            "type": "integer",
+            "description": "id of the experimentgroup",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
@@ -1235,35 +1233,6 @@
           "items": {
             "$ref": "#/definitions/ExperimentGroup"
           }
-        },
-        "size": {
-          "type": "integer"
-        }
-      }
-    },
-    "NewExperiment": {
-      "type": "object",
-      "required": [
-        "name",
-        "application_id",
-        "startDatetime",
-        "endDatetime",
-        "size"
-      ],
-      "properties": {
-        "application_id": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        },
-        "startDatetime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "endDatetime": {
-          "type": "string",
-          "format": "date-time"
         },
         "size": {
           "type": "integer"
