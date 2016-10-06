@@ -29,6 +29,8 @@ class ExclusionConstraints(WebUtils):
             return self.createResponse(None, 400)
         return exconstraint.as_dict()
 
+
+
     @view_config(route_name='exclusionconstraint', request_method="DELETE")
     def exclusioncontraints_DELETE_one(self):
         """ Find and delete one exclusionconstraint by id with destroy method """
