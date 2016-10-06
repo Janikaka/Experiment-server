@@ -377,6 +377,41 @@
         }
       }
     },
+    "/applications/{id}/exclusionconstraints": {
+      "post": {
+        "tags": [
+          "exclusion-constraint",
+          "application"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "integer",
+            "description": "ID of the application",
+            "required": true
+          },
+          {
+            "name": "exclusionconstraint",
+            "in": "body",
+            "description": "new exclusionconstraint",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewExclusionConstraint"
+            }
+          }
+        ],
+        "summary": "Create new exclusional constraint for application",
+        "responses": {
+          "200": {
+            "description": "Created exclusionconstraint",
+            "schema": {
+              "$ref": "#/definitions/ExclusionConstraint"
+            }
+          }
+        }
+      }
+    },
     "/configurationkeys": {
       "get": {
         "tags": [
@@ -936,7 +971,8 @@
       "type": "object",
       "required": [
         "name",
-        "type"
+        "type",
+        "application_id"
       ],
       "properties": {
         "name": {
@@ -1013,7 +1049,12 @@
         "id",
         "first_configurationkey_id",
         "first_operator_id",
-        "second_configurationkey_id"
+        "first_value_a",
+        "first_value_b",
+        "second_configurationkey_id",
+        "second_operator_id",
+        "second_value_a",
+        "second_value_b"
       ],
       "properties": {
         "id": {
@@ -1027,36 +1068,80 @@
         },
         "first_value_a": {
           "type": [
-            "string",
-            "null"
-          ]
+            "string"
+          ],
+          "x-nullable": true
         },
         "first_value_b": {
           "type": [
-            "string",
-            "null"
-          ]
+            "string"
+          ],
+          "x-nullable": true
         },
         "second_configurationkey_id": {
           "type": "integer"
         },
         "second_operator_id": {
           "type": [
-            "integer",
-            "null"
-          ]
+            "integer"
+          ],
+          "x-nullable": true
         },
         "second_value_a": {
           "type": [
-            "string",
-            "null"
-          ]
+            "string"
+          ],
+          "x-nullable": true
         },
         "second_value_b": {
           "type": [
-            "string",
-            "null"
-          ]
+            "string"
+          ],
+          "x-nullable": true
+        }
+      }
+    },
+    "NewExclusionConstraint": {
+      "type": "object",
+      "properties": {
+        "first_configurationkey_id": {
+          "type": "integer"
+        },
+        "first_operator_id": {
+          "type": "integer"
+        },
+        "first_value_a": {
+          "type": [
+            "string"
+          ],
+          "x-nullable": true
+        },
+        "first_value_b": {
+          "type": [
+            "string"
+          ],
+          "x-nullable": true
+        },
+        "second_configurationkey_id": {
+          "type": "integer"
+        },
+        "second_operator_id": {
+          "type": [
+            "integer"
+          ],
+          "x-nullable": true
+        },
+        "second_value_a": {
+          "type": [
+            "string"
+          ],
+          "x-nullable": true
+        },
+        "second_value_b": {
+          "type": [
+            "string"
+          ],
+          "x-nullable": true
         }
       }
     },
