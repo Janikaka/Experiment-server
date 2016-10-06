@@ -41,4 +41,4 @@ class ExclusionConstraints(WebUtils):
         ExclusionConstraint.destroy(exconstraint)
         print_log(datetime.datetime.now(), 'DELETE', '/exclusionconstraints/'
                   + str(exconst_id), 'Delete exclusionconstraint', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}

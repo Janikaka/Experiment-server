@@ -53,15 +53,15 @@ class ConfigurationKeys(WebUtils):
         """ Create new configurationkey to application.
             request.matchdict['id'] takes the id and DB.get_application_by_id(id) returns the application by id.
         """
-        data = self.request.json_body
         app_id = self.request.swagger_data['id']
         application = Application.get(app_id)
         if application is None:
             print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/configurationkeys',
                       'Create new configurationkey for application', 'Failed')
-            return self.createResponse(None, 400)
-        name = data['name']
-        type = data['type']
+            return self.createResponse({}, 400)
+        new_confkey = self.request.swagger_data['configurationkey']
+        name = new_confkey.name
+        type = new_confkey.type
         configurationkey = ConfigurationKey(
             application=application,
             name=name,
@@ -70,7 +70,7 @@ class ConfigurationKeys(WebUtils):
         ConfigurationKey.save(configurationkey)
         print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/configurationkeys',
                   'Create new configurationkey', 'Succeeded')
-        return self.createResponse(None, 200)
+        return configurationkey.as_dict()
 
     @view_config(route_name='configurationkeys_for_app', request_method="DELETE")
     def configurationkeys_for_application_DELETE(self):

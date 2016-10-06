@@ -30,11 +30,15 @@ class RangeConstraints(WebUtils):
             operator_id=req_rangec.operator_id,
             value=req_rangec.value
         )
-        RangeConstraint.save(rconstraint)
+
+        try:
+            RangeConstraint.save(rconstraint)
+        except:
+            return self.createResponse({}, 400)
 
         print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + '{id}' + '/rangeconstraints',
                   'Create new rangeconstraint for configurationkey', 'Succeeded')
-        return {}
+        return rconstraint.as_dict()
 
     @view_config(route_name='rangeconstraint', request_method="DELETE")
     def rangecontraints_DELETE_one(self):

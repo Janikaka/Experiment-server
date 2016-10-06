@@ -34,8 +34,7 @@ class Users(WebUtils):
             username=req_user.username
         )
         User.save(user)
-        added = User.get_by('username', user.username)
-        return added.as_dict()
+        return user.as_dict()
 
     # Get one user
     @view_config(route_name='user', request_method="GET", renderer='json')
