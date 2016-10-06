@@ -6,8 +6,8 @@ info:
   license:
     name: MIT
     url: http://opensource.org/licenses/MIT
-host: 127.0.0.1:6543
-schemes: 
+host: experiment-server2016.herokuapp.com
+schemes:
   - http
 produces:
   - application/json
@@ -29,7 +29,18 @@ tags:
   - name: experiments
     description: Experiment-related routes
 paths:
-  /users: 
+
+  /:
+    get:
+      summary: Get API information
+      responses:
+        200:
+          description: OK
+          schema:
+              $ref: "#/definitions/API-info"
+
+
+  /users:
     get:
       tags:
         - user
@@ -42,12 +53,12 @@ paths:
             type: array
             items:
               $ref: "#/definitions/User"
-              
+
     post:
       tags:
         - user
       summary: Create new user
-      parameters: 
+      parameters:
         - name: user
           in: body
           description: User to create
@@ -55,10 +66,10 @@ paths:
           schema:
             $ref: '#/definitions/NewUser'
       responses:
-        200: 
+        200:
           description: OK
-            
-  
+
+
   /users/{id}:
     get:
       tags:
@@ -79,7 +90,7 @@ paths:
       tags:
         - user
       summary: Delete one user
-      parameters: 
+      parameters:
         - name: id
           type: integer
           description: id of the user
@@ -88,13 +99,13 @@ paths:
       responses:
         200:
           description: OK
-    
+
   /users/{id}/configurations:
     get:
       tags:
         - user
       summary: Get users currenct configurations
-      parameters: 
+      parameters:
         - name: id
           type: integer
           description: id of the current user
@@ -107,7 +118,7 @@ paths:
              type: array
              items:
               $ref: "#/definitions/Configuration"
-              
+
   /users/{id}/experiments:
     get:
       tags:
@@ -129,13 +140,13 @@ paths:
 
   /applications:
     get:
-      tags: 
+      tags:
         - application
       summary: Get all applications
       responses:
         200:
           description: OK
-          schema: 
+          schema:
             type: array
             items:
               $ref: "#/definitions/Application"
@@ -143,7 +154,7 @@ paths:
       tags:
         - application
       summary: Create new application
-      parameters: 
+      parameters:
         - name: application
           in: body
           description: Application to create
@@ -151,12 +162,12 @@ paths:
           schema:
             $ref: '#/definitions/NewApplication'
       responses:
-        200: 
+        200:
           description: OK
           schema:
             $ref: "#/definitions/Application"
-            
-              
+
+
   /applications/{id}:
     get:
       tags:
@@ -176,10 +187,10 @@ paths:
         400:
           description: Bad Request
     delete:
-      tags: 
+      tags:
         - application
       summary: Delete one application
-      parameters: 
+      parameters:
         - name: id
           type: integer
           description: id of the application
@@ -190,7 +201,7 @@ paths:
           description: OK
         400:
           description: Bad Request
-          
+
   /applications/{id}/configurationkeys:
     get:
       tags:
@@ -228,7 +239,7 @@ paths:
           schema:
             $ref: '#/definitions/NewConfigurationKey'
       responses:
-        200: 
+        200:
           description: OK
           schema:
             $ref: '#/definitions/ConfigurationKey'
@@ -239,7 +250,7 @@ paths:
       tags:
         - application
       summary: Delete all conf.keys of one app
-      parameters: 
+      parameters:
         - name: id
           type: integer
           description: id of the application
@@ -250,7 +261,7 @@ paths:
           description: OK
         400:
           description: Bad Request
-          
+
   /configurationkeys:
     get:
       tags:
@@ -259,11 +270,11 @@ paths:
       responses:
         200:
           description: OK
-          schema: 
+          schema:
             type: array
             items:
               $ref: "#/definitions/ConfigurationKey"
-             
+
   /configurationkeys/{id}:
     get:
       tags:
@@ -292,22 +303,24 @@ paths:
           description: id of the configurationkey
           in: path
           required: true
-        - name: configuration-key
+        - name: configurationkey
           in: body
           description: Configurationkey to modify
           required: true
           schema:
-            $ref: '#/definitions/NewConfigurationKey'
+            $ref: '#/definitions/ConfigurationKey'
       responses:
         200:
           description: OK
+          schema:
+            $ref: '#/definitions/ConfigurationKey'
         400:
           description: Bad Request
     delete:
       tags:
         - configuration-keys
       summary: Delete one configurationkey
-      parameters: 
+      parameters:
         - name: id
           type: integer
           description: id of the configurationkey
@@ -318,7 +331,7 @@ paths:
           description: OK
         400:
           description: Bad Request
-          
+
   /configurationkeys/{id}/rangeconstraints:
     get:
       tags:
@@ -355,7 +368,7 @@ paths:
         400:
           description: Bad Request
     post:
-      tags: 
+      tags:
         - configuration-keys
       summary: Create new rangeconstraint
       parameters:
@@ -371,11 +384,11 @@ paths:
           schema:
             $ref: '#/definitions/NewRangeConstraint'
       responses:
-        200: 
+        200:
           description: OK
         400:
           description: Bad Request
-          
+
   /rangeconstraints:
     get:
       tags:
@@ -384,7 +397,7 @@ paths:
       responses:
         200:
           description: OK
-          schema: 
+          schema:
             type: array
             items:
               $ref: "#/definitions/RangeConstraint"
@@ -405,7 +418,7 @@ paths:
           description: OK
         400:
           description: Bad Request
-              
+
   /exclusionconstraints:
     get:
       tags:
@@ -414,11 +427,11 @@ paths:
       responses:
         200:
           description: OK
-          schema: 
+          schema:
             type: array
             items:
               $ref: "#/definitions/ExclusionConstraint"
-              
+
   /exclusionconstraints/{id}:
     get:
       tags:
@@ -441,7 +454,7 @@ paths:
       tags:
         - exclusion-constraint
       summary: Delete one exclusionconstraint
-      parameters: 
+      parameters:
         - name: id
           type: integer
           description: id of the exclusionconstraint
@@ -452,7 +465,7 @@ paths:
           description: OK
         400:
           description: Bad Request
-  
+
   /operators:
     get:
       tags:
@@ -461,11 +474,11 @@ paths:
       responses:
         200:
           description: OK
-          schema: 
+          schema:
             type: array
-            items: 
+            items:
               $ref: "#/definitions/Operator"
-  
+
   /experiments:
     get:
       tags:
@@ -474,7 +487,7 @@ paths:
       responses:
         200:
           description: OK
-          schema: 
+          schema:
             type: array
             items:
               $ref: "#/definitions/Experiment"
@@ -484,7 +497,7 @@ paths:
       tags:
         - experiments
       summary: Create new experiment
-      parameters: 
+      parameters:
         - name: experiment
           in: body
           description: Experiment to create
@@ -492,14 +505,14 @@ paths:
           schema:
             $ref: '#/definitions/NewExperiment'
       responses:
-        200: 
+        200:
           description: OK
           schema:
             $ref: "#/definitions/Experiment"
         400:
           description: Bad Request
-      
-              
+
+
   /experiments/{id}:
     get:
       tags:
@@ -522,7 +535,7 @@ paths:
       tags:
         - experiments
       summary: Delete one experiment
-      parameters: 
+      parameters:
         - name: id
           type: integer
           description: id of the experiment
@@ -533,7 +546,7 @@ paths:
           description: OK
         400:
           description: Bad Request
-        
+
   /experiments/{id}/users:
     get:
       tags:
@@ -554,8 +567,42 @@ paths:
               $ref: "#/definitions/User"
         400:
           description: Bad Request
-  
+
+  /experiments/{expid}/experimentgroups/{expgroupid}:
+    delete:
+      tags:
+        - experiments
+      summary: Delete experimentgroup from one experiment
+      parameters:
+        - name: expid
+          type: integer
+          description: id of the experiment
+          in: path
+          required: true
+        - name: expgroupid
+          type: integer
+          description: id of the experimentgroup
+          in: path
+          required: true
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+
 definitions:
+
+  API-info:
+    type: object
+    required: 
+      - version
+      - description
+    properties:
+      version:
+        type: string
+      description:
+        type: string
+
   Application:
     type: object
     allOf:
@@ -567,13 +614,13 @@ definitions:
             type: integer
           experiments:
             type: array
-            items: 
+            items:
               $ref: "#/definitions/Experiment"
           configurationkeys:
             type: array
             items:
               $ref: "#/definitions/ConfigurationKey"
-          
+
   NewApplication:
     type: object
     required:
@@ -581,7 +628,7 @@ definitions:
     properties:
       name:
         type: string
-          
+
   ConfigurationKey:
     type: object
     allOf:
@@ -593,9 +640,9 @@ definitions:
             type: integer
           rangeconstraints:
             type: array
-            items: 
+            items:
               $ref: "#/definitions/RangeConstraint"
-          
+
   NewConfigurationKey:
     type: object
     required:
@@ -608,7 +655,7 @@ definitions:
         type: string
       application_id:
         type: integer
-          
+
   Configuration:
     type: object
     required:
@@ -623,12 +670,12 @@ definitions:
         type: integer
       key:
         type: string
-      value: 
-        type: 
+      value:
+        type:
           - integer
           - string
           - boolean
-        
+
   DataItem:
     type: object
     required:
@@ -636,12 +683,12 @@ definitions:
     properties:
       id:
         type: integer
-      user_id: 
+      user_id:
         type: integer
       key:
         type: string
       value:
-        type: 
+        type:
           - integer
           - string
           - boolean
@@ -649,7 +696,7 @@ definitions:
         type: string
       endDateTime:
         type: string
-        
+
   ExclusionConstraint:
     type: object
     required:
@@ -665,11 +712,11 @@ definitions:
       first_operator_id:
         type: integer
       first_value_a:
-        type: 
+        type:
           - string
           - "null"
       first_value_b:
-        type: 
+        type:
           - string
           - "null"
       second_configurationkey_id:
@@ -679,11 +726,11 @@ definitions:
           - integer
           - "null"
       second_value_a:
-        type: 
+        type:
           - string
           - "null"
       second_value_b:
-        type: 
+        type:
           - string
           - "null"
 
@@ -700,14 +747,14 @@ definitions:
         type: string
       configurations:
         type: array
-        items: 
+        items:
           $ref: "#/definitions/Configuration"
       users:
         type: array
         items:
           $ref: "#/definitions/User"
 
-        
+
   Experiment:
     type: object
     required:
@@ -727,11 +774,11 @@ definitions:
         format: date-time
       experimentgroups:
         type: array
-        items: 
+        items:
           $ref: "#/definitions/ExperimentGroup"
       size:
         type: integer
-  
+
   NewExperiment:
     type: object
     required:
@@ -753,7 +800,7 @@ definitions:
         format: date-time
       size:
         type: integer
-        
+
   Operator:
     type: object
     required:
@@ -769,7 +816,7 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/RangeConstraint"
-          
+
   RangeConstraint:
     type: object
     allOf:
@@ -779,7 +826,7 @@ definitions:
         properties:
           id:
             type: integer
-        
+
   NewRangeConstraint:
     type: object
     required:
@@ -789,9 +836,9 @@ definitions:
         type: integer
       operator_id:
         type: integer
-      value: 
+      value:
         type: integer
-          
+
   User:
     allOf:
       - $ref: '#/definitions/NewUser'
@@ -803,13 +850,13 @@ definitions:
             type: integer
           dataitems:
             type: array
-            items: 
+            items:
               $ref: "#/definitions/DataItem"
           experimentgroups:
             type: array
             items:
               $ref: "#/definitions/ExperimentGroup"
-          
+
   NewUser:
     type: object
     required:
