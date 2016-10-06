@@ -8,6 +8,8 @@ A simple REST API server for providing runtime configurations for applications a
 
 See the current API documentation from [here](https://swaggerhub.com/api/wakr/experiment-server/). Remember to check the newest (highest) version.
 
+The live API will live at heroku: [https://experiment-server2016.herokuapp.com/experiments](https://experiment-server2016.herokuapp.com/experiments). It will be autoupdated everytime master branch is updated at GitHub.
+
 ###Environment setup
 
 We use virtualenv to virtualize the python installation. This will create need for a venv-directory which should be located at project root.
@@ -48,15 +50,15 @@ Run tests:
 
 `pytest experiment_server/tests.py`
 
-###Trying the REST API using `curl`
+###Publishing to production
 
-Creating a new experiment:
+In case there are no shcema changes:
+- Push to GitHub and to this projects master branch. The rest will be automatic
 
-    $ curl -H "Content-Type: application/json" -X POST -d '{"name": "My First Experiment", "experimentgroups": [{"name":"Group A", "configurations":[{"key":"key A", "value":4}]}, {"name": "Group B", "configurations":[{"key":"key B", "value":5}]}]}' http://localhost:6543/experiments
+In case the database schema has changed
+- `initialize_Experiment-server_db production.ini`. This will establish new via `/experiment_server/scripts/initializedb.py`
 
-Deleting an experiment:
 
-    $ curl -H "Content-Type: application/json" -X DELETE -d '' http://localhost:6543/experiments/1
 
 ###Work flow
 
