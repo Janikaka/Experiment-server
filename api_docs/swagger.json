@@ -944,30 +944,28 @@
       "allOf": [
         {
           "$ref": "#/definitions/NewApplication"
+        }
+      ],
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
         },
-        {
-          "required": [
-            "id"
-          ],
-          "properties": {
-            "id": {
-              "type": "integer"
-            },
-            "experiments": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Experiment"
-              }
-            },
-            "configurationkeys": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ConfigurationKey"
-              }
-            }
+        "experiments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Experiment"
+          }
+        },
+        "configurationkeys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ConfigurationKey"
           }
         }
-      ]
+      }
     },
     "NewApplication": {
       "type": "object",
@@ -985,24 +983,22 @@
       "allOf": [
         {
           "$ref": "#/definitions/NewConfigurationKey"
+        }
+      ],
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
         },
-        {
-          "required": [
-            "id"
-          ],
-          "properties": {
-            "id": {
-              "type": "integer"
-            },
-            "rangeconstraints": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/RangeConstraint"
-              }
-            }
+        "rangeconstraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RangeConstraint"
           }
         }
-      ]
+      }
     },
     "NewConfigurationKey": {
       "type": "object",
@@ -1302,18 +1298,16 @@
       "allOf": [
         {
           "$ref": "#/definitions/NewRangeConstraint"
-        },
-        {
-          "required": [
-            "id"
-          ],
-          "properties": {
-            "id": {
-              "type": "integer"
-            }
-          }
         }
-      ]
+      ],
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        }
+      }
     },
     "NewRangeConstraint": {
       "type": "object",
