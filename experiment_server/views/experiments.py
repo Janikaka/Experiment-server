@@ -9,6 +9,8 @@ from experiment_server.views.webutils import WebUtils
 from experiment_server.models.experiments import Experiment
 from experiment_server.models.experimentgroups import ExperimentGroup
 
+from toolz import assoc
+
 @view_defaults(renderer='json')
 class Experiments(WebUtils):
     def __init__(self, request):
@@ -108,31 +110,18 @@ class Experiments(WebUtils):
 
     @view_config(route_name='experiment_data', request_method="GET")
     def experiment_data_GET(self):
-        """ Show experiment data """
-        expId = int(self.request.matchdict['id'])
-        experiment = self.DB.get_experiment(expId)
-        expgroups = experiment.experimentgroups
+        """ Show one experiment data, including experiment and experimentgroups """
+        expId = self.request.swagger_data['id']
+        experiment = Experiment.get(expId)
+        if experiment is None:
+            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/data',
+                      'Get all things and experimentgroups of one experiment', None)
+            return self.createResponse(None, 400)
+        expgroups = list(map(lambda _: _.as_dict(), experiment.experimentgroups))
         experimentAsJSON = experiment.as_dict()
-        experimentgroups = []
-        for expgroup in expgroups:
-
-            experimentgroup = expgroup.as_dict()
-            users = []
-            for user in expgroup.users:
-                userAsJSON = user.as_dict()
-                dataitemsForUser = []
-                for dataitem in self.DB.get_dataitems_for_user_in_experiment(user.id, expId):
-                    dataitemsForUser.append(dataitem.as_dict())
-                userAsJSON['dataitems'] = dataitemsForUser
-                users.append(userAsJSON)
-
-            experimentgroup['users'] = users
-            experimentgroups.append(experimentgroup)
-        result = {'data': {'experiment': experimentAsJSON, 'experimentgroups': experimentgroups}}
-        print_log(datetime.datetime.now(), 'GET',
-                  '/experiments/' + str(id) + '/data', 'Show specific experiment data',
-                  result)
-        return self.createResponse(result, 200)
+        experimentgroups = {'experiment': experimentAsJSON}
+        result = assoc(experimentAsJSON, 'experimentgroups', expgroups)
+        return result
 
     @view_config(route_name='experimentgroup', request_method="GET")
     def experimentgroup_GET(self):

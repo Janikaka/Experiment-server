@@ -87,9 +87,9 @@ class Applications(WebUtils):
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
         if app is None:
-            return self.createResponse(None, 400)
             print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/rangeconstraints',
                       'Get all things of one application', None)
+            return self.createResponse(None, 400)
         ranges = list(map(lambda _: _.rangeconstraints, app.configurationkeys))
         ranges_concat = list(concat(ranges))
         ranges_list = list(map(lambda _: _.as_dict(), ranges_concat))

@@ -952,6 +952,48 @@
         }
       }
     },
+    "/experiments/{id}/data": {
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "List all things and experimentgroups of one experiment",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the application",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "experiment": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Experiment"
+                  }
+                },
+                "experimentgroups": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ExperimentGroup"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/experiments/{expid}/experimentgroups/{expgroupid}": {
       "delete": {
         "tags": [
