@@ -50,7 +50,7 @@ class Applications(WebUtils):
             return self.createResponse(None, 400)
         Application.destroy(app)
         print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(app_id), 'Delete application', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}
 
     @view_config(route_name='configurationkeys_for_app', request_method="GET")
     def configurationkeys_for_application_GET(self):

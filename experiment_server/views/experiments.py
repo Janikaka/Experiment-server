@@ -55,7 +55,7 @@ class Experiments(WebUtils):
             return self.createResponse(None, 400)
         Experiment.destroy(exp)
         print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(exp_id), 'Delete experiment', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}
 
     @view_config(route_name='experiment_metadata', request_method="GET")
     def experiment_metadata_GET(self):
@@ -177,7 +177,7 @@ class Experiments(WebUtils):
         print_log(datetime.datetime.now(), 'DELETE',
                   '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                   'Delete experimentgroup', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}
 
     @view_config(route_name='user_for_experiment', request_method="DELETE")
     def user_for_experiment_DELETE(self):
