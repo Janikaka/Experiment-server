@@ -20,3 +20,7 @@ class DataItem(Base, DictionaryCreator):
     value = Column(JSONType())
     startDatetime = Column(DateTime)
     endDatetime = Column(DateTime)
+
+    def as_dict(self):
+        """ Transfer data to dictionary """
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

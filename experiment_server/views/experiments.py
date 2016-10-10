@@ -126,30 +126,30 @@ class Experiments(WebUtils):
     @view_config(route_name='experimentgroup', request_method="GET")
     def experimentgroup_GET(self):
         """ Show specific experiment group metadata """
-        expgroupid = int(self.request.matchdict['expgroupid'])
-        expid = int(self.request.matchdict['expid'])
-        expgroup = self.DB.get_experimentgroup(expgroupid)
+        expgroupid = self.request.swagger_data['expgroupid']
+        expid = self.request.swagger_data['expid']
+        expgroup = ExperimentGroup.get(expgroupid)
+
         if expgroup is None or expgroup.experiment.id != expid:
             print_log(datetime.datetime.now(), 'GET',
                       '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                       'Show specific experimentgroup metadata', None)
             return self.createResponse(None, 400)
-        confs = expgroup.configurations
-        configurations = []
-        for i in range(len(confs)):
-            configurations.append(confs[i].as_dict())
-        users = []
-        for i in range(len(expgroup.users)):
-            users.append(expgroup.users[i].as_dict())
-        experimentgroup = expgroup.as_dict()
-        experimentgroup['configurations'] = configurations
-        experimentgroup['users'] = users
-        experimentgroup['totalDataitems'] = self.DB.get_total_dataitems_for_expgroup(expgroup.id)
-        result = {'data': experimentgroup}
-        print_log(datetime.datetime.now(), 'GET',
-                  '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
-                  'Show specific experimentgroup metadata', result)
-        return self.createResponse(result, 200)
+
+        configurations = list(map(lambda _: _.as_dict(), expgroup.configurations))
+        users = list(map(lambda _: _.as_dict(), expgroup.users))
+
+
+        total_dataitems = list(map(lambda _: _.dataitems, expgroup.users))
+        experimentgroup = {'experimentgroup': expgroup.as_dict()}
+
+        resultwithconf = assoc(experimentgroup, 'configurations', configurations)
+        resultwithuser = assoc(resultwithconf, 'users', users)
+        result = assoc(resultwithuser, 'totalDataitems', total_dataitems)
+
+        print('                      = == == = = = = = = = = = = = = =                ')
+        print(result)
+        return result
 
     @view_config(route_name='experimentgroup', request_method="DELETE")
     def experimentgroup_DELETE(self):

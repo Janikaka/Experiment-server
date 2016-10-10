@@ -962,7 +962,7 @@
           {
             "name": "id",
             "type": "integer",
-            "description": "id of the application",
+            "description": "id of the experiment",
             "in": "path",
             "required": true
           }
@@ -995,6 +995,65 @@
       }
     },
     "/experiments/{expid}/experimentgroups/{expgroupid}": {
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Show one experiment group metadata",
+        "parameters": [
+          {
+            "name": "expid",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "expgroupid",
+            "type": "integer",
+            "description": "id of the experimentgroup",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "experimentgroup": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/definitions/ExperimentGroup"
+                  }
+                },
+                "configurations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Configuration"
+                  }
+                },
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/User"
+                  }
+                },
+                "totalDataitems": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/DataItem"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
       "delete": {
         "tags": [
           "experiments"
