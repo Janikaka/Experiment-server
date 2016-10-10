@@ -147,8 +147,6 @@ class Experiments(WebUtils):
         resultwithuser = assoc(resultwithconf, 'users', users)
         result = assoc(resultwithuser, 'totalDataitems', total_dataitems)
 
-        print('                      = == == = = = = = = = = = = = = =                ')
-        print(result)
         return result
 
     @view_config(route_name='experimentgroup', request_method="DELETE")
