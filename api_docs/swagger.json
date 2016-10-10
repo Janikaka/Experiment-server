@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.2",
+    "version": "1.25",
     "title": "Experiment server",
     "description": "API for experiments",
     "license": {
@@ -87,7 +87,10 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
           }
         }
       }
@@ -370,6 +373,37 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/applications/{id}/rangeconstraints": {
+      "get": {
+        "tags": [
+          "application"
+        ],
+        "summary": "Get rangeconstraints of one application",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the application",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RangeConstraint"
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -1299,34 +1333,32 @@
       }
     },
     "User": {
+      "type": "object",
       "allOf": [
         {
           "$ref": "#/definitions/NewUser"
+        }
+      ],
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
         },
-        {
-          "type": "object",
-          "required": [
-            "id"
-          ],
-          "properties": {
-            "id": {
-              "type": "integer"
-            },
-            "dataitems": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/DataItem"
-              }
-            },
-            "experimentgroups": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ExperimentGroup"
-              }
-            }
+        "dataitems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DataItem"
+          }
+        },
+        "experimentgroups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExperimentGroup"
           }
         }
-      ]
+      }
     },
     "NewUser": {
       "type": "object",

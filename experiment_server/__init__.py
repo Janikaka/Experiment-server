@@ -13,6 +13,7 @@ def add_cors_headers_response_callback(event):
         'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
         'Access-Control-Allow-Credentials': 'true',
         'Access-Control-Max-Age': '1728000',
+        'Content-Type': 'application/json',
         })
     event.request.add_response_callback(cors_headers)
 
