@@ -1,6 +1,6 @@
 """ imports """
 from pyramid.view import view_config, view_defaults
-# from pyramid.response import Response
+from pyramid.response import Response
 from experiment_server.models.applications import Application
 from experiment_server.utils.log import print_log
 from ..models import DatabaseInterface
@@ -8,11 +8,31 @@ from .webutils import WebUtils
 import datetime
 from toolz import concat, assoc
 
+
 @view_defaults(renderer='json')
 class Applications(WebUtils):
     def __init__(self, request):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
+
+    """
+        CORS-options
+    """
+
+    @view_config(route_name='applications', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
+    @view_config(route_name='application', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
 
     @view_config(route_name='application', request_method="GET")
     def applications_GET_one(self):
@@ -95,5 +115,5 @@ class Applications(WebUtils):
         ranges_list = list(map(lambda _: _.as_dict(), ranges_concat))
         configurationkeys = list(map(lambda _: _.as_dict(), app.configurationkeys))
         resultwithck = assoc(app.as_dict(), 'configurationkeys', configurationkeys)
-        
+
         return assoc(resultwithck, 'rangeconstraints', ranges_list)

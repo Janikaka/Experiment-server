@@ -38,4 +38,6 @@ def main(global_config, **settings):
     config.include('.routes')
     config.scan()
 
+    settings['pyramid_swagger.enable_path_validation'] = False
+
     return config.make_wsgi_app()

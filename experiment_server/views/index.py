@@ -2,7 +2,6 @@ from pyramid.view import view_config, view_defaults
 
 from .webutils import WebUtils
 
-
 @view_defaults(renderer='json')
 class Index(WebUtils):
     def __init__(self, request):
