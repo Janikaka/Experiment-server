@@ -6,7 +6,7 @@ from experiment_server.utils.log import print_log
 from ..models import DatabaseInterface
 from .webutils import WebUtils
 import datetime
-
+from toolz import concat, assoc
 
 @view_defaults(renderer='json')
 class Applications(WebUtils):
@@ -50,7 +50,7 @@ class Applications(WebUtils):
             return self.createResponse(None, 400)
         Application.destroy(app)
         print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(app_id), 'Delete application', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}
 
     @view_config(route_name='configurationkeys_for_app', request_method="GET")
     def configurationkeys_for_application_GET(self):
@@ -65,12 +65,18 @@ class Applications(WebUtils):
 
     @view_config(route_name='rangeconstraints_for_app', request_method='GET')
     def rangeconstraints_for_app_GET(self):
+        """ list all rangeconstraints of one application """
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
         # TODO: finish
+        if app is None:
+            print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/rangeconstraints',
+                      'Get rangeconstraints of one application', None)
+            return self.createResponse(None, 400)
         ranges = list(map(lambda _: _.rangeconstraints, app.configurationkeys))
+        ranges_concat = list(concat(ranges))
 
-        return {}
+        return list(map(lambda _: _.as_dict(), ranges_concat))
 
     @view_config(route_name='app_data', request_method="GET")
     def data_for_app_GET(self):
@@ -78,26 +84,16 @@ class Applications(WebUtils):
             Returns application with configurationkeys, rangeconstraints of conf.keys,
             operator of rangeconstraints
         """
-        app_id = int(self.request.matchdict['id'])
+        app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
         if app is None:
+            print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/rangeconstraints',
+                      'Get all things of one application', None)
             return self.createResponse(None, 400)
-        app_json = app.as_dict()
-        configurationkeys = []
-        for i in range(len(app.configurationkeys)):
-            ckey = app.configurationkeys[i]
-            ckey_json = ckey.as_dict()
-            rconstraints = ckey.rangeconstraints
-            rangeconstraints = []
-            for r in range(len(rconstraints)):
-                rconstraint = rconstraints[r]
-                rconstraint_json = rconstraint.as_dict()
-                operator = rconstraint.operator
-                operator_json = operator.as_dict()
-                rconstraint_json['operator'] = operator_json
-                rangeconstraints.append(rconstraint_json)
-            ckey_json['rangeconstraints'] = rangeconstraints
-            configurationkeys.append(ckey_json)
-        app_json['configurationkeys'] = configurationkeys
-        result = {'application': app_json}
-        return self.createResponse(result, 200)
+        ranges = list(map(lambda _: _.rangeconstraints, app.configurationkeys))
+        ranges_concat = list(concat(ranges))
+        ranges_list = list(map(lambda _: _.as_dict(), ranges_concat))
+        configurationkeys = list(map(lambda _: _.as_dict(), app.configurationkeys))
+        resultwithck = assoc(app.as_dict(), 'configurationkeys', configurationkeys)
+        
+        return assoc(resultwithck, 'rangeconstraints', ranges_list)

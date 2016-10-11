@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.25",
+    "version": "1.3",
     "title": "Experiment server",
     "description": "API for experiments",
     "license": {
@@ -442,6 +442,53 @@
             "schema": {
               "$ref": "#/definitions/ExclusionConstraint"
             }
+          }
+        }
+      }
+    },
+    "/applications/{id}/data": {
+      "get": {
+        "tags": [
+          "application"
+        ],
+        "summary": "Get all configurationkeys and rangeconstraints of one application",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the application",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/Application"
+                }
+              ],
+              "properties": {
+                "rangeconstraints": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/RangeConstraint"
+                  }
+                },
+                "configurationkeys": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ConfigurationKey"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
           }
         }
       }
@@ -905,7 +952,108 @@
         }
       }
     },
+    "/experiments/{id}/data": {
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "List all things and experimentgroups of one experiment",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "experiment": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Experiment"
+                  }
+                },
+                "experimentgroups": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ExperimentGroup"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/experiments/{expid}/experimentgroups/{expgroupid}": {
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Show one experiment group metadata",
+        "parameters": [
+          {
+            "name": "expid",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "expgroupid",
+            "type": "integer",
+            "description": "id of the experimentgroup",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "experimentgroup": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/definitions/ExperimentGroup"
+                  }
+                },
+                "configurations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Configuration"
+                  }
+                },
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/User"
+                  }
+                },
+                "totalDataitems": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/DataItem"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
       "delete": {
         "tags": [
           "experiments"

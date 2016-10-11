@@ -7,6 +7,9 @@ from experiment_server.utils.log import print_log
 from experiment_server.views.webutils import WebUtils
 
 from experiment_server.models.experiments import Experiment
+from experiment_server.models.experimentgroups import ExperimentGroup
+
+from toolz import assoc
 
 @view_defaults(renderer='json')
 class Experiments(WebUtils):
@@ -54,7 +57,7 @@ class Experiments(WebUtils):
             return self.createResponse(None, 400)
         Experiment.destroy(exp)
         print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(exp_id), 'Delete experiment', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}
 
     @view_config(route_name='experiment_metadata', request_method="GET")
     def experiment_metadata_GET(self):
@@ -107,79 +110,61 @@ class Experiments(WebUtils):
 
     @view_config(route_name='experiment_data', request_method="GET")
     def experiment_data_GET(self):
-        """ Show experiment data """
-        expId = int(self.request.matchdict['id'])
-        experiment = self.DB.get_experiment(expId)
-        expgroups = experiment.experimentgroups
+        """ Show one experiment data, including experiment and experimentgroups """
+        expId = self.request.swagger_data['id']
+        experiment = Experiment.get(expId)
+        if experiment is None:
+            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/data',
+                      'Get all things and experimentgroups of one experiment', None)
+            return self.createResponse(None, 400)
+        expgroups = list(map(lambda _: _.as_dict(), experiment.experimentgroups))
         experimentAsJSON = experiment.as_dict()
-        experimentgroups = []
-        for expgroup in expgroups:
-
-            experimentgroup = expgroup.as_dict()
-            users = []
-            for user in expgroup.users:
-                userAsJSON = user.as_dict()
-                dataitemsForUser = []
-                for dataitem in self.DB.get_dataitems_for_user_in_experiment(user.id, expId):
-                    dataitemsForUser.append(dataitem.as_dict())
-                userAsJSON['dataitems'] = dataitemsForUser
-                users.append(userAsJSON)
-
-            experimentgroup['users'] = users
-            experimentgroups.append(experimentgroup)
-        result = {'data': {'experiment': experimentAsJSON, 'experimentgroups': experimentgroups}}
-        print_log(datetime.datetime.now(), 'GET',
-                  '/experiments/' + str(id) + '/data', 'Show specific experiment data',
-                  result)
-        return self.createResponse(result, 200)
+        experimentgroups = {'experiment': experimentAsJSON}
+        result = assoc(experimentAsJSON, 'experimentgroups', expgroups)
+        return result
 
     @view_config(route_name='experimentgroup', request_method="GET")
     def experimentgroup_GET(self):
         """ Show specific experiment group metadata """
-        expgroupid = int(self.request.matchdict['expgroupid'])
-        expid = int(self.request.matchdict['expid'])
-        expgroup = self.DB.get_experimentgroup(expgroupid)
+        expgroupid = self.request.swagger_data['expgroupid']
+        expid = self.request.swagger_data['expid']
+        expgroup = ExperimentGroup.get(expgroupid)
+
         if expgroup is None or expgroup.experiment.id != expid:
             print_log(datetime.datetime.now(), 'GET',
                       '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                       'Show specific experimentgroup metadata', None)
             return self.createResponse(None, 400)
-        confs = expgroup.configurations
-        configurations = []
-        for i in range(len(confs)):
-            configurations.append(confs[i].as_dict())
-        users = []
-        for i in range(len(expgroup.users)):
-            users.append(expgroup.users[i].as_dict())
-        experimentgroup = expgroup.as_dict()
-        experimentgroup['configurations'] = configurations
-        experimentgroup['users'] = users
-        experimentgroup['totalDataitems'] = self.DB.get_total_dataitems_for_expgroup(expgroup.id)
-        result = {'data': experimentgroup}
-        print_log(datetime.datetime.now(), 'GET',
-                  '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
-                  'Show specific experimentgroup metadata', result)
-        return self.createResponse(result, 200)
+
+        configurations = list(map(lambda _: _.as_dict(), expgroup.configurations))
+        users = list(map(lambda _: _.as_dict(), expgroup.users))
+
+
+        total_dataitems = list(map(lambda _: _.dataitems, expgroup.users))
+        experimentgroup = {'experimentgroup': expgroup.as_dict()}
+
+        resultwithconf = assoc(experimentgroup, 'configurations', configurations)
+        resultwithuser = assoc(resultwithconf, 'users', users)
+        result = assoc(resultwithuser, 'totalDataitems', total_dataitems)
+
+        return result
 
     @view_config(route_name='experimentgroup', request_method="DELETE")
     def experimentgroup_DELETE(self):
         """ Delete experimentgroup """
-        expgroupid = int(self.request.matchdict['expgroupid'])
-        experimentgroup = self.DB.get_experimentgroup(expgroupid)
-        experiment_id = experimentgroup.experiment_id
-        expid = int(self.request.matchdict['expid'])
-        result = self.DB.delete_experimentgroup(expgroupid)
-        if not result or experiment_id != expid:
+        expgroupid = self.request.swagger_data['expgroupid']
+        experimentgroup = ExperimentGroup.get(expgroupid)
+        expid = self.request.swagger_data['expid']
+        if not experimentgroup:
             print_log(datetime.datetime.now(), 'DELETE',
                       '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
-                      'Delete experimentgroup',
-                      'Failed')
+                      'Delete experimentgroup', 'Failed')
             return self.createResponse(None, 400)
+        ExperimentGroup.destroy(experimentgroup)
         print_log(datetime.datetime.now(), 'DELETE',
                   '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
-                  'Delete experimentgroup',
-                  'Succeeded')
-        return self.createResponse(None, 200)
+                  'Delete experimentgroup', 'Succeeded')
+        return {}
 
     @view_config(route_name='user_for_experiment', request_method="DELETE")
     def user_for_experiment_DELETE(self):
