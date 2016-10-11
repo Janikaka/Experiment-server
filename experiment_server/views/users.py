@@ -57,7 +57,7 @@ class Users(WebUtils):
     # Get one user
     @view_config(route_name='user', request_method="GET", renderer='json')
     def user_GET(self):
-        id = int(self.request.matchdict['id'])
+        id = self.request.swagger_data['id']
         result = User.get(id)
         if not result:
             print_log('/users/%s failed' % id)
@@ -79,7 +79,7 @@ class Users(WebUtils):
     # List configurations for specific user
     @view_config(route_name='configurations', request_method="GET")
     def configurations_GET(self):
-        id = int(self.request.matchdict['id'])
+        id = self.request.swagger_data['id']
         user = User.get(id)
         if user is None:
             print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
