@@ -14,10 +14,48 @@ class RangeConstraints(WebUtils):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
 
+    """
+        CORS-options
+    """
+    @view_config(route_name='rangeconstraints', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
+    @view_config(route_name='rangeconstraints_for_configurationkey', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
+    @view_config(route_name='rangeconstraint', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
     @view_config(route_name='rangeconstraints', request_method="GET")
     def rangeconstraints_GET(self):
         """ List all rangeconstraints with GET method """
         return list(map(lambda _: _.as_dict(), RangeConstraint.all()))
+
+    @view_config(route_name='rangeconstraint', request_method="DELETE")
+    def rangecontraints_DELETE_one(self):
+        """ Find and delete one rangeconstraint by id with destroy method """
+        rc_id = self.request.swagger_data['id']
+        rangeconstraint = RangeConstraint.get(rc_id)
+        if not rangeconstraint:
+            print_log(datetime.datetime.now(), 'DELETE', '/rangeconstraint/' + str(rc_id),
+                      'Delete rangeconstraint', 'Failed')
+            return self.createResponse(None, 400)
+        RangeConstraint.destroy(rangeconstraint)
+        print_log(datetime.datetime.now(), 'DELETE', '/rangeconstranit/' + str(rc_id),
+                  'Delete rangeconstraint', 'Succeeded')
+        return {}
 
     @view_config(route_name='rangeconstraints_for_configurationkey', request_method="POST")
     def rangecontraints_POST(self):
@@ -40,20 +78,6 @@ class RangeConstraints(WebUtils):
                   'Create new rangeconstraint for configurationkey', 'Succeeded')
         return rconstraint.as_dict()
 
-    @view_config(route_name='rangeconstraint', request_method="DELETE")
-    def rangecontraints_DELETE_one(self):
-        """ Find and delete one rangeconstraint by id with destroy method """
-        rc_id = self.request.swagger_data['id']
-        rangeconstraint = RangeConstraint.get(rc_id)
-        if not rangeconstraint:
-            print_log(datetime.datetime.now(), 'DELETE', '/rangeconstraint/' + str(rc_id),
-                      'Delete rangeconstraint', 'Failed')
-            return self.createResponse(None, 400)
-        RangeConstraint.destroy(rangeconstraint)
-        print_log(datetime.datetime.now(), 'DELETE', '/rangeconstranit/' + str(rc_id),
-                  'Delete rangeconstraint', 'Succeeded')
-        return self.createResponse(None, 200)
-
     @view_config(route_name='rangeconstraints_for_configurationkey', request_method="DELETE")
     def rangeconstraints_for_configuratinkey_DELETE(self):
         """ Delete all rangeconstraints for one specific configurationkey"""
@@ -69,4 +93,4 @@ class RangeConstraints(WebUtils):
                 return self.createResponse(None, 400)
         print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/' + str(id) + '/rangeconstraints',
                   'Delete rangeconstraints of configurationkey', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}

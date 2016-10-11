@@ -18,7 +18,6 @@ class Applications(WebUtils):
     """
         CORS-options
     """
-
     @view_config(route_name='applications', request_method="OPTIONS")
     def all_OPTIONS(self):
         res = Response()

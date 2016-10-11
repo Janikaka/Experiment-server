@@ -13,6 +13,16 @@ class ExclusionConstraints(WebUtils):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
 
+    """
+        CORS-options
+    """
+    @view_config(route_name='exclusionconstraints', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
     @view_config(route_name='exclusionconstraints', request_method="GET")
     def exclusionconstraints_GET(self):
         """ List all exclusionconstraints with GET method """
@@ -28,8 +38,6 @@ class ExclusionConstraints(WebUtils):
                       + str(exconst_id), 'Get one exclusionconstraint', 'Failed')
             return self.createResponse(None, 400)
         return exconstraint.as_dict()
-
-
 
     @view_config(route_name='exclusionconstraint', request_method="DELETE")
     def exclusioncontraints_DELETE_one(self):

@@ -1,3 +1,4 @@
+from pyramid.response import Response
 from pyramid.view import view_config, view_defaults
 
 from ..models import DatabaseInterface
@@ -15,6 +16,23 @@ class Users(WebUtils):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
 
+
+    """
+        CORS-options
+    """
+    @view_config(route_name='users', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
+    @view_config(route_name='user', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
 
     # List all users
     @view_config(route_name='users', request_method="GET", renderer='json')

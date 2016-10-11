@@ -13,6 +13,31 @@ class ConfigurationKeys(WebUtils):
         self.request = request
         self.DB = DatabaseInterface(self.request.dbsession)
 
+
+    """
+        CORS-options
+    """
+    @view_config(route_name='configurationkeys', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
+    @view_config(route_name='configurationkey', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
+    @view_config(route_name='configurationkeys_for_app', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
     @view_config(route_name='configurationkeys', request_method="GET")
     def configurationkeys_GET(self):
         """ List all configurationkeys with GET method """
@@ -36,6 +61,21 @@ class ConfigurationKeys(WebUtils):
         ConfigurationKey.update(configkey_req.id, "name", configkey_req.name)
         updated = ConfigurationKey.get(configkey_req.id)
         return updated.as_dict()
+
+    @view_config(route_name='configurationkey', request_method="DELETE")
+    def configurationkeys_DELETE_one(self):
+        """ Find and delete one configurationkey by id with destroy method """
+        confkey_id = self.request.swagger_data['id']
+        confkey = ConfigurationKey.get(confkey_id)
+        if not confkey:
+            print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/'
+                      + str(confkey_id), 'Delete configurationkey', 'Failed')
+            return self.createResponse(None, 400)
+        ConfigurationKey.destroy(confkey)
+        print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/'
+                  + str(confkey_id), 'Delete configurationkey', 'Succeeded')
+        return {}
+
 
     @view_config(route_name='rangeconstraints_for_configurationkey', request_method="GET")
     def rangeconstraints_for_confkey_GET(self):
@@ -89,18 +129,4 @@ class ConfigurationKeys(WebUtils):
                 return self.createResponse(None, 400)
         print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id) + '/configurationkeys',
                   'Delete configurationkeys of application', 'Succeeded')
-        return self.createResponse(None, 200)
-
-    @view_config(route_name='configurationkey', request_method="DELETE")
-    def configurationkeys_DELETE_one(self):
-        """ Find and delete one configurationkey by id with destroy method """
-        confkey_id = self.request.swagger_data['id']
-        confkey = ConfigurationKey.get(confkey_id)
-        if not confkey:
-            print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/'
-                      + str(confkey_id), 'Delete configurationkey', 'Failed')
-            return self.createResponse(None, 400)
-        ConfigurationKey.destroy(confkey)
-        print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/'
-                  + str(confkey_id), 'Delete configurationkey', 'Succeeded')
         return self.createResponse(None, 200)
