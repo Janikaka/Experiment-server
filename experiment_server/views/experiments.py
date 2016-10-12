@@ -135,17 +135,22 @@ class Experiments(WebUtils):
     @view_config(route_name='user_for_experiment', request_method="DELETE")
     def user_for_experiment_DELETE(self):
         """ Delete user from specific experiment """
-        expid = int(self.request.matchdict['expid'])
-        userid = int(self.request.matchdict['userid'])
-        result = self.DB.delete_user_from_experiment(userid, expid)
-        if not result:
+        expid = self.request.swagger_data['expid']
+        userid = self.request.swagger_data['userid']
+        user = User.get(userid)
+        if not expid or not userid or not user:
             print_log(datetime.datetime.now(),
                       'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
                       'Delete user from specific experiment', 'Failed')
             return self.createResponse(None, 400)
-        print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
-                  'Delete user from specific experiment', 'Succeeded')
-        return self.createResponse(None, 200)
+
+
+        users_exp_groups = list(filter(lambda expgroup: expgroup.experiment_id == expid, user.experimentgroups))
+
+        for eg in users_exp_groups:
+            user.experimentgroups.remove(eg)
+
+        return {}
 
     @view_config(route_name='experiment_data', request_method="GET")
     def experiment_data_GET(self):
@@ -203,24 +208,4 @@ class Experiments(WebUtils):
         print_log(datetime.datetime.now(), 'DELETE',
                   '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                   'Delete experimentgroup', 'Succeeded')
-        return {}
-
-    @view_config(route_name='user_for_experiment', request_method="DELETE")
-    def user_for_experiment_DELETE(self):
-        """ Delete user from specific experiment """
-        expid = self.request.swagger_data['expid']
-        userid = self.request.swagger_data['userid']
-        user = User.get(userid)
-        if not expid or not userid or not user:
-            print_log(datetime.datetime.now(),
-                      'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
-                      'Delete user from specific experiment', 'Failed')
-            return self.createResponse(None, 400)
-
-
-        users_exp_groups = list(filter(lambda expgroup: expgroup.experiment_id == expid, user.experimentgroups))
-
-        for eg in users_exp_groups:
-            user.experimentgroups.remove(eg)
-
         return {}
