@@ -6,6 +6,7 @@ from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.applications import Application
+from experiment_server.models.exclusionconstraints import ExclusionConstraint
 
 @view_defaults(renderer='json')
 class ConfigurationKeys(WebUtils):
@@ -80,13 +81,30 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='rangeconstraints_for_configurationkey', request_method="GET")
     def rangeconstraints_for_confkey_GET(self):
         """ List all rangeconstraints of specific conf.key """
-        confkey_id = int(self.request.matchdict['id'])
+        confkey_id = self.request.swagger_data['id']
         confkey = ConfigurationKey.get(confkey_id)
         if confkey is None:
             print_log(datetime.datetime.now(), 'GET', '/configurationkeys/' + str(confkey_id) + '/rangeconstraints',
                       'Get rangeconstraints of one configurationkey', 'Failed')
             return self.createResponse(None, 400)
         return list(map(lambda _: _.as_dict(), confkey.rangeconstraints))
+
+    @view_config(route_name='exconstraints_for_configurationkey', request_method="GET")
+    def exclusionconstraints_for_confkey_GET(self):
+        """ List all exclusionconstraints of specific con.key """
+        confkey_id = self.request.swagger_data['id']
+        confkey = ConfigurationKey.get(confkey_id)
+
+        if confkey is None:
+            print_log(datetime.datetime.now(), 'GET', '/configurationkeys/' + str(confkey_id) + '/exclusionconstraints',
+                      'Get rangeconstraints of one configurationkey', 'Failed')
+            return self.createResponse(None, 400)
+
+        exclusionconstraints = ExclusionConstraint.all()
+        result = list(map(lambda x: x.as_dict()
+        if (x.first_configurationkey_id == confkey_id or x.second_configurationkey_id == confkey_id)
+        else None, exclusionconstraints))
+        return result
 
     @view_config(route_name='configurationkeys_for_app', request_method="POST")
     def configurationkeys_POST(self):

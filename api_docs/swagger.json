@@ -598,6 +598,37 @@
         }
       }
     },
+    "/configurationkeys/{id}/exclusionconstraints": {
+      "get": {
+        "tags": [
+          "configuration-keys"
+        ],
+        "summary": "Get exclusionconstraints of one configurationkey",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the configurationkey",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ExclusionConstraint"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/configurationkeys/{id}/rangeconstraints": {
       "get": {
         "tags": [
@@ -945,6 +976,38 @@
                 "$ref": "#/definitions/User"
               }
             }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/experiments/{expid}/users/{userid}": {
+      "delete": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Delete user from one experiment",
+        "parameters": [
+          {
+            "name": "expid",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "userid",
+            "type": "integer",
+            "description": "id of the user",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
