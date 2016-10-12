@@ -3,16 +3,16 @@ from experiment_server.views.applications import Applications
 from .base_test import BaseTest
 
 
+# ---------------------------------------------------------------------------------
+#                                DatabaseInterface
+# ---------------------------------------------------------------------------------
+
 class TestApplications(BaseTest):
     def setUp(self):
         super(TestApplications, self).setUp()
         self.init_database()
         self.init_databaseData()
         self.req = self.dummy_request()
-
-# ---------------------------------------------------------------------------------
-#                                DatabaseInterface
-# ---------------------------------------------------------------------------------
 
     def test_createApp(self):
         appsFromDB = Application.all()
@@ -59,7 +59,6 @@ class TestApplications(BaseTest):
 # ---------------------------------------------------------------------------------
 
 class TestApplicationsREST(BaseTest):
-
     def setUp(self):
         super(TestApplicationsREST, self).setUp()
         self.init_database()
@@ -91,6 +90,7 @@ class TestApplicationsREST(BaseTest):
         assert response.status_code == 400
 
     def test_applications_POST(self):
+        #TODO: Fix this - AttributeError: 'dict' object has no attribute 'name'
         self.req.swagger_data = {'application': {'name': 'App 3'}}
         httpApps = Applications(self.req)
         response = httpApps.applications_POST()
@@ -102,7 +102,7 @@ class TestApplicationsREST(BaseTest):
         httpApps = Applications(self.req)
         response = httpApps.configurationkeys_for_application_GET()
         ckeys = [{'id': 1, 'application_id':1, 'name': 'highscore', 'type': 'boolean'},
-        {'id': 2, 'application_id': 1,  'name': 'difficulty', 'type': 'integer'}]
+                 {'id': 2, 'application_id': 1,  'name': 'difficulty', 'type': 'integer'}]
         assert response == ckeys
 
     def test_rangeconstraints_for_app_GET(self):
@@ -153,6 +153,5 @@ class TestApplicationsREST(BaseTest):
                 }
             ],
         }
-
         assert response == app_data
 

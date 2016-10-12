@@ -3,7 +3,6 @@ from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
 from experiment_server.models.applications import Application
 from experiment_server.utils.log import print_log
-from ..models import DatabaseInterface
 from .webutils import WebUtils
 import datetime
 from toolz import concat, assoc
@@ -13,7 +12,6 @@ from toolz import concat, assoc
 class Applications(WebUtils):
     def __init__(self, request):
         self.request = request
-        self.DB = DatabaseInterface(self.request.dbsession)
 
     """
         CORS-options

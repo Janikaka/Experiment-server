@@ -1,6 +1,5 @@
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
-from ..models import DatabaseInterface
 import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
@@ -11,7 +10,6 @@ from experiment_server.models.exclusionconstraints import ExclusionConstraint
 class ExclusionConstraints(WebUtils):
     def __init__(self, request):
         self.request = request
-        self.DB = DatabaseInterface(self.request.dbsession)
 
     """
         CORS-options
@@ -40,7 +38,7 @@ class ExclusionConstraints(WebUtils):
         return exconstraint.as_dict()
 
     @view_config(route_name='exclusionconstraint', request_method="DELETE")
-    def exclusioncontraints_DELETE_one(self):
+    def exclusionconstraints_DELETE_one(self):
         """ Find and delete one exclusionconstraint by id with destroy method """
         exconst_id = self.request.swagger_data['id']
         exconstraint = ExclusionConstraint.get(exconst_id)

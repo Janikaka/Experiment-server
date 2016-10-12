@@ -8,22 +8,11 @@ from experiment_server.views.configurationkeys import ConfigurationKeys
 # ---------------------------------------------------------------------------------
 
 class TestConfigurationKeys(BaseTest):
-
     def setUp(self):
         super(TestConfigurationKeys, self).setUp()
         self.init_database()
         self.init_databaseData()
         self.req = self.dummy_request()
-
-        self.confkey = {
-            'id': 1, 'application_id': 1,
-            'type': 'boolean', 'name': 'highscore'
-        }
-
-        self.confkey2 = {
-            'id': 2, 'application_id': 1,
-            'type': 'integer', 'name': 'difficulty'
-        }
 
     def test_createConfKey(self):
         ckeysFromDB = ConfigurationKey.all()
@@ -82,6 +71,17 @@ class TestConfigurationKeys(BaseTest):
 # ---------------------------------------------------------------------------------
 
 class TestConfigurationKeysREST(BaseTest):
+
+    confkey = {
+        'id': 1, 'application_id': 1,
+        'type': 'boolean', 'name': 'highscore'
+    }
+
+    confkey2 = {
+        'id': 2, 'application_id': 1,
+        'type': 'integer', 'name': 'difficulty'
+    }
+
     def setUp(self):
         super(TestConfigurationKeysREST, self).setUp()
         self.init_database()
@@ -132,5 +132,11 @@ class TestConfigurationKeysREST(BaseTest):
         assert 1 == 1
 
     def test_configurationkeys_for_application_DELETE(self):
-        #TODO: Write test
-        assert 1 == 1
+        self.req.swagger_data = {'id': 1}
+        httpCkeys = ConfigurationKeys(self.req)
+        response = httpCkeys.configurationkeys_for_application_DELETE()
+        assert response == {}
+        self.req.swagger_data = {'id': 3}
+        httpCkeys = ConfigurationKeys(self.req)
+        response = httpCkeys.configurationkeys_for_application_DELETE()
+        assert response.status_code == 400
