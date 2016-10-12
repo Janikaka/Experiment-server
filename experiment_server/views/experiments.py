@@ -6,6 +6,7 @@ from experiment_server.models import DatabaseInterface
 from experiment_server.utils.log import print_log
 from experiment_server.views.webutils import WebUtils
 
+from experiment_server.models.users import User
 from experiment_server.models.experiments import Experiment
 from experiment_server.models.experimentgroups import ExperimentGroup
 
@@ -202,4 +203,24 @@ class Experiments(WebUtils):
         print_log(datetime.datetime.now(), 'DELETE',
                   '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                   'Delete experimentgroup', 'Succeeded')
+        return {}
+
+    @view_config(route_name='user_for_experiment', request_method="DELETE")
+    def user_for_experiment_DELETE(self):
+        """ Delete user from specific experiment """
+        expid = self.request.swagger_data['expid']
+        userid = self.request.swagger_data['userid']
+        user = User.get(userid)
+        if not expid or not userid or not user:
+            print_log(datetime.datetime.now(),
+                      'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
+                      'Delete user from specific experiment', 'Failed')
+            return self.createResponse(None, 400)
+
+
+        users_exp_groups = list(filter(lambda expgroup: expgroup.experiment_id == expid, user.experimentgroups))
+
+        for eg in users_exp_groups:
+            user.experimentgroups.remove(eg)
+
         return {}
