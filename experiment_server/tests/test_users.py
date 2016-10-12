@@ -4,10 +4,9 @@ from ..models import (Experiment, User, DataItem, ExperimentGroup)
 from experiment_server.views.users import Users
 
 
-
-def strToDatetime(date):
-    return datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-
+# ---------------------------------------------------------------------------------
+#                                DatabaseInterface
+# ---------------------------------------------------------------------------------
 
 class TestUsers(BaseTest):
     def setUp(self):
@@ -15,11 +14,6 @@ class TestUsers(BaseTest):
         self.init_database()
         self.init_databaseData()
         self.req = self.dummy_request()
-
-
-# ---------------------------------------------------------------------------------
-#                                DatabaseInterface
-# ---------------------------------------------------------------------------------
 
     def test_createUser(self):
         usersFromDB = self.dbsession.query(User).all()
@@ -115,11 +109,9 @@ class TestUsers(BaseTest):
 
         assert users == [user1]
 
-
 # ---------------------------------------------------------------------------------
 #                                  REST-Inteface
 # ---------------------------------------------------------------------------------
-
 
 class TestUsersREST(BaseTest):
     def setUp(self):
@@ -129,20 +121,17 @@ class TestUsersREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_configurations_GET(self):
-        headers = {'username': 'First user'}
-        self.req.headers = headers
+        self.req.swagger_data = {'id': 1}
         httpUsers = Users(self.req)
         response = httpUsers.configurations_GET()
-        result = response.json['data']
-        configurations = [{'value': 0.5, 'key': 'v1'}, {'value': True, 'key': 'v2'}]
+        configurations = [{'id': 1, 'experimentgroup_id': 1, 'value': 0.5, 'key': 'v1'},
+                          {'id': 2, 'experimentgroup_id': 1, 'value': True, 'key': 'v2'}]
 
-        assert response.status_code == 200
-        assert result == configurations
-        headers = {'username': 'sdfsdf'}
-        self.req.headers = headers
+        assert response == configurations
+        self.req.swagger_data = {'id': 3}
         httpUsers = Users(self.req)
         response = httpUsers.configurations_GET()
-        assert response.status_code == 200
+        assert response.status_code == 400
 
     def test_users_GET(self):
         httpUsers = Users(self.req)
@@ -156,19 +145,17 @@ class TestUsersREST(BaseTest):
         self.req.swagger_data = {'id': 1}
         httpUsers = Users(self.req)
         response = httpUsers.experiments_for_user_GET()
-        result = response.json['data']
-        experiments = [
-            {"id": 1,
+        experiments = [{
+             'id': 1,
              'application_id': None,
-             "name": "Test experiment",
-             "size": 100,
-             "startDatetime": "2016-01-01 00:00:00",
-             "endDatetime": "2017-01-01 00:00:00",
-             "experimentgroup": {"id": 1, "experiment_id": 1, "name": "Group A"}
+             'name': 'Test experiment',
+             'size': 100,
+             'startDatetime': '2016-01-01 00:00:00',
+             'endDatetime': '2017-01-01 00:00:00',
+             'experimentgroups': [{'id': 1, 'experiment_id': 1, 'name': 'Group A'}]
              }]
 
-        assert response.status_code == 200
-        assert result == experiments
+        assert response == experiments
 
     def test_events_POST(self):
         json_body = {

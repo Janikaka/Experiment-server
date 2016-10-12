@@ -33,30 +33,6 @@ class BaseTest(unittest.TestCase):
 
     def init_databaseData(self):
 
-        app1 = Application(name='App 1')
-        Application.save(app1)
-
-        app2 = Application(name='App 2')
-        Application.save(app2)
-
-        confk1 = ConfigurationKey(application=app1, name='highscore', type='boolean')
-        ConfigurationKey.save(confk1)
-
-        confk2 = ConfigurationKey(application=app1, name='difficulty', type='integer')
-        ConfigurationKey.save(confk2)
-
-        op1 = Operator(math_value='<=', human_value='less or equal than')
-        Operator.save(op1)
-
-        op2 = Operator(math_value='>=', human_value='greater or equal than')
-        Operator.save(op2)
-
-        rc1 = RangeConstraint(configurationkey=confk2, operator=op2, value=1)
-        RangeConstraint.save(rc1)
-
-        rc2 = RangeConstraint(configurationkey=confk2, operator=op1, value=5)
-        RangeConstraint.save(rc2)
-
         DatabaseData.create_database(self)
 
     def tearDown(self):
