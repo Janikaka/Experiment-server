@@ -780,18 +780,3 @@ class TestUsersREST(BaseTest):
         httpUsers = Users(self.req)
         response = httpUsers.user_DELETE()
         assert response.status_code == 400
-
-
-
-
-        
-
-        
-
-
-
-
-
-
-
-

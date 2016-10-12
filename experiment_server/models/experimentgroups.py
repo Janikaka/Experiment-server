@@ -13,9 +13,7 @@ from .users_experimentgroups import users_experimentgroups
 
 class ExperimentGroup(Base):
     """ This is definition of class ExperimentGroup. """
-    # TODO Too few public methods (1/2)
     __tablename__ = 'experimentgroups'
-    # FIXME "id" is an invalid class attribute name
     id = Column(Integer, primary_key=True)
     name = Column(Text)
     experiment_id = Column(Integer, ForeignKey('experiments.id'))
