@@ -147,4 +147,4 @@ class ConfigurationKeys(WebUtils):
                 return self.createResponse(None, 400)
         print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id) + '/configurationkeys',
                   'Delete configurationkeys of application', 'Succeeded')
-        return self.createResponse(None, 200)
+        return {}
