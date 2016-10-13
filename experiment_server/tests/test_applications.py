@@ -14,7 +14,7 @@ class TestApplications(BaseTest):
         self.init_databaseData()
         self.req = self.dummy_request()
 
-    def test_createApp(self):
+    def test_create_app(self):
         appsFromDB = Application.all()
         app1 = {
             'id': 1,
@@ -30,23 +30,23 @@ class TestApplications(BaseTest):
             for key in apps[i]:
                 assert getattr(appsFromDB[i], key) == apps[i][key]
 
-    def test_getAllApps(self):
+    def test_get_all_apps(self):
         appsFromDB = Application.all()
         assert len(appsFromDB) == 2
 
-    def test_getApp(self):
+    def test_get_app(self):
         app1 = Application.get(1)
         app2 = Application.get(2)
         assert app1.id == 1 and app1.name == 'App 1'
         assert app2.id == 2 and app2.name == 'App 2'
 
-    def test_saveApp(self):
+    def test_save_app(self):
         app = Application(name='App 3')
         Application.save(app)
         appsFromDB = Application.all()
         assert len(appsFromDB) == 3
 
-    def test_destroyApp(self):
+    def test_destroy_app(self):
         app1 = Application.get(1)
         Application.destroy(app1)
         appsFromDB = Application.all()
@@ -54,7 +54,7 @@ class TestApplications(BaseTest):
         assert appsFromDB == [app2]
         assert len(appsFromDB) == 1
 
-    def test_getConfKeysOfApp(self):
+    def test_get_confkeys_of_app(self):
         assert len(Application.get(1).configurationkeys) == 2
         ck = Application.get(1).configurationkeys[0]
         assert ck.name == 'highscore'

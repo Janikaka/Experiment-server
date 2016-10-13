@@ -27,7 +27,7 @@ class TestOperators(BaseTest):
         self.init_databaseData()
         self.req = self.dummy_request()
 
-    def test_createOperator(self):
+    def test_create_operator(self):
         operatorsFromDB = Operator.all()
         operators = [self.op1, self.op2, self.op3]
 
@@ -35,15 +35,19 @@ class TestOperators(BaseTest):
             for key in operators[i]:
                 assert getattr(operatorsFromDB[i], key) == operators[i][key]
 
-    def test_getAllOperators(self):
+    def test_get_all_operators(self):
         operatorsFromDB = Operator.all()
         assert len(operatorsFromDB) == 3
 
-    def test_getOperator(self):
+    def test_get_operator(self):
         op1 = Operator.get(1)
         op3 = Operator.get(3)
         assert op1.id == 1 and op1.human_value == 'less or equal than'
         assert op3.id == 3 and op3.math_value == 'def'
+
+# ---------------------------------------------------------------------------------
+#                                  REST-Inteface
+# ---------------------------------------------------------------------------------
 
     def test_GET_all_operators(self):
         httpOperators = Operators(self.req)

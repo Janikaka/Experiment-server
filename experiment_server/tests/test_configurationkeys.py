@@ -1,5 +1,5 @@
 from .base_test import BaseTest
-from ..models import (Application, ConfigurationKey)
+from ..models import (Application, ConfigurationKey, RangeConstraint, ExclusionConstraint)
 from experiment_server.views.configurationkeys import ConfigurationKeys
 
 
@@ -14,7 +14,7 @@ class TestConfigurationKeys(BaseTest):
         self.init_databaseData()
         self.req = self.dummy_request()
 
-    def test_createConfKey(self):
+    def test_create_configurationkey(self):
         ckeysFromDB = ConfigurationKey.all()
         appsFromDB = Application.all()
         ck1 = {
@@ -35,11 +35,11 @@ class TestConfigurationKeys(BaseTest):
             for key in confkeys[i]:
                 assert getattr(ckeysFromDB[i], key) == confkeys[i][key]
 
-    def test_getAllConfKeys(self):
+    def test_get_all_configurationkeys(self):
         ckeysFromDB = ConfigurationKey.all()
         assert len(ckeysFromDB) == 2
 
-    def test_getConfKey(self):
+    def test_get_configurationkey(self):
         ck1 = ConfigurationKey.get(1)
         ck2 = ConfigurationKey.get(2)
         assert ck1.id == 1 and ck1.name == 'highscore' and \
@@ -47,7 +47,7 @@ class TestConfigurationKeys(BaseTest):
         assert ck2.id == 2 and ck2.name == 'difficulty' and \
                ck2.application.id == 1
 
-    def test_destroyConfKey(self):
+    def test_destroy_configurationkey(self):
         ck1 = ConfigurationKey.get(1)
         ConfigurationKey.destroy(ck1)
         ckeysFromDB = ConfigurationKey.all()
@@ -55,19 +55,38 @@ class TestConfigurationKeys(BaseTest):
         assert ckeysFromDB == [ck2]
         assert len(ckeysFromDB) == 1
 
-    def test_saveConfKey(self):
+    def test_save_configurationkey(self):
         confk3 = ConfigurationKey(application=Application.get(2), name='speed', type='double')
         ConfigurationKey.save(confk3)
         ckeysFromDB = ConfigurationKey.all()
         assert len(ckeysFromDB) == 3
 
-    def test_getRangeContraintsOfConfKey(self):
+    def test_get_rangecontraints_of_configurationkey(self):
         assert len(ConfigurationKey.get(1).rangeconstraints) == 0
         assert len(ConfigurationKey.get(2).rangeconstraints) == 2
 
-    def test_getExContraintsOfConfKey(self):
+    def test_get_exlusioncontraints_of_configurationkey(self):
         assert len(ConfigurationKey.get(1).exclusionconstraints) == 2
         assert len(ConfigurationKey.get(2).exclusionconstraints) == 2
+
+    def test_cascade_of_destroy_app_and_configurationkeys(self):
+        assert len(ConfigurationKey.all()) == 2
+        app = Application.get(1)
+        Application.destroy(app)
+        assert len(ConfigurationKey.all()) == 0
+
+    def test_cascade_of_destroy_configurationkey_and_rangeconstraints(self):
+        assert len(RangeConstraint.all()) == 2
+        ck = ConfigurationKey.get(2)
+        ConfigurationKey.destroy(ck)
+        assert len(RangeConstraint.all()) == 0
+
+    def test_cascade_of_destroy_configurationkey_and_exclusionconstraints(self):
+        assert len(ExclusionConstraint.all()) == 2
+        ck = ConfigurationKey.get(2)
+        ConfigurationKey.destroy(ck)
+        assert len(ExclusionConstraint.all()) == 0
+
 
 # ---------------------------------------------------------------------------------
 #                                  REST-Inteface
