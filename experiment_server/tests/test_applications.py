@@ -54,6 +54,11 @@ class TestApplications(BaseTest):
         assert appsFromDB == [app2]
         assert len(appsFromDB) == 1
 
+    def test_getConfKeysOfApp(self):
+        assert len(Application.get(1).configurationkeys) == 2
+        ck = Application.get(1).configurationkeys[0]
+        assert ck.name == 'highscore'
+
 # ---------------------------------------------------------------------------------
 #                                  REST-Inteface
 # ---------------------------------------------------------------------------------

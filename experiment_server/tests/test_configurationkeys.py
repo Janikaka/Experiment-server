@@ -61,10 +61,13 @@ class TestConfigurationKeys(BaseTest):
         ckeysFromDB = ConfigurationKey.all()
         assert len(ckeysFromDB) == 3
 
-    def test_getAppsConfKeys(self):
-        assert len(Application.get(1).configurationkeys) == 2
-        ck = Application.get(1).configurationkeys[0]
-        assert ck.name == 'highscore'
+    def test_getRangeContraintsOfConfKey(self):
+        assert len(ConfigurationKey.get(1).rangeconstraints) == 0
+        assert len(ConfigurationKey.get(2).rangeconstraints) == 2
+
+    def test_getExContraintsOfConfKey(self):
+        assert len(ConfigurationKey.get(1).exclusionconstraints) == 2
+        assert len(ConfigurationKey.get(2).exclusionconstraints) == 2
 
 # ---------------------------------------------------------------------------------
 #                                  REST-Inteface
@@ -101,8 +104,8 @@ class TestConfigurationKeysREST(BaseTest):
         assert response == confkeys
 
     def test_configurationkeys_PUT_one(self):
-        #TODO: Write test
-        assert 1 == 1
+        #TODO: Write put test
+        assert 1 == 0
 
     def test_configurationkeys_DELETE_one(self):
         self.req.swagger_data = {'id': 1}
@@ -128,18 +131,42 @@ class TestConfigurationKeysREST(BaseTest):
         assert response == rconstraints
 
     def test_exclusionconstraints_for_confkey_GET(self):
-        #TODO: Write test
-        assert 1 == 1
+        exconst = {'id': 1, 'first_configurationkey_id': 1, 'first_operator_id': 3,
+                   'first_value_a': None, 'first_value_b': None,
+                   'second_configurationkey_id': 2, 'second_operator_id': None,
+                   'second_value_a': None, 'second_value_b': None}
+
+        exconst2 = {'id': 2, 'first_configurationkey_id': 1, 'first_operator_id': 3,
+                    'first_value_a': None, 'first_value_b': None,
+                    'second_configurationkey_id': 2, 'second_operator_id': 2,
+                    'second_value_a': '2', 'second_value_b': None}
+        exconstraints = [exconst, exconst2]
+
+        self.req.swagger_data = {'id': 1}
+        httpCkeys = ConfigurationKeys(self.req)
+        response = httpCkeys.exclusionconstraints_for_confkey_GET()
+        assert response == exconstraints
+
+        self.req.swagger_data = {'id': 3}
+        httpCkeys = ConfigurationKeys(self.req)
+        response = httpCkeys.exclusionconstraints_for_confkey_GET()
+        assert response.status_code == 400
+
+        self.req.swagger_data = {'id': 2}
+        httpCkeys = ConfigurationKeys(self.req)
+        response = httpCkeys.exclusionconstraints_for_confkey_GET()
+        assert response == exconstraints
 
     def test_configurationkeys_POST(self):
-        #TODO: Write test
-        assert 1 == 1
+        #TODO: Write post test
+        assert 1 == 0
 
     def test_configurationkeys_for_application_DELETE(self):
         self.req.swagger_data = {'id': 1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_for_application_DELETE()
         assert response == {}
+
         self.req.swagger_data = {'id': 3}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_for_application_DELETE()

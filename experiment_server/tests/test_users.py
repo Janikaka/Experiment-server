@@ -128,8 +128,8 @@ class TestUsersREST(BaseTest):
         assert response == user
 
     def test_create_user(self):
-        #TODO: Write test
-        assert 1 == 1
+        #TODO: Write create user test
+        assert 1 == 0
 
     def test_configurations_GET(self):
         self.req.swagger_data = {'id': 1}
