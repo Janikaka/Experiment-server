@@ -37,6 +37,12 @@ class DatabaseData:
                                    second_value_a=None, second_value_b=None)
         ExclusionConstraint.save(exc1)
 
+        exc2 = ExclusionConstraint(first_configurationkey=confk1, first_operator=op3,
+                                   first_value_a=None, first_value_b=None,
+                                   second_configurationkey=confk2, second_operator=op2,
+                                   second_value_a=2, second_value_b=None)
+        ExclusionConstraint.save(exc2)
+
         app2 = Application(name='App 2')
         Application.save(app2)
 
