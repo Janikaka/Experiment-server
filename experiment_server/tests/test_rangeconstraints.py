@@ -14,15 +14,15 @@ class TestRangeConstraints(BaseTest):
         self.init_database()
         self.init_databaseData()
 
-    def test_getRangeConstraint(self):
+    def test_get_rangeconstraint(self):
         rc = RangeConstraint.get(1)
         assert rc.id == 1 and rc.configurationkey_id == 2 and rc.operator_id == 2 and rc.value == 1
 
-    def test_getAllRangeConstraints(self):
+    def test_get_all_rangeconstraints(self):
         rcsFromDB = RangeConstraint.all()
         assert len(rcsFromDB) == 2
 
-    def test_destroyRangeConstraint(self):
+    def test_destroy_rangeconstraint(self):
         rc = RangeConstraint.get(1)
         RangeConstraint.destroy(rc)
         rcsFromDB = RangeConstraint.all()

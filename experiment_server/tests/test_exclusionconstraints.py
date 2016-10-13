@@ -13,15 +13,15 @@ class TestExclusionConstraints(BaseTest):
         self.init_database()
         self.init_databaseData()
 
-    def test_getExConstraint(self):
+    def test_get_exclusionconstraint(self):
         ec = ExclusionConstraint.get(1)
         assert ec.id == 1 and ec.first_configurationkey_id == 1 and ec.first_operator_id == 3
 
-    def test_getAllExConstraints(self):
+    def test_get_all_exclusionconstraints(self):
         ecsFromDB = ExclusionConstraint.all()
         assert len(ecsFromDB) == 2
 
-    def test_destroyExConstraint(self):
+    def test_destroy_exclusionconstraint(self):
         ec = ExclusionConstraint.get(1)
         ExclusionConstraint.destroy(ec)
         ecsFromDB = ExclusionConstraint.all()
