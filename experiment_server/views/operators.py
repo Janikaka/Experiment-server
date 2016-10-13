@@ -6,7 +6,7 @@ import datetime
 
 
 @view_defaults(renderer='json')
-class Applications(WebUtils):
+class Operators(WebUtils):
     def __init__(self, request):
         self.request = request
 

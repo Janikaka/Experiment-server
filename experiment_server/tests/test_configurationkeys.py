@@ -127,6 +127,10 @@ class TestConfigurationKeysREST(BaseTest):
         response = httpCkeys.rangeconstraints_for_confkey_GET()
         assert response == rconstraints
 
+    def test_exclusionconstraints_for_confkey_GET(self):
+        #TODO: Write test
+        assert 1 == 1
+
     def test_configurationkeys_POST(self):
         #TODO: Write test
         assert 1 == 1

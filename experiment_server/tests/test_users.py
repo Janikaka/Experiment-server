@@ -120,6 +120,17 @@ class TestUsersREST(BaseTest):
         self.init_databaseData()
         self.req = self.dummy_request()
 
+    def test_user_GET(self):
+        self.req.swagger_data = {'id': 1}
+        httpUsers = Users(self.req)
+        response = httpUsers.user_GET()
+        user = {'id': 1, 'username': 'First user'}
+        assert response == user
+
+    def test_create_user(self):
+        #TODO: Write test
+        assert 1 == 1
+
     def test_configurations_GET(self):
         self.req.swagger_data = {'id': 1}
         httpUsers = Users(self.req)
