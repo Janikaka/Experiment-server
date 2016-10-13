@@ -18,6 +18,10 @@ class ConfigurationKey(Base):
     name = Column(Text)
     type = Column(Text)
     rangeconstraints = relationship("RangeConstraint", backref="configurationkey", cascade="delete")
+    exclusionconstraints = relationship("ExclusionConstraint",
+                                        primaryjoin="or_(ConfigurationKey.id==ExclusionConstraint.first_configurationkey_id,ConfigurationKey.id==ExclusionConstraint.second_configurationkey_id)",
+                                        cascade="delete")
+
 
     def as_dict(self):
         """ transfer data to dictionary """
