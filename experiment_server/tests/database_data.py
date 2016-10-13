@@ -10,6 +10,9 @@ class DatabaseData:
         app1 = Application(name='App 1')
         Application.save(app1)
 
+        app2 = Application(name='App 2')
+        Application.save(app2)
+
         confk1 = ConfigurationKey(application=app1, name='highscore', type='boolean')
         ConfigurationKey.save(confk1)
 
@@ -42,9 +45,6 @@ class DatabaseData:
                                    second_configurationkey=confk2, second_operator=op2,
                                    second_value_a=2, second_value_b=None)
         ExclusionConstraint.save(exc2)
-
-        app2 = Application(name='App 2')
-        Application.save(app2)
 
         expgroup1 = self.DB.create_experimentgroup(
             {'name': 'Group A'

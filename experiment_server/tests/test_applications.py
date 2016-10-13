@@ -96,6 +96,7 @@ class TestApplicationsREST(BaseTest):
 
     def test_applications_POST(self):
         #TODO: Fix this - AttributeError: 'dict' object has no attribute 'name'
+        # request.swagger_data['application'] returns NewApplication(name='Test 1')
         self.req.swagger_data = {'application': {'name': 'App 3'}}
         httpApps = Applications(self.req)
         response = httpApps.applications_POST()
@@ -159,4 +160,3 @@ class TestApplicationsREST(BaseTest):
             ],
         }
         assert response == app_data
-

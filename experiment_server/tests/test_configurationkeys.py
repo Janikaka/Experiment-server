@@ -61,6 +61,13 @@ class TestConfigurationKeys(BaseTest):
         ckeysFromDB = ConfigurationKey.all()
         assert len(ckeysFromDB) == 3
 
+    def test_update_configurationkey_name(self):
+        ck = ConfigurationKey.get(2)
+        assert ck.name == 'difficulty'
+        ConfigurationKey.update(2, 'name', 'new name')
+        ck = ConfigurationKey.get(2)
+        assert ck.name == ('new name')
+
     def test_get_rangecontraints_of_configurationkey(self):
         assert len(ConfigurationKey.get(1).rangeconstraints) == 0
         assert len(ConfigurationKey.get(2).rangeconstraints) == 2
