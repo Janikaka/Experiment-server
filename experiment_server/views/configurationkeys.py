@@ -107,7 +107,7 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkeys_for_app', request_method="POST")
     def configurationkeys_POST(self):
         """ Create new configurationkey to application.
-            request.matchdict['id'] takes the id and DB.get_application_by_id(id) returns the application by id.
+            request.matchdict['id'] takes the id and Application.get(app_id) returns the application by id.
         """
         app_id = self.request.swagger_data['id']
         application = Application.get(app_id)

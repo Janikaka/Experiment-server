@@ -90,14 +90,11 @@ class TestApplicationsREST(BaseTest):
         assert response == {}
 
         self.req.swagger_data = {'id': 3}
-        httpApps = Applications(self.req)
         response = httpApps.applications_DELETE_one()
         assert response.status_code == 400
 
     def test_applications_POST(self):
-        #TODO: Fix this - AttributeError: 'dict' object has no attribute 'name'
-        # request.swagger_data['application'] returns NewApplication(name='Test 1')
-        self.req.swagger_data = {'application': {'name': 'App 3'}}
+        self.req.swagger_data = {'application': Application(name='App 3')}
         httpApps = Applications(self.req)
         response = httpApps.applications_POST()
         app = {'id': 3, 'name': 'App 3'}
@@ -119,7 +116,6 @@ class TestApplicationsREST(BaseTest):
                         {'id': 2, 'configurationkey_id': 2, 'operator_id': 1, 'value': 5}]
         assert response == rconstraints
         self.req.swagger_data = {'id': 2}
-        httpApps = Applications(self.req)
         response = httpApps.rangeconstraints_for_app_GET()
         assert response == []
 
@@ -160,3 +156,4 @@ class TestApplicationsREST(BaseTest):
             ],
         }
         assert response == app_data
+

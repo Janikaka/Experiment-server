@@ -54,13 +54,17 @@ class TestRangeConstraintsREST(BaseTest):
         assert response == {}
 
         self.req.swagger_data = {'id': 3}
-        httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangecontraints_DELETE_one()
         assert response.status_code == 400
 
     def test_rangecontraints_POST(self):
-        #TODO: Write post test
-        assert 1 == 0
+        self.req.swagger_data = {
+            'id': 1,
+            'rangeconstraint': RangeConstraint(configurationkey_id=2, operator_id=1, value=10)}
+        httpCkeys = RangeConstraints(self.req)
+        response = httpCkeys.rangecontraints_POST()
+        rc = {'id': 3, 'configurationkey_id': 1, 'operator_id': 1, 'value': 10}
+        assert response == rc
 
     def test_rangeconstraints_for_configuratinkey_DELETE(self):
         self.req.swagger_data = {'id': 2}
@@ -70,6 +74,5 @@ class TestRangeConstraintsREST(BaseTest):
         assert len(ConfigurationKey.get(2).rangeconstraints) == 0
         assert response == {}
         self.req.swagger_data = {'id': 3}
-        httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangeconstraints_for_configuratinkey_DELETE()
         assert response.status_code == 400
