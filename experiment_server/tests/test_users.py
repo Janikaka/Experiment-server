@@ -128,8 +128,11 @@ class TestUsersREST(BaseTest):
         assert response == user
 
     def test_create_user(self):
-        #TODO: Write create user test
-        assert 1 == 0
+        self.req.swagger_data = {'user': User(username='Test User')}
+        httpUsers = Users(self.req)
+        response = httpUsers.create_user()
+        user = {'id': 3, 'username': 'Test User'}
+        assert response == user
 
     def test_configurations_GET(self):
         self.req.swagger_data = {'id': 1}
