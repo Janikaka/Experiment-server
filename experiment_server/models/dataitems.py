@@ -7,7 +7,6 @@ from sqlalchemy import (
     DateTime
 )
 from .meta import Base
-from .dictionary_creator import DictionaryCreator
 from .extension_types.sqltypes import JSONType
 
 
