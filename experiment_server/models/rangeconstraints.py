@@ -6,7 +6,7 @@ from sqlalchemy import (
 )
 
 from .meta import Base
-
+from .extension_types.sqltypes import JSONType
 
 class RangeConstraint(Base):
     """ This is definition of a RangeConstraints class """
@@ -14,7 +14,7 @@ class RangeConstraint(Base):
     id = Column(Integer, primary_key=True)
     configurationkey_id = Column(Integer, ForeignKey('configurationkeys.id'))
     operator_id = Column(Integer, ForeignKey('operators.id'))
-    value = Column(Integer)
+    value = Column(JSONType())
 
     def as_dict(self):
         """ transfer data to dictionary """

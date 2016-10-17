@@ -627,6 +627,38 @@
             "description": "Bad Request"
           }
         }
+      },
+      "post": {
+        "tags": [
+          "configuration-keys"
+        ],
+        "summary": "Create new exclusionconstraint to configurationkey",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "id of the conf.key",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "exclusionconstraint",
+            "in": "body",
+            "description": "exclusionconstraint to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewExclusionConstraint"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ExclusionConstraint"
+            }
+          }
+        }
       }
     },
     "/configurationkeys/{id}/rangeconstraints": {
@@ -1103,7 +1135,7 @@
                     "$ref": "#/definitions/User"
                   }
                 },
-                "totalDataitems": {
+                "dataitems": {
                   "type": "array",
                   "items": {
                     "$ref": "#/definitions/DataItem"
@@ -1347,6 +1379,16 @@
     },
     "NewExclusionConstraint": {
       "type": "object",
+      "required": [
+        "first_configurationkey_id",
+        "first_operator_id",
+        "first_value_a",
+        "first_value_b",
+        "second_configurationkey_id",
+        "second_operator_id",
+        "second_value_a",
+        "second_value_b"
+      ],
       "properties": {
         "first_configurationkey_id": {
           "type": "integer"
@@ -1533,7 +1575,7 @@
           "type": "integer"
         },
         "value": {
-          "type": "integer"
+          "type": "string"
         }
       }
     },
