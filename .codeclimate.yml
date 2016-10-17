@@ -24,4 +24,5 @@ ratings:
   - "**.php"
   - "**.py"
   - "**.rb"
-exclude_paths: [experiment_server/tests.py]
+exclude_paths:
+- "experiment_server/tests"
