@@ -10,7 +10,7 @@ from experiment_server.models.users import User
 from experiment_server.models.experiments import Experiment
 from experiment_server.models.experimentgroups import ExperimentGroup
 
-from toolz import assoc
+from toolz import assoc, concat
 
 @view_defaults(renderer='json')
 class Experiments(WebUtils):
@@ -60,7 +60,12 @@ class Experiments(WebUtils):
     @view_config(route_name='experiments', request_method="GET")
     def experiments_GET(self):
         """ List all experiments """
-        return list(map(lambda _: _.as_dict(), Experiment.all()))
+        experiments = []
+        for exp in Experiment.all():
+            status = self.DB.get_status_for_experiment(exp.id)
+            exp_with_status = assoc(exp.as_dict(), 'status', status)
+            experiments.append(exp_with_status)
+        return experiments
 
     @view_config(route_name='experiment', request_method="GET", renderer='json')
     def experiments_GET_one(self):
@@ -86,12 +91,11 @@ class Experiments(WebUtils):
 
     @view_config(route_name='experiment_metadata', request_method="GET")
     def experiment_metadata_GET(self):
-        """ Show specific experiment metadata """
         id = int(self.request.matchdict['id'])
-        experiment = self.DB.get_experiment(id)
+        experiment = Experiment.get(id)
         if experiment is None:
             print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
-                      'Show specific experiment metadata', None)
+                     'Show specific experiment metadata', None)
             return self.createResponse(None, 400)
         experimentAsJSON = experiment.as_dict()
         totalDataitems = self.DB.get_total_dataitems_for_experiment(id)
@@ -99,7 +103,7 @@ class Experiments(WebUtils):
         for i in range(len(experiment.experimentgroups)):
             expgroup = experiment.experimentgroups[i]
             expgroupAsJSON = expgroup.as_dict()
-            totalDataitemsForExpgroup = self.DB.get_total_dataitems_for_expgroup(expgroup.id)
+            #totalDataitemsForExpgroup = self.DB.get_total_dataitems_for_expgroup(expgroup.id)
             confs = expgroup.configurations
             users = []
             for i in range(len(expgroup.users)):
@@ -115,8 +119,8 @@ class Experiments(WebUtils):
         experimentAsJSON['status'] = self.DB.get_status_for_experiment(experiment.id)
         result = {'data': experimentAsJSON}
         print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
-                  'Show specific experiment metadata', result)
-        return result
+                 'Show specific experiment metadata', result)
+        return self.createResponse(result, 200)
 
     @view_config(route_name='users_for_experiment', request_method="GET")
     def users_for_experiment_GET(self):
@@ -127,7 +131,7 @@ class Experiments(WebUtils):
             print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
                       'List all users for specific experiment', None)
             return self.createResponse(None, 400)
-        users=[]
+        users = []
         for expgroup in exp.experimentgroups:
             users.extend(map(lambda _: _.as_dict(), expgroup.users))
         return list(users)
@@ -138,12 +142,12 @@ class Experiments(WebUtils):
         expid = self.request.swagger_data['expid']
         userid = self.request.swagger_data['userid']
         user = User.get(userid)
-        if not expid or not userid or not user:
+        exp = Experiment.get(expid)
+        if not exp or not userid or not user:
             print_log(datetime.datetime.now(),
                       'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
                       'Delete user from specific experiment', 'Failed')
             return self.createResponse(None, 400)
-
 
         users_exp_groups = list(filter(lambda expgroup: expgroup.experiment_id == expid, user.experimentgroups))
 
@@ -163,7 +167,6 @@ class Experiments(WebUtils):
             return self.createResponse(None, 400)
         expgroups = list(map(lambda _: _.as_dict(), experiment.experimentgroups))
         experimentAsJSON = experiment.as_dict()
-        experimentgroups = {'experiment': experimentAsJSON}
         result = assoc(experimentAsJSON, 'experimentgroups', expgroups)
         return result
 
@@ -182,14 +185,17 @@ class Experiments(WebUtils):
 
         configurations = list(map(lambda _: _.as_dict(), expgroup.configurations))
         users = list(map(lambda _: _.as_dict(), expgroup.users))
-
-
-        total_dataitems = list(map(lambda _: _.dataitems, expgroup.users))
-        experimentgroup = {'experimentgroup': expgroup.as_dict()}
-
+        dataitems = list(map(lambda _: _.dataitems, expgroup.users))
+        dataitems_concat = list(concat(dataitems))
+        dataitems_with_user = []
+        for ditem in dataitems_concat:
+            dataitem = ditem.as_dict()
+            di_and_user = assoc(dataitem, 'user', ditem.user.as_dict())
+            dataitems_with_user.append(di_and_user)
+        experimentgroup = expgroup.as_dict()
         resultwithconf = assoc(experimentgroup, 'configurations', configurations)
         resultwithuser = assoc(resultwithconf, 'users', users)
-        result = assoc(resultwithuser, 'totalDataitems', total_dataitems)
+        result = assoc(resultwithuser, 'dataitems', dataitems_with_user)
 
         return result
 
@@ -199,7 +205,7 @@ class Experiments(WebUtils):
         expgroupid = self.request.swagger_data['expgroupid']
         experimentgroup = ExperimentGroup.get(expgroupid)
         expid = self.request.swagger_data['expid']
-        if not experimentgroup:
+        if not experimentgroup or experimentgroup.experiment.id != expid:
             print_log(datetime.datetime.now(), 'DELETE',
                       '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
                       'Delete experimentgroup', 'Failed')

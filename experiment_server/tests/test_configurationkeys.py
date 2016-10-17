@@ -12,7 +12,6 @@ class TestConfigurationKeys(BaseTest):
         super(TestConfigurationKeys, self).setUp()
         self.init_database()
         self.init_databaseData()
-        self.req = self.dummy_request()
 
     def test_create_configurationkey(self):
         ckeysFromDB = ConfigurationKey.all()
@@ -136,7 +135,7 @@ class TestConfigurationKeysREST(BaseTest):
         assert response.id == 1
         assert response.name == 'highscore'
 
-        self.req.swagger_data = self.req.swagger_data = {
+        self.req.swagger_data = {
             'id': 1,
             'configurationkey': ConfigurationKey(id=1, application_id=1, name='test name', type='boolean')}
         response = httpCkeys.configurationkeys_PUT_one()

@@ -11,7 +11,7 @@ from .dictionary_creator import DictionaryCreator
 from .extension_types.sqltypes import JSONType
 
 
-class DataItem(Base, DictionaryCreator):
+class DataItem(Base):
     """ This is definition of class dataitem """
     __tablename__ = 'dataitems'
     id = Column(Integer, primary_key=True)
@@ -23,4 +23,10 @@ class DataItem(Base, DictionaryCreator):
 
     def as_dict(self):
         """ Transfer data to dictionary """
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        result = {}
+        for c in self.__table__.columns:
+            if c.name == 'startDatetime' or c.name == 'endDatetime':
+                result[c.name] = str(getattr(self, c.name))
+            else:
+                result[c.name] = getattr(self, c.name)
+        return result

@@ -16,7 +16,6 @@ class TestExperiments(BaseTest):
         super(TestExperiments, self).setUp()
         self.init_database()
         self.init_databaseData()
-        self.req = self.dummy_request()
 
     def test_createExperiment(self):
         experimentsFromDB = self.dbsession.query(Experiment).all()
@@ -86,36 +85,23 @@ class TestExperimentsREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_experiments_POST(self):
-        json_body = {'name': 'Example Experiment',
-                     'application_id': None,
-                     'startDatetime': '2016-01-01 00:00:00',
-                     'endDatetime': '2017-01-01 00:00:00',
-                     'size': 100,
-                     'experimentgroups': [
-                         {'name': 'expgroup',
-                          'configurations': [{'key': 'key1', 'value': 10}]
-                          }]
-                     }
-        self.req.json_body = json_body
-        {
-            "application_id": 0,
-            "name": "string",
-            "startDatetime": "2016-10-12T20:09:08.762Z",
-            "endDatetime": "2016-10-12T20:09:08.762Z",
-            "size": 0
-        }
+        self.req.swagger_data = {'experiment': Experiment(
+            name='Example Experiment',
+            application_id=1,
+            startDatetime=datetime.datetime(2016, 1, 1, 0, 0, 0),
+            endDatetime=datetime.datetime(2017, 1, 1, 0, 0, 0),
+            size=100)}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiments_POST()
-        result = response.json['data']
         experiment = {'id': 2,
-                      'application_id': None,
+                      'application_id': 1,
                       'name': 'Example Experiment',
                       'size': 100,
                       'startDatetime': '2016-01-01 00:00:00',
-                      'endDatetime': '2017-01-01 00:00:00'}
+                      'endDatetime': '2017-01-01 00:00:00',
+                      }
 
-        assert response.status_code == 200
-        assert result == experiment
+        assert response == experiment
 
     def test_experiments_GET(self):
         httpExperiments = Experiments(self.req)
@@ -128,7 +114,7 @@ class TestExperimentsREST(BaseTest):
         assert experiment['startDatetime'] == '2016-01-01 00:00:00'
         assert experiment['endDatetime'] == '2017-01-01 00:00:00'
         assert experiment['size'] == 100
-        #assert experiment['status'] == 'running'
+        assert experiment['status'] == 'running'
 
     def test_experiment_metadata_GET(self):
         self.req.matchdict = {'id': 1}
@@ -163,7 +149,6 @@ class TestExperimentsREST(BaseTest):
                       }
 
         assert result == experiment
-        assert response.status_code == 200
 
         self.req.matchdict = {'id': 2}
         httpExperiments = Experiments(self.req)
@@ -175,8 +160,8 @@ class TestExperimentsREST(BaseTest):
         self.req.swagger_data = {'id': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_DELETE()
-
         assert response == {}
+
         self.req.swagger_data = {'id': 2}
         print(self.req.matchdict)
         httpExperiments = Experiments(self.req)
@@ -189,16 +174,12 @@ class TestExperimentsREST(BaseTest):
         httpExperiments = Experiments(self.req)
         response = httpExperiments.users_for_experiment_GET()
         users = [{'id': 1,
-                  'username': 'First user',
-                  'experimentgroup': {'name': 'Group A', 'id': 1, 'experiment_id': 1},
-                  'totalDataitems': 2},
+                  'username': 'First user'},
                  {'id': 2,
-                  'username': 'Second user',
-                  'experimentgroup': {'name': 'Group B', 'id': 2, 'experiment_id': 1},
-                  'totalDataitems': 2}]
-
+                  'username': 'Second user'}]
         assert response == users
-        self.req.matchdict = {'id': 2}
+
+        self.req.swagger_data = {'id': 2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.users_for_experiment_GET()
         assert response.status_code == 400
@@ -209,45 +190,61 @@ class TestExperimentsREST(BaseTest):
         assert 1 == 1
 
     def test_experimentgroup_GET(self):
-        self.request.swagger_data = {'expgroupid': 1, 'expid': 1}
+        self.req.swagger_data = {'expgroupid': 1, 'expid': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_GET()
-        result = response.json['data']
-        experimentgroup = {'id': 1,
+        experimentgroup = {
+                            'id': 1,
+                            'name': 'Group A',
+                            'experiment_id': 1,
                            'configurations': [
                                {'experimentgroup_id': 1, 'key': 'v1', 'id': 1, 'value': 0.5},
                                {'experimentgroup_id': 1, 'key': 'v2', 'id': 2, 'value': True}],
-                           'totalDataitems': 2,
-                           'name': 'Group A',
-                           'experiment_id': 1,
+                           'dataitems': [
+                               {'id': 1,
+                                'user_id': 1,
+                                'key': 'key1',
+                                'value': 10,
+                                'startDatetime': '2016-01-01 00:00:00',
+                                'endDatetime': '2016-01-01 01:01:01',
+                                'user': {'id': 1, 'username': 'First user'}
+                                },
+                               {'id': 2,
+                                'user_id':1,
+                                'key': 'key2',
+                                'value': 0.5,
+                                'startDatetime': '2016-02-02 01:01:02',
+                                'endDatetime': '2016-02-02 02:02:02',
+                                'user': {'id': 1, 'username': 'First user'}
+                                }
+                           ],
                            'users': [{'id': 1, 'username': 'First user'}]}
+        assert response == experimentgroup
 
-        assert response.status_code == 200
-        assert result == experimentgroup
-        self.req.matchdict = {'expgroupid': 1, 'expid': 2}
+        self.req.swagger_data = {'expgroupid': 1, 'expid': 2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_GET()
         assert response.status_code == 400
         assert response.json == None
 
     def test_experimentgroup_DELETE(self):
-        self.request.swagger_data = {'expgroupid': 1, 'expid': 1}
+        self.req.swagger_data = {'expgroupid': 1, 'expid': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_DELETE()
-
         assert response == {}
-        self.request.swagger_data = {'expgroupid': 2, 'expid': 2}
+
+        self.req.swagger_data = {'expgroupid': 2, 'expid': 2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_DELETE()
         assert response.status_code == 400
 
     def test_user_for_experiment_DELETE(self):
-        self.req.matchdict = {'userid': 1, 'expid': 1}
+        self.req.swagger_data = {'userid': 1, 'expid': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.user_for_experiment_DELETE()
+        assert response == {}
 
-        assert response.status_code == 200
-        self.req.matchdict = {'userid': 2, 'expid': 2}
+        self.req.swagger_data = {'userid': 2, 'expid': 2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.user_for_experiment_DELETE()
         assert response.status_code == 400

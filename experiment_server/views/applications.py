@@ -98,8 +98,7 @@ class Applications(WebUtils):
     @view_config(route_name='app_data', request_method="GET")
     def data_for_app_GET(self):
         """ List all configurationkeys and rangeconstraints of specific application.
-            Returns application with configurationkeys, rangeconstraints of conf.keys,
-            operator of rangeconstraints
+            Returns application with configurationkeys and rangeconstraints of conf.keys
         """
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
