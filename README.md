@@ -18,6 +18,11 @@ Deactivating virtualenv
 
 `deactivate`
 
+### Dependencies
+
+- PostgresSQL for production `brew install postgresql`
+
+- sqlite for development
 
 ###Getting Started
 ---------------
@@ -56,8 +61,7 @@ In case there are no shcema changes:
 - Push to GitHub and to this projects master branch. The rest will be automatic
 
 In case the database schema has changed
-- `initialize_Experiment-server_db production.ini`. This will establish new via `/experiment_server/scripts/initializedb.py`
-
+- `initialize_Experiment-server_db production.ini`. This will establish new via `/experiment_server/scripts/initializedb.py`. Remember to first clean the production database or it will not make modifications to it.
 
 
 ###Work flow
