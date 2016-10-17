@@ -12,7 +12,6 @@ class TestApplications(BaseTest):
         super(TestApplications, self).setUp()
         self.init_database()
         self.init_databaseData()
-        self.req = self.dummy_request()
 
     def test_create_app(self):
         appsFromDB = Application.all()
@@ -157,3 +156,6 @@ class TestApplicationsREST(BaseTest):
         }
         assert response == app_data
 
+    def test_application_routes(self):
+        assert self.req.route_url('application', id=1) == 'http://example.com/applications/1'
+        assert self.req.route_url('applications') == 'http://example.com/applications'

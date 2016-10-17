@@ -15,7 +15,6 @@ class TestExperimentGroups(BaseTest):
         super(TestExperimentGroups, self).setUp()
         self.init_database()
         self.init_databaseData()
-        self.req = self.dummy_request()
 
     def test_createExperimentgroup(self):
         expgroupsFromDB = self.dbsession.query(ExperimentGroup).all()

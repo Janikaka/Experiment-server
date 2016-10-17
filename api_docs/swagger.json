@@ -1103,7 +1103,7 @@
                     "$ref": "#/definitions/User"
                   }
                 },
-                "totalDataitems": {
+                "dataitems": {
                   "type": "array",
                   "items": {
                     "$ref": "#/definitions/DataItem"

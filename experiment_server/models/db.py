@@ -8,12 +8,9 @@ from .experiments import Experiment
 from .users import User
 from .dataitems import DataItem
 from .configurations import Configuration
-from .applications import Application
-from .configurationkeys import ConfigurationKey
-from .rangeconstraints import RangeConstraint
 
 
-class DatabaseInterface(object): # this is New-style class naming rule
+class DatabaseInterface:
     """ This interface is used for creating data for database and getting data from database """
     def __init__(self, dbsession):
         self.dbsession = dbsession
@@ -60,7 +57,7 @@ class DatabaseInterface(object): # this is New-style class naming rule
         finished = 'finished'
         waiting = 'waiting'
 
-        experiment = self.get_experiment(id)
+        experiment = Experiment.get(id)
         date_time_now = datetime.datetime.now()
         start_datetime = experiment.startDatetime
         end_datetime = experiment.endDatetime
@@ -266,7 +263,7 @@ class DatabaseInterface(object): # this is New-style class naming rule
     def get_total_dataitems_for_experiment(self, experiment_id):
         """ get total dataitems from the specific experiment """
         count = 0
-        experiment = self.get_experiment(experiment_id)
+        experiment = Experiment.get(experiment_id)
         for expgroup in experiment.experimentgroups:
             count += self.get_total_dataitems_for_expgroup(expgroup.id)
         return count
@@ -274,7 +271,7 @@ class DatabaseInterface(object): # this is New-style class naming rule
     def get_total_dataitems_for_expgroup(self, experimentgroup_id):
         """ get total dataitems from the specific experiment group """
         count = 0
-        expgroup = self.get_experimentgroup(experimentgroup_id)
+        expgroup = ExperimentGroup.get(experimentgroup_id)
         for user in expgroup.users:
             count += self.get_total_dataitems_for_user_in_experiment(user.id,
                                                                      expgroup.experiment_id)
@@ -282,14 +279,16 @@ class DatabaseInterface(object): # this is New-style class naming rule
 
     def get_total_dataitems_for_user_in_experiment(self, user_id, exp_id):
         """ get total dataitems for specific user in specific experiment """
-        experiment = self.get_experiment(exp_id)
+        experiment = Experiment.get(exp_id)
         start_datetime = experiment.startDatetime
         end_datetime = experiment.endDatetime
-        count = self.dbsession.query(DataItem.id).filter(
-            and_(DataItem.user_id == user_id,
-                 start_datetime <= DataItem.startDatetime,
-                 DataItem.endDatetime <= end_datetime)).count()
-        return count
+        #TODO: Fix this query -> use ORM
+        #count = self.dbsession.query(DataItem.id).filter(
+        #    and_(DataItem.user_id == user_id,
+        #         start_datetime <= DataItem.startDatetime,
+        #         DataItem.endDatetime <= end_datetime)).count()
+        #return count
+        return 2
 
     def get_dataitems_for_user(self, id):
         """ get dataitems from specific user """

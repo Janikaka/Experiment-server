@@ -1,6 +1,6 @@
 import datetime
 from .base_test import BaseTest
-from ..models import (Experiment, User, DataItem)
+from ..models import (User, DataItem)
 
 
 def strToDatetime(date):
