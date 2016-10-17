@@ -12,7 +12,6 @@ from .extension_types.sqltypes import JSONType
 
 class Configuration(Base):
     """ This is definition of class configuration """
-    # TODO Too few public methods (1/2) and "id" is an invalid class attribute name.
     __tablename__ = 'configurations'
     id = Column(Integer, primary_key=True)
     experimentgroup_id = Column(Integer, ForeignKey('experimentgroups.id'))

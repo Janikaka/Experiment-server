@@ -254,13 +254,11 @@ class DatabaseInterface:
         experiment = Experiment.get(exp_id)
         start_datetime = experiment.startDatetime
         end_datetime = experiment.endDatetime
-        #TODO: Fix this query -> use ORM
-        #count = self.dbsession.query(DataItem.id).filter(
-        #    and_(DataItem.user_id == user_id,
-        #         start_datetime <= DataItem.startDatetime,
-        #         DataItem.endDatetime <= end_datetime)).count()
-        #return count
-        return 2
+        count = DataItem.query().filter(
+            and_(DataItem.user_id == user_id,
+                 start_datetime <= DataItem.startDatetime,
+                 DataItem.endDatetime <= end_datetime)).count()
+        return count
 
     def get_dataitems_for_user_on_period(self, id, start_datetime, end_datetime):
         """ get dataitems from specific user on a specific period """
