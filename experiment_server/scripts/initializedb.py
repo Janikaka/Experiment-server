@@ -179,9 +179,9 @@ def main(argv=sys.argv):
 
         dbsession.add(us1)
 
-        rc1 = RangeConstraint(configurationkey=confk2, operator=op4, value=1)
-        rc2 = RangeConstraint(configurationkey=confk2, operator=op2, value=5)
-        rc3 = RangeConstraint(configurationkey=confk3, operator=op5, value=0)
+        rc1 = RangeConstraint(configurationkey=confk2, operator=op4, value="1")
+        rc2 = RangeConstraint(configurationkey=confk2, operator=op2, value="5")
+        rc3 = RangeConstraint(configurationkey=confk3, operator=op5, value="0")
 
         dbsession.add(rc1)
         dbsession.add(rc2)
