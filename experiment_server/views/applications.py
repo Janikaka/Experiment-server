@@ -3,7 +3,6 @@ from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
 from experiment_server.models.applications import Application
 from experiment_server.utils.log import print_log
-from ..models import DatabaseInterface
 from .webutils import WebUtils
 import datetime
 from toolz import concat, assoc
@@ -13,7 +12,6 @@ from toolz import concat, assoc
 class Applications(WebUtils):
     def __init__(self, request):
         self.request = request
-        self.DB = DatabaseInterface(self.request.dbsession)
 
     """
         CORS-options
@@ -87,7 +85,6 @@ class Applications(WebUtils):
         """ list all rangeconstraints of one application """
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
-        # TODO: finish
         if app is None:
             print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/rangeconstraints',
                       'Get rangeconstraints of one application', None)
@@ -100,8 +97,7 @@ class Applications(WebUtils):
     @view_config(route_name='app_data', request_method="GET")
     def data_for_app_GET(self):
         """ List all configurationkeys and rangeconstraints of specific application.
-            Returns application with configurationkeys, rangeconstraints of conf.keys,
-            operator of rangeconstraints
+            Returns application with configurationkeys and rangeconstraints of conf.keys
         """
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)

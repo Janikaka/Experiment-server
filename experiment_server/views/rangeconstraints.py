@@ -1,6 +1,5 @@
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
-from ..models import DatabaseInterface
 import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
@@ -12,7 +11,6 @@ from experiment_server.models.configurationkeys import ConfigurationKey
 class RangeConstraints(WebUtils):
     def __init__(self, request):
         self.request = request
-        self.DB = DatabaseInterface(self.request.dbsession)
 
     """
         CORS-options

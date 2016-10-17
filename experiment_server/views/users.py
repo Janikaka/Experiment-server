@@ -6,6 +6,7 @@ import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 from experiment_server.models.users import User
+from experiment_server.models.dataitems import DataItem
 
 from fn import _
 from toolz import *
@@ -57,7 +58,7 @@ class Users(WebUtils):
     # Get one user
     @view_config(route_name='user', request_method="GET", renderer='json')
     def user_GET(self):
-        id = int(self.request.matchdict['id'])
+        id = self.request.swagger_data['id']
         result = User.get(id)
         if not result:
             print_log('/users/%s failed' % id)
@@ -79,7 +80,7 @@ class Users(WebUtils):
     # List configurations for specific user
     @view_config(route_name='configurations', request_method="GET")
     def configurations_GET(self):
-        id = int(self.request.matchdict['id'])
+        id = self.request.swagger_data['id']
         user = User.get(id)
         if user is None:
             print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
@@ -98,20 +99,10 @@ class Users(WebUtils):
         if not user:
             return self.createResponse(None, 400)
         users_experimentgroups = user.experimentgroups
-        experiments = map(lambda _:_.experiment, users_experimentgroups)
-        result = map(lambda _:_.as_dict(), experiments)
+        experiments = map(lambda _: _.experiment, users_experimentgroups)
+        # TODO: Add experimentgroups (= user's experimentgroups of that experiment) to experiment
+        result = map(lambda _: _.as_dict(), experiments)
         return list(result)
-        experiments = self.DB.get_user_experiments_list(id)
-        experimentsJSON = []
-        for i in range(len(experiments)):
-            expgroup = self.DB.get_experimentgroup_for_user_in_experiment(id, experiments[i].id)
-            exp = experiments[i].as_dict()
-            exp['experimentgroup'] = expgroup.as_dict()
-            experimentsJSON.append(exp)
-        result = {'data': experimentsJSON}
-        print_log(datetime.datetime.now(), 'GET', '/users/' + str(id) + '/experiments',
-                 'List all experiments for specific user', result)
-        return self.createResponse(result, 200)
 
     # Save experiment data
     @view_config(route_name='events', request_method="POST")
@@ -122,17 +113,18 @@ class Users(WebUtils):
         startDatetime = json['startDatetime']
         endDatetime = json['endDatetime']
         username = self.request.headers['username']
-        user = self.DB.get_user_by_username(username)
+        user = User.get_by('username', username)
         if user is None:
             print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', None)
             return self.createResponse(None, 400)
-        result = {'data': self.DB.create_dataitem(
-            {'user': user,
-             'value': value,
-             'key': key,
-             'startDatetime': startDatetime,
-             'endDatetime': endDatetime
-             }).as_dict()}
+        result = DataItem(
+            user=user,
+            value=value,
+            key=key,
+            startDatetime=startDatetime,
+            endDatetime=endDatetime
+        )
+        DataItem.save(result)
         print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', result)
-        return self.createResponse(result, 200)
+        return result.as_dict()
 
