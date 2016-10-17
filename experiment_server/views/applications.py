@@ -85,7 +85,6 @@ class Applications(WebUtils):
         """ list all rangeconstraints of one application """
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
-        # TODO: finish
         if app is None:
             print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/rangeconstraints',
                       'Get rangeconstraints of one application', None)

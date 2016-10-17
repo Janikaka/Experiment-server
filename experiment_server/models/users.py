@@ -13,7 +13,6 @@ from .users_experimentgroups import users_experimentgroups
 
 class User(Base):
     """ This is definition of class User. """
-    # TODO Too few public methods (1/2) and "id" is an invalid class attribute name.
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     username = Column(Text, unique=True, index=True)
