@@ -43,7 +43,7 @@ class RangeConstraints(WebUtils):
 
     @view_config(route_name='rangeconstraint', request_method="DELETE")
     def rangecontraints_DELETE_one(self):
-        """ Find and delete one rangeconstraint by id with destroy method """
+        """ Find and delete one rangeconstraint by id with DELETE method """
         rc_id = self.request.swagger_data['id']
         rangeconstraint = RangeConstraint.get(rc_id)
         if not rangeconstraint:
@@ -78,7 +78,7 @@ class RangeConstraints(WebUtils):
 
     @view_config(route_name='rangeconstraints_for_configurationkey', request_method="DELETE")
     def rangeconstraints_for_configuratinkey_DELETE(self):
-        """ Delete all rangeconstraints for one specific configurationkey"""
+        """ Delete all rangeconstraints of one specific configurationkey"""
         id = self.request.swagger_data['id']
         con_key = ConfigurationKey.get(id)
         if not con_key:

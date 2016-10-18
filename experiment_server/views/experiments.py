@@ -79,7 +79,7 @@ class Experiments(WebUtils):
 
     @view_config(route_name='experiment', request_method="DELETE")
     def experiment_DELETE(self):
-        """ Delete experiment """
+        """ Delete one experiment """
         exp_id = self.request.swagger_data['id']
         exp = Experiment.get(exp_id)
         if not exp:
@@ -201,7 +201,7 @@ class Experiments(WebUtils):
 
     @view_config(route_name='experimentgroup', request_method="DELETE")
     def experimentgroup_DELETE(self):
-        """ Delete experimentgroup """
+        """ Delete one experimentgroup """
         expgroupid = self.request.swagger_data['expgroupid']
         experimentgroup = ExperimentGroup.get(expgroupid)
         expid = self.request.swagger_data['expid']

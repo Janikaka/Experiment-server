@@ -59,7 +59,7 @@ class Applications(WebUtils):
 
     @view_config(route_name='application', request_method="DELETE")
     def applications_DELETE_one(self):
-        """ Find and delete one application by id with destroy method """
+        """ Find and delete one application by id with delete method """
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
         if not app:

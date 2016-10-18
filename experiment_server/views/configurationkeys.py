@@ -63,7 +63,7 @@ class ConfigurationKeys(WebUtils):
 
     @view_config(route_name='configurationkey', request_method="DELETE")
     def configurationkeys_DELETE_one(self):
-        """ Find and delete one configurationkey by id with destroy method """
+        """ Find and delete one configurationkey by id with delete method """
         confkey_id = self.request.swagger_data['id']
         confkey = ConfigurationKey.get(confkey_id)
         if not confkey:
@@ -107,7 +107,7 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkeys_for_app', request_method="POST")
     def configurationkeys_POST(self):
         """ Create new configurationkey to application.
-            request.matchdict['id'] takes the id and Application.get(app_id) returns the application by id.
+            request.swagger_data['id'] takes the id and Application.get(app_id) returns the application by id.
         """
         app_id = self.request.swagger_data['id']
         application = Application.get(app_id)
@@ -130,7 +130,7 @@ class ConfigurationKeys(WebUtils):
 
     @view_config(route_name='configurationkeys_for_app', request_method="DELETE")
     def configurationkeys_for_application_DELETE(self):
-        """ Delete all configurationkeys for one specific application """
+        """ Delete all configurationkeys of one specific application """
         id = self.request.swagger_data['id']
         app = Application.get(id)
         if not app:

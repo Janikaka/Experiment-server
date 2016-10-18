@@ -12,4 +12,5 @@ class Operators(WebUtils):
 
     @view_config(route_name='operators', request_method="GET")
     def GET_all_operators(self):
+        """ Retuns all operators as a list"""
         return list(map(lambda _: _.as_dict(), Operator.all()))

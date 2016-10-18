@@ -39,7 +39,7 @@ class ExclusionConstraints(WebUtils):
 
     @view_config(route_name='exclusionconstraint', request_method="DELETE")
     def exclusionconstraints_DELETE_one(self):
-        """ Find and delete one exclusionconstraint by id with destroy method """
+        """ Find and delete one exclusionconstraint by id with DELETE method """
         exconst_id = self.request.swagger_data['id']
         exconstraint = ExclusionConstraint.get(exconst_id)
         if not exconstraint:
