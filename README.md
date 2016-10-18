@@ -53,7 +53,7 @@ Clone this repository
 
 Run tests:
 
-`pytest experiment_server/tests.py`
+`pytest experiment_server/tests`
 
 ###Publishing to production
 
