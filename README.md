@@ -10,6 +10,8 @@ See the current API documentation from [here](https://swaggerhub.com/api/wakr/ex
 
 The live API will live at heroku: [https://experiment-server2016.herokuapp.com/experiments](https://experiment-server2016.herokuapp.com/experiments). It will be autoupdated everytime master branch is updated at GitHub.
 
+Backlog [here](https://trello.com/b/aRdMndWJ/backlog)
+
 ###Environment setup
 
 We use virtualenv to virtualize the python installation. This will create need for a venv-directory which should be located at project root.
