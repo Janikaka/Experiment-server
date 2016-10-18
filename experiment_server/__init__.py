@@ -5,6 +5,11 @@ from sqlalchemy import engine_from_config
 
 import experiment_server.database.orm as orm_config
 
+"""
+Startpoint for the app. CORS-headers are first added here.
+"""
+
+
 def add_cors_headers_response_callback(event):
     def cors_headers(request, response):
         response.headers.update({
@@ -16,7 +21,6 @@ def add_cors_headers_response_callback(event):
         'Content-Type': 'application/json',
         })
     event.request.add_response_callback(cors_headers)
-
 
 
 def main(global_config, **settings):

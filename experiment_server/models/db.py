@@ -10,6 +10,13 @@ from .dataitems import DataItem
 from .configurations import Configuration
 
 
+
+"""
+    WARNING: This is a deprecated class and should be removed ASAP. The real way is to use ORM-style per model.
+    It is only acceptable if some tests are utilizing this but these dependencies to this class should be removed als
+    ASAP.
+"""
+
 class DatabaseInterface:
     """ This interface is used for creating data for database and getting data from database """
     def __init__(self, dbsession):

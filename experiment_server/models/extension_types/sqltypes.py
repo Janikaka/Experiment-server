@@ -1,6 +1,10 @@
 import json
 import sqlalchemy.types
 
+"""
+Data-model for arbitary data. Use this instead of PickleType.
+"""
+
 
 class JSONType(sqlalchemy.types.PickleType):
     impl = sqlalchemy.types.UnicodeText

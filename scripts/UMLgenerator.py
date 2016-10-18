@@ -1,6 +1,10 @@
 from sqlalchemy import MetaData
 from sqlalchemy_schemadisplay import create_schema_graph
 
+"""
+Generate UML from the current database.
+"""
+
 # Database
 host     = 'localhost'
 engine   = 'sqlite'

@@ -19,7 +19,6 @@ class ExclusionConstraint(Base):
     first_value_a = Column(Text)
     first_value_b = Column(Text)
 
-
     second_configurationkey_id = Column(Integer, ForeignKey('configurationkeys.id'))
     second_operator_id = Column(Integer, ForeignKey('operators.id'))
     second_value_a = Column(Text)
@@ -29,8 +28,6 @@ class ExclusionConstraint(Base):
     first_operator = relationship("Operator", foreign_keys=[first_operator_id])
     second_configurationkey = relationship("ConfigurationKey", foreign_keys=[second_configurationkey_id])
     second_operator = relationship("Operator", foreign_keys=[second_operator_id])
-
-
 
     def as_dict(self):
         """ transfer data to dictionary """

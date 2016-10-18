@@ -1,6 +1,11 @@
 import json
-
 from sqlalchemy.ext.declarative import DeclarativeMeta
+
+"""
+Class for middleware jsonifier-support to return json from API.
+"""
+
+
 class AlchemyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):
