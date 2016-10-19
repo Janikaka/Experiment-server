@@ -7,6 +7,7 @@ from .webutils import WebUtils
 from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.applications import Application
 from experiment_server.models.exclusionconstraints import ExclusionConstraint
+from experiment_server.models.operators import Operator
 
 @view_defaults(renderer='json')
 class ConfigurationKeys(WebUtils):
@@ -105,6 +106,49 @@ class ConfigurationKeys(WebUtils):
         if (x.first_configurationkey_id == confkey_id or x.second_configurationkey_id == confkey_id)
         else None, exclusionconstraints))
         return result
+
+    @view_config(route_name='exconstraints_for_configurationkey', request_method="POST")
+    def exclusionconstraints_for_confkey_POST(self):
+        """ Add new exclusionconstraint to configurationkey """
+        print(" = = = = = = = = == = =  == = = = = = = = = = = = = = = =")
+        print_log(self.request.swagger_data)
+        confkey_id = self.request.swagger_data['id']
+        confkey = ConfigurationKey.get(confkey_id)
+        new_exconstraint = self.request.swagger_data['exclusionconstraint']
+
+        if confkey is None:
+            print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + str(confkey_id) + '/exclusionconstraints',
+                      'Post exclusionconstraints of one configurationkey', 'Failed')
+            return self.createResponse(None, 400)
+
+        if new_exconstraint.first_configurationkey_id is None or new_exconstraint.second_configurationkey_id is None:
+            print_log(datetime.datetime.now(), 'POST',
+                      '/configurationkeys/' + str(confkey_id) + '/exclusionconstraints',
+                      'Post exclusionconstraints of one configurationkey', 'Failed')
+            return self.createResponse("The first or second confkey ID doesn't give!", 400)
+
+        if new_exconstraint.first_operator_id is None:
+            print_log(datetime.datetime.now(), 'POST',
+                      '/configurationkeys/' + str(confkey_id) + '/exclusionconstraints',
+                      'Post exclusionconstraints of one configurationkey', 'Failed')
+            return self.createResponse("The first Operator Id doesn't give!", 400)
+
+        exclusionconstraint = ExclusionConstraint(
+                first_configurationkey_id = new_exconstraint.first_configurationkey_id,
+                first_operator_id = new_exconstraint.first_operator_id,
+                first_value_a = new_exconstraint.first_value_a,
+                first_value_b = new_exconstraint.first_value_b,
+
+                second_configurationkey_id = new_exconstraint.second_configurationkey_id,
+                second_operator_id = new_exconstraint.second_operator_id,
+                second_value_a = new_exconstraint.second_value_a,
+                second_value_b = new_exconstraint.second_value_a,
+        )
+        ExclusionConstraint.save(exclusionconstraint)
+        print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + str(confkey_id) + '/exclusionconstraints',
+                  'Post exclusionconstraints of one configurationkey', 'Succeeded')
+        return exclusionconstraint.as_dict()
+
 
     @view_config(route_name='configurationkeys_for_app', request_method="POST")
     def configurationkeys_POST(self):
