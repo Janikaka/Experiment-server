@@ -177,7 +177,7 @@ class TestConfigurationKeysREST(BaseTest):
         exconst2 = {'id': 2, 'first_configurationkey_id': 1, 'first_operator_id': 3,
                     'first_value_a': None, 'first_value_b': None,
                     'second_configurationkey_id': 2, 'second_operator_id': 2,
-                    'second_value_a': '2', 'second_value_b': None}
+                    'second_value_a': 2, 'second_value_b': None}
         exconstraints = [exconst, exconst2]
 
         self.req.swagger_data = {'id': 1}
