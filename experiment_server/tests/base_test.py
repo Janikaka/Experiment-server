@@ -70,7 +70,7 @@ class BaseTest(unittest.TestCase):
         exc2 = ExclusionConstraint(first_configurationkey=confk1, first_operator=op3,
                                    first_value_a=None, first_value_b=None,
                                    second_configurationkey=confk2, second_operator=op2,
-                                   second_value_a=2, second_value_b=None)
+                                   second_value_a='2', second_value_b=None)
         ExclusionConstraint.save(exc2)
 
         expgroup1 = self.DB.create_experimentgroup(
