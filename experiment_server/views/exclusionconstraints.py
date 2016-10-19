@@ -21,6 +21,13 @@ class ExclusionConstraints(WebUtils):
         res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
         return res
 
+    @view_config(route_name='exclusionconstraints_for_app', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
     @view_config(route_name='exclusionconstraints', request_method="GET")
     def exclusionconstraints_GET(self):
         """ List all exclusionconstraints with GET method """
@@ -50,3 +57,27 @@ class ExclusionConstraints(WebUtils):
         print_log(datetime.datetime.now(), 'DELETE', '/exclusionconstraints/'
                   + str(exconst_id), 'Delete exclusionconstraint', 'Succeeded')
         return {}
+
+    @view_config(route_name='exclusionconstraints_for_app', request_method="POST")
+    def create_exclusionconstraint_for_app(self):
+        app_id = self.request.swagger_data['id']
+        exconstraint = self.request.swagger_data['exclusionconstraint']
+
+        if app_id is None or exconstraint is None:
+            print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/exclusionconstraints',
+                      'Create new exclusionconstraint for application', 'Failed')
+            return self.createResponse({}, 400)
+
+        new_exconstraint = ExclusionConstraint(
+            first_configurationkey_id = exconstraint.first_configurationkey_id,
+            first_operator_id = exconstraint.first_operator_id,
+            first_value_a = exconstraint.first_value_a,
+            first_value_b = exconstraint.first_value_b,
+
+            second_configurationkey_id = exconstraint.second_configurationkey_id,
+            second_operator_id = exconstraint.second_operator_id,
+            second_value_a = exconstraint.second_value_a,
+            second_value_b = exconstraint.second_value_b
+        )
+        ExclusionConstraint.save(new_exconstraint)
+        return new_exconstraint.as_dict()

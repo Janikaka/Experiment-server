@@ -11,7 +11,7 @@ def includeme(config):
     config.add_route('app_data', '/applications/{id}/data')
     config.add_route('configurationkeys_for_app', '/applications/{id}/configurationkeys')
     config.add_route('rangeconstraints_for_app', '/applications/{id}/rangeconstraints')
-    config.add_route('exclusionconstraints_for_app', '/applications/{id}/exclusionconstraints_for_app')
+    config.add_route('exclusionconstraints_for_app', '/applications/{id}/exclusionconstraints')
 
     config.add_route('users', '/users')
     config.add_route('user', '/users/{id}')
