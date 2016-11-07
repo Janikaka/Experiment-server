@@ -1,8 +1,9 @@
+import datetime
 import unittest
 import transaction
 
 from pyramid import testing
-from ..models import (DatabaseInterface, Experiment, User, DataItem, ExperimentGroup, Configuration,
+from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration,
                       Application, ConfigurationKey, Operator, RangeConstraint, ExclusionConstraint)
 
 
@@ -32,8 +33,6 @@ class BaseTest(unittest.TestCase):
         Base.metadata.create_all(self.engine)
 
     def init_databaseData(self):
-        self.DB = DatabaseInterface(self.dbsession)
-
         app1 = Application(name='App 1')
         Application.save(app1)
 
@@ -73,80 +72,62 @@ class BaseTest(unittest.TestCase):
                                    second_value_a='2', second_value_b=None)
         ExclusionConstraint.save(exc2)
 
-        expgroup1 = self.DB.create_experimentgroup(
-            {'name': 'Group A'
-             })
-        expgroup2 = self.DB.create_experimentgroup(
-            {'name': 'Group B'
-             })
+        expgroup1 = ExperimentGroup(name='Group A')
+        ExperimentGroup.save(expgroup1)
 
-        conf1 = self.DB.create_configuration(
-            {'key': 'v1',
-             'value': 0.5,
-             'experimentgroup': expgroup1
-             })
-        conf2 = self.DB.create_configuration(
-            {'key': 'v2',
-             'value': True,
-             'experimentgroup': expgroup1
-             })
-        conf3 = self.DB.create_configuration(
-            {'key': 'v1',
-             'value': 1.0,
-             'experimentgroup': expgroup2
-             })
-        conf4 = self.DB.create_configuration(
-            {'key': 'v2',
-             'value': False,
-             'experimentgroup': expgroup2
-             })
+        expgroup2 = ExperimentGroup(name='Group B')
+        ExperimentGroup.save(expgroup2)
 
-        experiment = self.DB.create_experiment(
-            {'name': 'Test experiment',
-             'application': app1,
-             'startDatetime': '2016-01-01 00:00:00',
-             'endDatetime': '2017-01-01 00:00:00',
-             'size': 100,
-             'experimentgroups': [expgroup1, expgroup2]
-             })
+        conf1 = Configuration(key='v1', value=0.5, experimentgroup=expgroup1)
+        Configuration.save(conf1)
 
-        user1 = self.DB.create_user(
-            {'username': 'First user',
-             'experimentgroups': [expgroup1]
-             })
-        user2 = self.DB.create_user(
-            {'username': 'Second user',
-             'experimentgroups': [expgroup2]
-             })
+        conf2 = Configuration(key='v2', value=True, experimentgroup=expgroup1)
+        Configuration.save(conf2)
 
-        dt1 = self.DB.create_dataitem(
-            {'key': 'key1',
-             'value': 10,
-             'startDatetime': '2016-01-01 00:00:00',
-             'endDatetime': '2016-01-01 01:01:01',
-             'user': user1
-             })
-        dt2 = self.DB.create_dataitem(
-            {'key': 'key2',
-             'value': 0.5,
-             'startDatetime': '2016-02-02 01:01:02',
-             'endDatetime': '2016-02-02 02:02:02',
-             'user': user1
-             })
-        dt3 = self.DB.create_dataitem(
-            {'key': 'key3',
-             'value': 'liked',
-             'startDatetime': '2016-03-03 00:00:00',
-             'endDatetime': '2016-03-03 03:03:03',
-             'user': user2
-             })
-        dt4 = self.DB.create_dataitem(
-            {'key': 'key4',
-             'value': False,
-             'startDatetime': '2016-04-04 03:03:04',
-             'endDatetime': '2016-04-04 04:04:04',
-             'user': user2
-             })
+        conf3 = Configuration(key='v1', value=1.0, experimentgroup=expgroup2)
+        Configuration.save(conf3)
+
+        conf4 = Configuration(key='v2', value=False, experimentgroup=expgroup2)
+        Configuration.save(conf4)
+
+        year1 = datetime.datetime(2016, 1, 1, 0, 0, 0)
+        year2 = datetime.datetime(2017, 1, 1, 0, 0, 0)
+        experiment = Experiment(name='Test experiment', application=app1,
+                                startDatetime=year1,
+                                endDatetime=year2,
+                                size=100,
+                                experimentgroups=[expgroup1, expgroup2])
+        Experiment.save(experiment)
+
+        user1 = User(username='First user', experimentgroups=[expgroup1])
+        User.save(user1)
+
+        user2 = User(username='Second user', experimentgroups=[expgroup2])
+        User.save(user2)
+
+        start1 = datetime.datetime(2016, 1, 1, 0, 0, 0)
+        end1 = datetime.datetime(2016, 1, 1, 1, 1, 1)
+        dt1 = DataItem(key='key1', value=10, startDatetime=start1,
+                        endDatetime=end1, user=user1)
+        DataItem.save(dt1)
+
+        start2 = datetime.datetime(2016, 2, 2, 1, 1, 2)
+        end2 = datetime.datetime(2016, 2, 2, 2, 2, 2)
+        dt2 = DataItem(key='key2', value=0.5, startDatetime=start2,
+                        endDatetime=end2, user=user1)
+        DataItem.save(dt2)
+
+        start3 = datetime.datetime(2016, 3, 3, 0, 0, 0)
+        end3 = datetime.datetime(2016, 3, 3, 3, 3, 3)
+        dt3 = DataItem(key='key3', value='liked', startDatetime=start3,
+                        endDatetime=end3, user=user2)
+        DataItem.save(dt3)
+
+        start4 = datetime.datetime(2016, 4, 4, 3, 3, 4)
+        end4 = datetime.datetime(2016, 4, 4, 4, 4, 4)
+        dt4 = DataItem(key='key4', value=False, startDatetime=start4,
+                        endDatetime=end4, user=user2)
+        DataItem.save(dt4)
 
     def tearDown(self):
         from experiment_server.models.meta import Base

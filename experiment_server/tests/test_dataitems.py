@@ -102,7 +102,7 @@ class TestDataitems(BaseTest):
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
         user1 = self.dbsession.query(User).filter_by(id=1).one()
         assert dt1 in user1.dataitems
-        self.DB.delete_dataitem(dt1.id)
+        dt1 = DataItem.destroy(dt1)
         assert dt1 not in user1.dataitems
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).all()
         assert [] == dt1
