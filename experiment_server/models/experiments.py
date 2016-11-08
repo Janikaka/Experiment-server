@@ -7,6 +7,7 @@ from sqlalchemy import (
     DateTime
 )
 
+import datetime
 from sqlalchemy.orm import relationship
 from experiment_server.models.meta import Base
 
@@ -29,3 +30,31 @@ class Experiment(Base):
             else:
                 result[c.name] = getattr(self, c.name)
         return result
+
+    def get_status(self):
+        """ get status of the experiment by comparing start datetime and end datetime """
+        # open = 'open'
+        running = 'running'
+        finished = 'finished'
+        waiting = 'waiting'
+
+        date_time_now = datetime.datetime.now()
+        start_datetime = self.startDatetime
+        end_datetime = self.endDatetime
+        if start_datetime >= end_datetime:
+            # validate this earlier
+            return None
+        if start_datetime <= date_time_now and date_time_now <= end_datetime:
+            return running
+        elif date_time_now > end_datetime:
+            return finished
+        elif date_time_now < start_datetime:
+            return waiting
+        return None
+
+    def get_total_dataitems(self):
+        """ get total dataitems from the specific experiment """
+        count = 0
+        for expgroup in self.experimentgroups:
+            count += expgroup.get_total_dataitems()
+        return count

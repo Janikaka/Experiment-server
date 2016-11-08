@@ -2,7 +2,6 @@
 import datetime
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
-from experiment_server.models import DatabaseInterface
 from experiment_server.utils.log import print_log
 from experiment_server.views.webutils import WebUtils
 
@@ -16,7 +15,6 @@ from toolz import assoc, concat
 class Experiments(WebUtils):
     def __init__(self, request):
         self.request = request
-        self.DB = DatabaseInterface(self.request.dbsession)
 
     """
         CORS-options
@@ -62,7 +60,7 @@ class Experiments(WebUtils):
         """ List all experiments """
         experiments = []
         for exp in Experiment.all():
-            status = self.DB.get_status_for_experiment(exp.id)
+            status = exp.get_status()
             exp_with_status = assoc(exp.as_dict(), 'status', status)
             experiments.append(exp_with_status)
         return experiments
@@ -98,12 +96,11 @@ class Experiments(WebUtils):
                      'Show specific experiment metadata', None)
             return self.createResponse(None, 400)
         experimentAsJSON = experiment.as_dict()
-        totalDataitems = self.DB.get_total_dataitems_for_experiment(id)
+        totalDataitems = experiment.get_total_dataitems()
         experimentgroups = []
         for i in range(len(experiment.experimentgroups)):
             expgroup = experiment.experimentgroups[i]
             expgroupAsJSON = expgroup.as_dict()
-            #totalDataitemsForExpgroup = self.DB.get_total_dataitems_for_expgroup(expgroup.id)
             confs = expgroup.configurations
             users = []
             for i in range(len(expgroup.users)):
@@ -116,7 +113,7 @@ class Experiments(WebUtils):
             experimentgroups.append(expgroupAsJSON)
         experimentAsJSON['experimentgroups'] = experimentgroups
         experimentAsJSON['totalDataitems'] = totalDataitems
-        experimentAsJSON['status'] = self.DB.get_status_for_experiment(experiment.id)
+        experimentAsJSON['status'] = experiment.get_status()
         result = {'data': experimentAsJSON}
         print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
                  'Show specific experiment metadata', result)
