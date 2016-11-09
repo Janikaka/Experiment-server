@@ -1,6 +1,6 @@
 import os
 
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 from paste.deploy import loadapp
 from waitress import serve
 
