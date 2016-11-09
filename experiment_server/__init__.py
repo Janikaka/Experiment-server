@@ -1,4 +1,3 @@
-import os
 from pyramid.config import Configurator
 from sqlalchemy import orm
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -27,16 +26,10 @@ def add_cors_headers_response_callback(event):
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    env_db_address = os.environ["DATABASE_URL"]
-    if env_db_address != None:
-        settings["sqlalchemy.url"] = env_db_adress
-
     config = Configurator(settings=settings)
 
     settings = config.get_settings()
-
     engine = engine_from_config(settings, 'sqlalchemy.')
-
     orm_config.DBSession = orm.scoped_session(
         orm.sessionmaker(extension=ZopeTransactionExtension(), autoflush=True))
     orm_config.DBSession.configure(bind=engine)
