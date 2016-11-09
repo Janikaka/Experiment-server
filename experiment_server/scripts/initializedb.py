@@ -18,6 +18,7 @@ from ..models import (
 from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration,
                       Application, ConfigurationKey, Operator, RangeConstraint, ExclusionConstraint)
 
+# TODO: Automate initializedb.py to run after deployment
 def usage(argv):
     cmd = os.path.basename(argv[0])
     print('usage: %s <config_uri> [var=value]\n'
@@ -44,8 +45,8 @@ def main(argv=sys.argv):
 
         dt = datetime.datetime.now()
         dateTimeNow = datetime.datetime(
-                dt.year, 
-                dt.month, 
+                dt.year,
+                dt.month,
                 dt.day,
                 dt.hour,
                 dt.minute,
@@ -58,10 +59,10 @@ def main(argv=sys.argv):
         experiment1 = Experiment(
             name='High score',
             application=app1,
-            startDatetime=dateTimeNow, 
+            startDatetime=dateTimeNow,
             endDatetime=datetime.datetime(
-                dateTimeNow.year+1, 
-                dateTimeNow.month, 
+                dateTimeNow.year+1,
+                dateTimeNow.month,
                 dateTimeNow.day,
                 dateTimeNow.hour,
                 dateTimeNow.minute,
@@ -71,8 +72,8 @@ def main(argv=sys.argv):
             name='Game level',
             application=app1,
             startDatetime=datetime.datetime(
-                dateTimeNow.year-1, 
-                dateTimeNow.month, 
+                dateTimeNow.year-1,
+                dateTimeNow.month,
                 dateTimeNow.day,
                 dateTimeNow.hour,
                 dateTimeNow.minute,
@@ -83,15 +84,15 @@ def main(argv=sys.argv):
             name='Operators',
             application=app1,
             startDatetime=datetime.datetime(
-                dateTimeNow.year+1, 
-                dateTimeNow.month, 
+                dateTimeNow.year+1,
+                dateTimeNow.month,
                 dateTimeNow.day,
                 dateTimeNow.hour,
                 dateTimeNow.minute,
-                dateTimeNow.second), 
+                dateTimeNow.second),
             endDatetime=datetime.datetime(
-                dateTimeNow.year+2, 
-                dateTimeNow.month, 
+                dateTimeNow.year+2,
+                dateTimeNow.month,
                 dateTimeNow.day,
                 dateTimeNow.hour,
                 dateTimeNow.minute,
@@ -134,8 +135,8 @@ def main(argv=sys.argv):
         conf5 = Configuration(key='operators', value=0, experimentgroup=experimentgroup3A)
         conf6 = Configuration(key='operators', value=1, experimentgroup=experimentgroup3A)
         conf7 = Configuration(key='operators', value=2, experimentgroup=experimentgroup3B)
-        conf8 = Configuration(key='operators', value=3, experimentgroup=experimentgroup3B)        
-        
+        conf8 = Configuration(key='operators', value=3, experimentgroup=experimentgroup3B)
+
         dbsession.add(conf1)
         dbsession.add(conf2)
         dbsession.add(conf3)
