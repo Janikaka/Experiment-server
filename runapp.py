@@ -11,6 +11,7 @@ if __name__ == "__main__":
     db_address = os.environ['DATABASE_URL']
 
     if db_address != None:
+        print("***\n" + db_address + "\***")
         parser = SafeConfigParser()
         parser.read('production.ini')
         parser.set('app:main', 'sqlalchemy.url', db_address)
