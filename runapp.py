@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 import os
 
 from paste.deploy import loadapp
@@ -7,10 +7,11 @@ from waitress import serve
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
 
-    parser = ConfigParser.SafeConfigParser()
+    parser = configparser.SafeConfigParser()
     parser.read('production.ini')
     parser.set('app:main', 'sqlalchemy.url', os.environ['DATABASE_URL'])
-    parser.write('production.ini')
+    with open('example.ini', 'w') as configfile:
+        config.write(configfile)
 
     app = loadapp('config:production.ini', relative_to='.')
 
