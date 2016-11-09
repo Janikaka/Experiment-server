@@ -8,8 +8,6 @@ from experiment_server.models.experiments import Experiment
 from experiment_server.models.users import User
 from experiment_server.models.dataitems import DataItem
 from experiment_server.models.experimentgroups import ExperimentGroup
-# Do not use! Decapricated class. Only used by old tests
-from experiment_server.models.db import DatabaseInterface
 from experiment_server.models.configurations import Configuration
 from experiment_server.models.applications import Application
 from experiment_server.models.configurationkeys import ConfigurationKey

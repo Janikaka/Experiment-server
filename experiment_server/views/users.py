@@ -1,7 +1,6 @@
 from pyramid.response import Response
 from pyramid.view import view_config, view_defaults
 
-from ..models import DatabaseInterface
 import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
@@ -15,7 +14,6 @@ from toolz import *
 class Users(WebUtils):
     def __init__(self, request):
         self.request = request
-        self.DB = DatabaseInterface(self.request.dbsession)
 
 
     """
@@ -127,4 +125,3 @@ class Users(WebUtils):
         DataItem.save(result)
         print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', result)
         return result.as_dict()
-

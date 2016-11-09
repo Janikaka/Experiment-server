@@ -2,7 +2,9 @@ import unittest
 import transaction
 
 from pyramid import testing
-from ..models import (DatabaseInterface, Experiment, User, DataItem, ExperimentGroup, Configuration,
+from .db import DatabaseInterface
+from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration,
+
                       Application, ConfigurationKey, Operator, RangeConstraint, ExclusionConstraint)
 
 
