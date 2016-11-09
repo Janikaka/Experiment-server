@@ -9,6 +9,8 @@ if __name__ == "__main__":
 
     db_url = os.environ['DATABASE_URL']
 
+    # If enviroment contains DATABASE_URL, add it to the production configuration
+    # file.
     if db_url != None:
         parser = configparser.SafeConfigParser()
         parser.read('production.ini')
