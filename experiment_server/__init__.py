@@ -32,7 +32,7 @@ def main(global_config, **settings):
     settings = config.get_settings()
 
     env_db_address = os.environ.get('DATABASE_URL')
-    if env_db_address not None:
+    if env_db_address != None:
         settings["sqlalchemy.url"] = env_db_adress
 
     engine = engine_from_config(settings, 'sqlalchemy.')
