@@ -10,7 +10,7 @@ if __name__ == "__main__":
     parser = configparser.SafeConfigParser()
     parser.read('production.ini')
     parser.set('app:main', 'sqlalchemy.url', os.environ['DATABASE_URL'])
-    with open('example.ini', 'w') as configfile:
+    with open('production.ini', 'w') as configfile:
         config.write(configfile)
 
     app = loadapp('config:production.ini', relative_to='.')
