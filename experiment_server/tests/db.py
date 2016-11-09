@@ -12,9 +12,8 @@ from experiment_server.models.configurations import Configuration
 
 
 """
-    WARNING: This is a deprecated class and should be removed ASAP. The real way is to use ORM-style per model.
-    It is only acceptable if some tests are utilizing this but these dependencies to this class should be removed als
-    ASAP.
+    WARNING: This is a depricated class. Currently this works only as helper
+    class for tests.
 """
 
 class DatabaseInterface:

@@ -28,7 +28,13 @@ class User(Base):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def get_total_dataitems_in_experiment(self, exp_id):
-        """ get total dataitems for specific user in specific experiment """
+        """ 
+        Get total count of DataItems, which are sent to the service during Experiment's,
+        and in which user has participated to.
+        'running' state.
+        Params: exp_id: Experiment id in which User belongs to
+        Return: total count of DataItems in Experiment sent by User
+        """
         from .experiments import Experiment
         from .dataitems import DataItem
 

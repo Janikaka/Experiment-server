@@ -32,7 +32,15 @@ class Experiment(Base):
         return result
 
     def get_status(self):
-        """ get status of the experiment by comparing start datetime and end datetime """
+        """
+        get status of the experiment by comparing start datetime and end
+        datetime.
+        Return:
+            None, if start- and end times are incorrectly set
+            'running' if current date is between start- and end time
+            'finished' if current date is after end time
+            'waiting' if current date is before start time
+        """
         # open = 'open'
         running = 'running'
         finished = 'finished'
@@ -53,7 +61,11 @@ class Experiment(Base):
         return None
 
     def get_total_dataitems(self):
-        """ get total dataitems from the specific experiment """
+        """
+        Get total dataitems from the specific experiment. Calls for each
+        experimentgroup to count their total dataitems.
+        Return: Total count of dataitems in Experiment
+        """
         count = 0
         for expgroup in self.experimentgroups:
             count += expgroup.get_total_dataitems()
