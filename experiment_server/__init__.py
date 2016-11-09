@@ -1,3 +1,4 @@
+import os
 from pyramid.config import Configurator
 from sqlalchemy import orm
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -29,7 +30,13 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
 
     settings = config.get_settings()
+
+    env_db_address = os.environ.get('DATABASE_URL')
+    if env_db_address not None:
+        settings["sqlalchemy.url"] = env_db_adress
+
     engine = engine_from_config(settings, 'sqlalchemy.')
+
     orm_config.DBSession = orm.scoped_session(
         orm.sessionmaker(extension=ZopeTransactionExtension(), autoflush=True))
     orm_config.DBSession.configure(bind=engine)
