@@ -180,7 +180,7 @@ def main(argv=sys.argv):
         dbsession.add(op9)
         dbsession.add(op10)
 
-        us1 =client(clientname='Julio')
+        us1 =Client(clientname='Julio')
 
         dbsession.add(us1)
 
