@@ -15,7 +15,7 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import (Experiment, client, DataItem, ExperimentGroup, Configuration,
+from ..models import (Experiment, Client, DataItem, ExperimentGroup, Configuration,
                       Application, ConfigurationKey, Operator, RangeConstraint, ExclusionConstraint)
 
 def usage(argv):
@@ -28,7 +28,7 @@ def usage(argv):
 # data. When called, the first parameter is the configuration-file's name. When
 # done at production enviroment, please give database's URL.
 # Params:   argv[1]: configuration file
-#           argv[2 + n]: optional variables. Can set configuration variables. 
+#           argv[2 + n]: optional variables. Can set configuration variables.
 def main(argv=sys.argv):
     if len(argv) < 2:
         usage(argv)
