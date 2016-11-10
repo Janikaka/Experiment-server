@@ -63,7 +63,7 @@ In case there are no shcema changes:
 - Push to GitHub and to this projects master branch. The rest will be automatic
 
 In case the database schema has changed
-- `initialize_Experiment-server_db production.ini`. This will establish new via `/experiment_server/scripts/initializedb.py`. Remember to first clean the production database or it will not make modifications to it.
+- `initialize_Experiment-server_db production.ini DATABASE_URL`. This will establish new via `/experiment_server/scripts/initializedb.py`. Remember to first clean the production database or it will not make modifications to it.
 
 
 ###Work flow
@@ -78,4 +78,3 @@ In case the database schema has changed
 - When you feel that you would like the whole team get your code: Make a pull-request
 - Assign somebody to code review your work
 - When the code review is done merge the branch to master via GitHub.com
-

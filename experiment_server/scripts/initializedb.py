@@ -18,13 +18,17 @@ from ..models import (
 from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration,
                       Application, ConfigurationKey, Operator, RangeConstraint, ExclusionConstraint)
 
-# TODO: Automate initializedb.py to run after deployment
 def usage(argv):
     cmd = os.path.basename(argv[0])
     print('usage: %s <config_uri> [var=value]\n'
           '(example: "%s development.ini")' % (cmd, cmd))
     sys.exit(1)
 
+# Performs database setup. Initialization creates required tables, and some test
+# data. When called, the first parameter is the configuration-file's name. When
+# done at production enviroment, please give database's URL.
+# Params:   argv[1]: configuration file
+#           argv[2]: optional, database's url for production enviroment
 def main(argv=sys.argv):
     if len(argv) < 2:
         usage(argv)
@@ -32,6 +36,11 @@ def main(argv=sys.argv):
     options = parse_vars(argv[2:])
     setup_logging(config_uri)
     settings = get_appsettings(config_uri, options=options)
+
+    # Takes the database-address from second parameter given to the script, and
+    # sets it to sqlalchemy.url
+    if len(argv) > 2:
+        settings['sqlalchemy.url'] = argv[3]
 
     engine = get_engine(settings)
     Base.metadata.create_all(engine)
