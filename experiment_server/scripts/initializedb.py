@@ -70,8 +70,7 @@ def main(argv=sys.argv):
                 dateTimeNow.day,
                 dateTimeNow.hour,
                 dateTimeNow.minute,
-                dateTimeNow.second),
-            size=100)
+                dateTimeNow.second))
         experiment2 = Experiment(
             name='Game level',
             application=app1,
@@ -82,8 +81,7 @@ def main(argv=sys.argv):
                 dateTimeNow.hour,
                 dateTimeNow.minute,
                 dateTimeNow.second),
-            endDatetime=dateTimeNow,
-            size=100)
+            endDatetime=dateTimeNow)
         experiment3 = Experiment(
             name='Operators',
             application=app1,
@@ -100,8 +98,7 @@ def main(argv=sys.argv):
                 dateTimeNow.day,
                 dateTimeNow.hour,
                 dateTimeNow.minute,
-                dateTimeNow.second),
-            size=100)
+                dateTimeNow.second))
 
         dbsession.add(experiment1)
         dbsession.add(experiment2)
