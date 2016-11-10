@@ -108,7 +108,6 @@ class BaseTest(unittest.TestCase):
              'application': app1,
              'startDatetime': '2016-01-01 00:00:00',
              'endDatetime': '2017-01-01 00:00:00',
-             'size': 100,
              'experimentgroups': [expgroup1, expgroup2]
              })
 

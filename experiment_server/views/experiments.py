@@ -48,7 +48,6 @@ class Experiments(WebUtils):
                 name=req_exp.name,
                 startDatetime = req_exp.startDatetime,
                 endDatetime = req_exp.endDatetime,
-                size = req_exp.size,
                 application_id = req_exp.application_id
         )
         Experiment.save(exp)

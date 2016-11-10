@@ -30,12 +30,10 @@ class DatabaseInterface:
         experimentgroups = data['experimentgroups']
         start_datetime = datetime.datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
         end_datetime = datetime.datetime.strptime(data['endDatetime'], "%Y-%m-%d %H:%M:%S")
-        size = data['size']
         experiment = Experiment(
             name=name,
             startDatetime=start_datetime,
-            endDatetime=end_datetime,
-            size=size,
+            endDatetime=end_datetime,            
             experimentgroups=experimentgroups)
         self.dbsession.add(experiment)
         return self.dbsession.query(Experiment).filter(

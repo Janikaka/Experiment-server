@@ -68,7 +68,6 @@ class TestClients(BaseTest):
             {'name': 'Example experiment',
              'startDatetime': '2016-01-01 00:00:00',
              'endDatetime': '2017-01-01 00:00:00',
-             'size': 100,
              'experimentgroups': [expgroup]
              })
         experiment = self.dbsession.query(Experiment).filter_by(id=2).one()
@@ -162,7 +161,6 @@ class TestClientsREST(BaseTest):
              'id': 1,
              'application_id': None,
              'name': 'Test experiment',
-             'size': 100,
              'startDatetime': '2016-01-01 00:00:00',
              'endDatetime': '2017-01-01 00:00:00'
              # TODO: Add experimentgroups to experiment (views/experiments experiments_for_client_GET())

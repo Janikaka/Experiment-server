@@ -19,8 +19,7 @@ class Experiment(Base):
     name = Column(Text, unique=True, index=True)
     startDatetime = Column(DateTime)
     endDatetime = Column(DateTime)
-    experimentgroups = relationship("ExperimentGroup", backref="experiment", cascade="delete")
-    size = Column(Integer)
+    experimentgroups = relationship("ExperimentGroup", backref="experiment", cascade="delete")    
 
     def as_dict(self):
         result = {}

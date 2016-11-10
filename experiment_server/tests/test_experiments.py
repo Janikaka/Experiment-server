@@ -1,3 +1,4 @@
+
 import datetime
 from .base_test import BaseTest
 from ..models import (Experiment, Client, ExperimentGroup, Configuration)
@@ -22,7 +23,6 @@ class TestExperiments(BaseTest):
         experimentgroups = self.dbsession.query(ExperimentGroup).all()
         experiments = [
             {'name': 'Test experiment',
-             'size': 100,
              'experimentgroups': [experimentgroups[0], experimentgroups[1]],
              'startDatetime': strToDatetime('2016-01-01 00:00:00'),
              'endDatetime': strToDatetime('2017-01-01 00:00:00')
@@ -89,14 +89,12 @@ class TestExperimentsREST(BaseTest):
             name='Example Experiment',
             application_id=1,
             startDatetime=datetime.datetime(2016, 1, 1, 0, 0, 0),
-            endDatetime=datetime.datetime(2017, 1, 1, 0, 0, 0),
-            size=100)}
+            endDatetime=datetime.datetime(2017, 1, 1, 0, 0, 0))}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiments_POST()
         experiment = {'id': 2,
                       'application_id': 1,
                       'name': 'Example Experiment',
-                      'size': 100,
                       'startDatetime': '2016-01-01 00:00:00',
                       'endDatetime': '2017-01-01 00:00:00',
                       }
@@ -113,7 +111,6 @@ class TestExperimentsREST(BaseTest):
         assert experiment['name'] == 'Test experiment'
         assert experiment['startDatetime'] == '2016-01-01 00:00:00'
         assert experiment['endDatetime'] == '2017-01-01 00:00:00'
-        assert experiment['size'] == 100
         assert experiment['status'] == 'running'
 
     def test_experiment_metadata_GET(self):
@@ -127,7 +124,6 @@ class TestExperimentsREST(BaseTest):
                       'startDatetime': '2016-01-01 00:00:00',
                       'endDatetime': '2017-01-01 00:00:00',
                       'status': 'running',
-                      'size': 100,
                       'totalDataitems': 4,
                       'experimentgroups':
                           [{'id': 1,
