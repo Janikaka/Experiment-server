@@ -28,7 +28,7 @@ def usage(argv):
 # data. When called, the first parameter is the configuration-file's name. When
 # done at production enviroment, please give database's URL.
 # Params:   argv[1]: configuration file
-#           argv[2]: optional, database's url for production enviroment
+#           argv[2 + n]: optional variables. Can set configuration variables. 
 def main(argv=sys.argv):
     if len(argv) < 2:
         usage(argv)
@@ -36,11 +36,6 @@ def main(argv=sys.argv):
     options = parse_vars(argv[2:])
     setup_logging(config_uri)
     settings = get_appsettings(config_uri, options=options)
-
-    # Takes the database-address from second parameter given to the script, and
-    # sets it to sqlalchemy.url
-    if len(argv) > 2:
-        settings['sqlalchemy.url'] = argv[3]
 
     engine = get_engine(settings)
     Base.metadata.create_all(engine)
