@@ -1,7 +1,7 @@
 import datetime
 from .base_test import BaseTest
 from ..models import (Experiment, Client, DataItem, ExperimentGroup)
-from experiment_server.views.clients import clients
+from experiment_server.views.clients import Clients
 
 
 # ---------------------------------------------------------------------------------
@@ -121,33 +121,33 @@ class TestClientsREST(BaseTest):
 
     def test_client_GET(self):
         self.req.swagger_data = {'id': 1}
-        httpclients = clients(self.req)
+        httpclients = Clients(self.req)
         response = httpclients.client_GET()
         client = {'id': 1, 'clientname': 'First client'}
         assert response == client
 
     def test_create_client(self):
-        self.req.swagger_data = {'client': client(clientname='Test client')}
-        httpclients = clients(self.req)
+        self.req.swagger_data = {'client': Client(clientname='Test client')}
+        httpclients = Clients(self.req)
         response = httpclients.create_client()
         client = {'id': 3, 'clientname': 'Test client'}
         assert response == client
 
     def test_configurations_GET(self):
         self.req.swagger_data = {'id': 1}
-        httpclients = clients(self.req)
+        httpclients = Clients(self.req)
         response = httpclients.configurations_GET()
         configurations = [{'id': 1, 'experimentgroup_id': 1, 'value': 0.5, 'key': 'v1'},
                           {'id': 2, 'experimentgroup_id': 1, 'value': True, 'key': 'v2'}]
 
         assert response == configurations
         self.req.swagger_data = {'id': 3}
-        httpclients = clients(self.req)
+        httpclients = Clients(self.req)
         response = httpclients.configurations_GET()
         assert response.status_code == 400
 
     def test_clients_GET(self):
-        httpclients = clients(self.req)
+        httpclients = Clients(self.req)
         response = httpclients.clients_GET()
         result = response
         clients = [{"id": 1, "clientname": "First client"},
@@ -156,7 +156,7 @@ class TestClientsREST(BaseTest):
 
     def test_experiments_for_client_GET(self):
         self.req.swagger_data = {'id': 1}
-        httpclients = clients(self.req)
+        httpclients = Clients(self.req)
         response = httpclients.experiments_for_client_GET()
         experiments = [{
              'id': 1,
@@ -181,7 +181,7 @@ class TestClientsREST(BaseTest):
         headers = {'clientname': 'First client'}
         self.req.json_body = json_body
         self.req.headers = headers
-        httpclients = clients(self.req)
+        httpclients = Clients(self.req)
         response = httpclients.events_POST()
         #result = response.json['data']
         dataitem = {'id': 5,
@@ -194,17 +194,17 @@ class TestClientsREST(BaseTest):
         assert response == dataitem
         headers = {'clientname': 'fsdfdsf'}
         self.req.headers = headers
-        httpclients = clients(self.req)
+        httpclients = Clients(self.req)
         response = httpclients.events_POST()
         assert response.status_code == 400
 
     def test_client_DELETE(self):
         self.req.swagger_data = {'id': 1}
-        httpclients = clients(self.req)
+        httpclients = Clients(self.req)
         response = httpclients.client_DELETE()
 
         assert response == {}
         self.req.swagger_data = {'id': 3}
-        httpclients = clients(self.req)
+        httpclients = Clients(self.req)
         response = httpclients.client_DELETE()
         assert response.status_code == 400

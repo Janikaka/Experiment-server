@@ -37,7 +37,7 @@ class TestExperiments(BaseTest):
         experimentsFromDB = self.dbsession.query(Experiment).all()
         experimentgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
         configurationsFromDB = self.dbsession.query(Configuration).all()
-        clientsFromDB = self.dbsession.query(client).all()
+        clientsFromDB = self.dbsession.query(Client).all()
 
         assert experimentsFromDB == []
         assert experimentgroupsFromDB == []

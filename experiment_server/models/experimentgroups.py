@@ -18,7 +18,7 @@ class ExperimentGroup(Base):
     name = Column(Text)
     experiment_id = Column(Integer, ForeignKey('experiments.id'))
     configurations = relationship("Configuration", backref="experimentgroup", cascade="delete")
-    clients = relationship("client",
+    clients = relationship("Client",
                          secondary=clients_experimentgroups,
                          back_populates="experimentgroups"
                         )

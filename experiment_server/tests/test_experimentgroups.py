@@ -20,7 +20,7 @@ class TestExperimentGroups(BaseTest):
         expgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
         experimentsFromDB = self.dbsession.query(Experiment).all()
         configurationsFromDB = self.dbsession.query(Configuration).all()
-        clientsFromDB = self.dbsession.query(client).all()
+        clientsFromDB = self.dbsession.query(Client).all()
 
         expgroup1 = {
             'id': 1,
@@ -48,7 +48,7 @@ class TestExperimentGroups(BaseTest):
         expgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
         experimentsFromDB = self.dbsession.query(Experiment).all()
         configurationsFromDB = self.dbsession.query(Configuration).all()
-        clientsFromDB = self.dbsession.query(client).all()
+        clientsFromDB = self.dbsession.query(Client).all()
 
         experimentgroups = [self.dbsession.query(ExperimentGroup).filter_by(id=2).one()]
         configurations = [self.dbsession.query(Configuration).filter_by(id=3).one(),

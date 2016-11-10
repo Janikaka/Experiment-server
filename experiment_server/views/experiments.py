@@ -5,7 +5,7 @@ from pyramid.response import Response
 from experiment_server.utils.log import print_log
 from experiment_server.views.webutils import WebUtils
 
-from experiment_server.models.clients import client
+from experiment_server.models.clients import Client
 from experiment_server.models.experiments import Experiment
 from experiment_server.models.experimentgroups import ExperimentGroup
 
@@ -138,7 +138,7 @@ class Experiments(WebUtils):
         """ Delete client from specific experiment """
         expid = self.request.swagger_data['expid']
         clientid = self.request.swagger_data['clientid']
-        client = client.get(clientid)
+        client = Client.get(clientid)
         exp = Experiment.get(expid)
         if not exp or not clientid or not client:
             print_log(datetime.datetime.now(),

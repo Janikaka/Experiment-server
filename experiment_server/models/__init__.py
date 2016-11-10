@@ -5,7 +5,7 @@ import zope.sqlalchemy
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
 from experiment_server.models.experiments import Experiment
-from experiment_server.models.clients import client
+from experiment_server.models.clients import Client
 from experiment_server.models.dataitems import DataItem
 from experiment_server.models.experimentgroups import ExperimentGroup
 from experiment_server.models.configurations import Configuration

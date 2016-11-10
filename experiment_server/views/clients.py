@@ -4,14 +4,14 @@ from pyramid.view import view_config, view_defaults
 import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
-from experiment_server.models.clients import client
+from experiment_server.models.clients import Client
 from experiment_server.models.dataitems import DataItem
 
 from fn import _
 from toolz import *
 
 @view_defaults(renderer='json')
-class clients(WebUtils):
+class Clients(WebUtils):
     def __init__(self, request):
         self.request = request
 
@@ -41,23 +41,23 @@ class clients(WebUtils):
             Creates a list and returns it. In future we might would like general json-serialization to make this even
             more simpler.
         """
-        return list(map(lambda _: _.as_dict(), client.all()))
+        return list(map(lambda _: _.as_dict(), Client.all()))
 
     # Create new client
     @view_config(route_name='clients', request_method="POST", renderer='json')
     def create_client(self):
         req_client = self.request.swagger_data['client']
-        client = client(
+        client = Client(
             clientname=req_client.clientname
         )
-        client.save(client)
+        Client.save(client)
         return client.as_dict()
 
     # Get one client
     @view_config(route_name='client', request_method="GET", renderer='json')
     def client_GET(self):
         id = self.request.swagger_data['id']
-        result = client.get(id)
+        result = Client.get(id)
         if not result:
             print_log('/clients/%s failed' % id)
             return self.createResponse(None, 400)
@@ -67,11 +67,11 @@ class clients(WebUtils):
     @view_config(route_name='client', request_method="DELETE")
     def client_DELETE(self):
         id = self.request.swagger_data['id']
-        result = client.get(id)
+        result = Client.get(id)
         if not result:
             print_log(datetime.datetime.now(), 'DELETE', '/clients/' + str(id), 'Delete client', 'Failed')
             return self.createResponse(None, 400)
-        client.destroy(result)
+        Client.destroy(result)
         print_log(datetime.datetime.now(), 'DELETE', '/clients/' + str(id), 'Delete client', 'Succeeded')
         return {}
 
@@ -79,7 +79,7 @@ class clients(WebUtils):
     @view_config(route_name='configurations', request_method="GET")
     def configurations_GET(self):
         id = self.request.swagger_data['id']
-        client = client.get(id)
+        client = Client.get(id)
         if client is None:
             print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific client', None)
             return self.createResponse(None, 400)
@@ -93,7 +93,7 @@ class clients(WebUtils):
     @view_config(route_name='experiments_for_client', request_method="GET")
     def experiments_for_client_GET(self):
         id = self.request.swagger_data['id']
-        client = client.get(id)
+        client = Client.get(id)
         if not client:
             return self.createResponse(None, 400)
         clients_experimentgroups = client.experimentgroups
@@ -111,7 +111,7 @@ class clients(WebUtils):
         startDatetime = json['startDatetime']
         endDatetime = json['endDatetime']
         clientname = self.request.headers['clientname']
-        client = client.get_by('clientname', clientname)
+        client = Client.get_by('clientname', clientname)
         if client is None:
             print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', None)
             return self.createResponse(None, 400)

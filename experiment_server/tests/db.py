@@ -129,7 +129,7 @@ class DatabaseInterface:
 
     def get_experimentgroups_for_client(self, id):
         """ get client's experiment groups """
-        client = self.dbsession.query(client).filter_by(id=id).first()
+        client = self.dbsession.query(Client).filter_by(id=id).first()
         if client is None:
             return None
         return client.experimentgroups
@@ -150,7 +150,7 @@ class DatabaseInterface:
                     experimentgroups=data['experimentgroups'],
                     dataitems=data['dataitems'])
         self.dbsession.add(client)
-        return self.dbsession.query(Client).order_by(client.id.desc()).first()
+        return self.dbsession.query(Client).order_by(Client.id.desc()).first()
 
     def delete_client(self, id):
         """ delete client by id """
@@ -206,7 +206,7 @@ class DatabaseInterface:
     def delete_client_from_experiment(self, client_id, experiment_id):
         """ delete client from experiment """
         expgroup = self.get_experimentgroup_for_client_in_experiment(client_id, experiment_id)
-        client = client.get(client_id)
+        client = Client.get(client_id)
         if expgroup is None or client is None:
             return None
         client.experimentgroups.remove(expgroup)
