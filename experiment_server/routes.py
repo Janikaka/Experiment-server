@@ -13,10 +13,10 @@ def includeme(config):
     config.add_route('rangeconstraints_for_app', '/applications/{id}/rangeconstraints')
     config.add_route('exclusionconstraints_for_app', '/applications/{id}/exclusionconstraints')
 
-    config.add_route('users', '/users')
-    config.add_route('user', '/users/{id}')
-    config.add_route('experiments_for_user', '/users/{id}/experiments')
-    config.add_route('configurations', 'users/{id}/configurations')
+    config.add_route('clients', '/clients')
+    config.add_route('client', '/clients/{id}')
+    config.add_route('experiments_for_client', '/clients/{id}/experiments')
+    config.add_route('configurations', 'clients/{id}/configurations')
 
     config.add_route('configurationkeys', '/configurationkeys')
     config.add_route('rangeconstraints_for_configurationkey', '/configurationkeys/{id}/rangeconstraints')
@@ -29,8 +29,8 @@ def includeme(config):
     config.add_route('experiment_metadata', '/experiments/{id}/metadata')
     config.add_route('experiment', '/experiments/{id}')
     config.add_route('experimentgroup', '/experiments/{expid}/experimentgroups/{expgroupid}')
-    config.add_route('users_for_experiment', '/experiments/{id}/users')
-    config.add_route('user_for_experiment', '/experiments/{expid}/users/{userid}')
+    config.add_route('clients_for_experiment', '/experiments/{id}/clients')
+    config.add_route('client_for_experiment', '/experiments/{expid}/clients/{clientid}')
     config.add_route('experiment_data', '/experiments/{id}/data')
 
     config.add_route('events', '/events')

@@ -1,6 +1,6 @@
 import datetime
 from .base_test import BaseTest
-from ..models import (Experiment, User, ExperimentGroup, Configuration)
+from ..models import (Experiment, Client, ExperimentGroup, Configuration)
 from experiment_server.views.experiments import Experiments
 
 
@@ -37,13 +37,13 @@ class TestExperiments(BaseTest):
         experimentsFromDB = self.dbsession.query(Experiment).all()
         experimentgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
         configurationsFromDB = self.dbsession.query(Configuration).all()
-        usersFromDB = self.dbsession.query(User).all()
+        clientsFromDB = self.dbsession.query(client).all()
 
         assert experimentsFromDB == []
         assert experimentgroupsFromDB == []
         assert configurationsFromDB == []
-        assert usersFromDB[0].experimentgroups == []
-        assert usersFromDB[1].experimentgroups == []
+        assert clientsFromDB[0].experimentgroups == []
+        assert clientsFromDB[1].experimentgroups == []
 
     def test_getStatusForExperiment(self):
         status = self.DB.get_status_for_experiment(1)
@@ -65,13 +65,13 @@ class TestExperiments(BaseTest):
 
         assert experiments == experimentsFromDB
 
-    def test_getExperimentsUserParticipates(self):
-        expForUser1 = self.DB.get_user_experiments_list(1)
-        expForUser2 = self.DB.get_user_experiments_list(2)
+    def test_getExperimentsclientParticipates(self):
+        expForclient1 = self.DB.get_client_experiments_list(1)
+        expForclient2 = self.DB.get_client_experiments_list(2)
         experimentsFromDB = self.dbsession.query(Experiment).all()
 
-        assert expForUser1 == [experimentsFromDB[0]]
-        assert expForUser2 == [experimentsFromDB[0]]
+        assert expForclient1 == [experimentsFromDB[0]]
+        assert expForclient2 == [experimentsFromDB[0]]
 
 # ---------------------------------------------------------------------------------
 #                                  REST-Inteface
@@ -132,7 +132,7 @@ class TestExperimentsREST(BaseTest):
                       'experimentgroups':
                           [{'id': 1,
                             'name': 'Group A',
-                            'users': [{'id': 1, 'username': 'First user'}],
+                            'clients': [{'id': 1, 'clientname': 'First client'}],
                             'experiment_id': 1,
                             'configurations':
                                 [{'id': 1, 'key': 'v1', 'value': 0.5, 'experimentgroup_id': 1},
@@ -140,7 +140,7 @@ class TestExperimentsREST(BaseTest):
                             },
                            {'id': 2,
                             'name': 'Group B',
-                            'users': [{'id': 2, 'username': 'Second user'}],
+                            'clients': [{'id': 2, 'clientname': 'Second client'}],
                             'experiment_id': 1,
                             'configurations':
                                 [{'id': 3, 'key': 'v1', 'value': 1.0, 'experimentgroup_id': 2},
@@ -169,19 +169,19 @@ class TestExperimentsREST(BaseTest):
         assert response.status_code == 400
         assert response.json == None
 
-    def test_users_for_experiment_GET(self):
+    def test_clients_for_experiment_GET(self):
         self.req.swagger_data = {'id': 1}
         httpExperiments = Experiments(self.req)
-        response = httpExperiments.users_for_experiment_GET()
-        users = [{'id': 1,
-                  'username': 'First user'},
+        response = httpExperiments.clients_for_experiment_GET()
+        clients = [{'id': 1,
+                  'clientname': 'First client'},
                  {'id': 2,
-                  'username': 'Second user'}]
-        assert response == users
+                  'clientname': 'Second client'}]
+        assert response == clients
 
         self.req.swagger_data = {'id': 2}
         httpExperiments = Experiments(self.req)
-        response = httpExperiments.users_for_experiment_GET()
+        response = httpExperiments.clients_for_experiment_GET()
         assert response.status_code == 400
         assert response.json == None
 
@@ -202,23 +202,23 @@ class TestExperimentsREST(BaseTest):
                                {'experimentgroup_id': 1, 'key': 'v2', 'id': 2, 'value': True}],
                            'dataitems': [
                                {'id': 1,
-                                'user_id': 1,
+                                'client_id': 1,
                                 'key': 'key1',
                                 'value': 10,
                                 'startDatetime': '2016-01-01 00:00:00',
                                 'endDatetime': '2016-01-01 01:01:01',
-                                'user': {'id': 1, 'username': 'First user'}
+                                'client': {'id': 1, 'clientname': 'First client'}
                                 },
                                {'id': 2,
-                                'user_id':1,
+                                'client_id':1,
                                 'key': 'key2',
                                 'value': 0.5,
                                 'startDatetime': '2016-02-02 01:01:02',
                                 'endDatetime': '2016-02-02 02:02:02',
-                                'user': {'id': 1, 'username': 'First user'}
+                                'client': {'id': 1, 'clientname': 'First client'}
                                 }
                            ],
-                           'users': [{'id': 1, 'username': 'First user'}]}
+                           'clients': [{'id': 1, 'clientname': 'First client'}]}
         assert response == experimentgroup
 
         self.req.swagger_data = {'expgroupid': 1, 'expid': 2}
@@ -238,13 +238,13 @@ class TestExperimentsREST(BaseTest):
         response = httpExperiments.experimentgroup_DELETE()
         assert response.status_code == 400
 
-    def test_user_for_experiment_DELETE(self):
-        self.req.swagger_data = {'userid': 1, 'expid': 1}
+    def test_client_for_experiment_DELETE(self):
+        self.req.swagger_data = {'clientid': 1, 'expid': 1}
         httpExperiments = Experiments(self.req)
-        response = httpExperiments.user_for_experiment_DELETE()
+        response = httpExperiments.client_for_experiment_DELETE()
         assert response == {}
 
-        self.req.swagger_data = {'userid': 2, 'expid': 2}
+        self.req.swagger_data = {'clientid': 2, 'expid': 2}
         httpExperiments = Experiments(self.req)
-        response = httpExperiments.user_for_experiment_DELETE()
+        response = httpExperiments.client_for_experiment_DELETE()
         assert response.status_code == 400

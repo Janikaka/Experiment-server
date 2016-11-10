@@ -8,8 +8,8 @@ from sqlalchemy import (
 
 from .meta import Base
 
-users_experimentgroups = Table('users_experimentgroups', Base.metadata,
-                               Column('user_id', Integer, ForeignKey('users.id')),
+clients_experimentgroups = Table('clients_experimentgroups', Base.metadata,
+                               Column('client_id', Integer, ForeignKey('clients.id')),
                                Column('experimentgroup_id', Integer,
                                       ForeignKey('experimentgroups.id'))
                               )

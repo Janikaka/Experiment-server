@@ -5,7 +5,7 @@ from pyramid.response import Response
 from experiment_server.utils.log import print_log
 from experiment_server.views.webutils import WebUtils
 
-from experiment_server.models.users import User
+from experiment_server.models.clients import client
 from experiment_server.models.experiments import Experiment
 from experiment_server.models.experimentgroups import ExperimentGroup
 
@@ -102,14 +102,14 @@ class Experiments(WebUtils):
             expgroup = experiment.experimentgroups[i]
             expgroupAsJSON = expgroup.as_dict()
             confs = expgroup.configurations
-            users = []
-            for i in range(len(expgroup.users)):
-                users.append(expgroup.users[i].as_dict())
+            clients = []
+            for i in range(len(expgroup.clients)):
+                clients.append(expgroup.clients[i].as_dict())
             configurations = []
             for i in range(len(confs)):
                 configurations.append(confs[i].as_dict())
             expgroupAsJSON['configurations'] = configurations
-            expgroupAsJSON['users'] = users
+            expgroupAsJSON['clients'] = clients
             experimentgroups.append(expgroupAsJSON)
         experimentAsJSON['experimentgroups'] = experimentgroups
         experimentAsJSON['totalDataitems'] = totalDataitems
@@ -119,37 +119,37 @@ class Experiments(WebUtils):
                  'Show specific experiment metadata', result)
         return self.createResponse(result, 200)
 
-    @view_config(route_name='users_for_experiment', request_method="GET")
-    def users_for_experiment_GET(self):
-        """ List all users for specific experiment """
+    @view_config(route_name='clients_for_experiment', request_method="GET")
+    def clients_for_experiment_GET(self):
+        """ List all clients for specific experiment """
         id = self.request.swagger_data['id']
         exp = Experiment.get(id)
         if exp is None:
-            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/users',
-                      'List all users for specific experiment', None)
+            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/clients',
+                      'List all clients for specific experiment', None)
             return self.createResponse(None, 400)
-        users = []
+        clients = []
         for expgroup in exp.experimentgroups:
-            users.extend(map(lambda _: _.as_dict(), expgroup.users))
-        return list(users)
+            clients.extend(map(lambda _: _.as_dict(), expgroup.clients))
+        return list(clients)
 
-    @view_config(route_name='user_for_experiment', request_method="DELETE")
-    def user_for_experiment_DELETE(self):
-        """ Delete user from specific experiment """
+    @view_config(route_name='client_for_experiment', request_method="DELETE")
+    def client_for_experiment_DELETE(self):
+        """ Delete client from specific experiment """
         expid = self.request.swagger_data['expid']
-        userid = self.request.swagger_data['userid']
-        user = User.get(userid)
+        clientid = self.request.swagger_data['clientid']
+        client = client.get(clientid)
         exp = Experiment.get(expid)
-        if not exp or not userid or not user:
+        if not exp or not clientid or not client:
             print_log(datetime.datetime.now(),
-                      'GET', '/experiments/' + str(expid) + '/users/' + str(userid),
-                      'Delete user from specific experiment', 'Failed')
+                      'GET', '/experiments/' + str(expid) + '/clients/' + str(clientid),
+                      'Delete client from specific experiment', 'Failed')
             return self.createResponse(None, 400)
 
-        users_exp_groups = list(filter(lambda expgroup: expgroup.experiment_id == expid, user.experimentgroups))
+        clients_exp_groups = list(filter(lambda expgroup: expgroup.experiment_id == expid, client.experimentgroups))
 
-        for eg in users_exp_groups:
-            user.experimentgroups.remove(eg)
+        for eg in clients_exp_groups:
+            client.experimentgroups.remove(eg)
 
         return {}
 
@@ -181,18 +181,18 @@ class Experiments(WebUtils):
             return self.createResponse(None, 400)
 
         configurations = list(map(lambda _: _.as_dict(), expgroup.configurations))
-        users = list(map(lambda _: _.as_dict(), expgroup.users))
-        dataitems = list(map(lambda _: _.dataitems, expgroup.users))
+        clients = list(map(lambda _: _.as_dict(), expgroup.clients))
+        dataitems = list(map(lambda _: _.dataitems, expgroup.clients))
         dataitems_concat = list(concat(dataitems))
-        dataitems_with_user = []
+        dataitems_with_client = []
         for ditem in dataitems_concat:
             dataitem = ditem.as_dict()
-            di_and_user = assoc(dataitem, 'user', ditem.user.as_dict())
-            dataitems_with_user.append(di_and_user)
+            di_and_client = assoc(dataitem, 'client', ditem.client.as_dict())
+            dataitems_with_client.append(di_and_client)
         experimentgroup = expgroup.as_dict()
         resultwithconf = assoc(experimentgroup, 'configurations', configurations)
-        resultwithuser = assoc(resultwithconf, 'users', users)
-        result = assoc(resultwithuser, 'dataitems', dataitems_with_user)
+        resultwithclient = assoc(resultwithconf, 'clients', clients)
+        result = assoc(resultwithclient, 'dataitems', dataitems_with_client)
 
         return result
 

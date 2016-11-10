@@ -1,6 +1,6 @@
 import datetime
 from .base_test import BaseTest
-from ..models import (Experiment, User, ExperimentGroup, Configuration)
+from ..models import (Experiment, Client, ExperimentGroup, Configuration)
 
 
 def strToDatetime(date):
@@ -20,21 +20,21 @@ class TestExperimentGroups(BaseTest):
         expgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
         experimentsFromDB = self.dbsession.query(Experiment).all()
         configurationsFromDB = self.dbsession.query(Configuration).all()
-        usersFromDB = self.dbsession.query(User).all()
+        clientsFromDB = self.dbsession.query(client).all()
 
         expgroup1 = {
             'id': 1,
             'name': 'Group A',
             'experiment': experimentsFromDB[0],
             'configurations': [configurationsFromDB[0], configurationsFromDB[1]],
-            'users': [usersFromDB[0]]
+            'clients': [clientsFromDB[0]]
         }
         expgroup2 = {
             'id': 2,
             'name': 'Group B',
             'experiment': experimentsFromDB[0],
             'configurations': [configurationsFromDB[2], configurationsFromDB[3]],
-            'users': [usersFromDB[1]]
+            'clients': [clientsFromDB[1]]
         }
         expgroups = [expgroup1, expgroup2]
 
@@ -48,7 +48,7 @@ class TestExperimentGroups(BaseTest):
         expgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
         experimentsFromDB = self.dbsession.query(Experiment).all()
         configurationsFromDB = self.dbsession.query(Configuration).all()
-        usersFromDB = self.dbsession.query(User).all()
+        clientsFromDB = self.dbsession.query(client).all()
 
         experimentgroups = [self.dbsession.query(ExperimentGroup).filter_by(id=2).one()]
         configurations = [self.dbsession.query(Configuration).filter_by(id=3).one(),
@@ -57,15 +57,15 @@ class TestExperimentGroups(BaseTest):
         assert expgroupsFromDB == experimentgroups
         assert experimentsFromDB[0].experimentgroups == experimentgroups
         assert configurationsFromDB == configurations
-        assert usersFromDB[0].experimentgroups == []
-        assert usersFromDB[1].experimentgroups == experimentgroups
+        assert clientsFromDB[0].experimentgroups == []
+        assert clientsFromDB[1].experimentgroups == experimentgroups
 
-    def test_getExperimentgroupForUserInExperiment(self):
-        expgroupInExperimentForUser1 = self.DB.get_experimentgroup_for_user_in_experiment(1, 1)
-        expgroupInExperimentForUser2 = self.DB.get_experimentgroup_for_user_in_experiment(2, 1)
+    def test_getExperimentgroupForclientInExperiment(self):
+        expgroupInExperimentForclient1 = self.DB.get_experimentgroup_for_client_in_experiment(1, 1)
+        expgroupInExperimentForclient2 = self.DB.get_experimentgroup_for_client_in_experiment(2, 1)
 
         expgroup1 = self.dbsession.query(ExperimentGroup).filter_by(id=1).one()
         expgroup2 = self.dbsession.query(ExperimentGroup).filter_by(id=2).one()
 
-        assert expgroupInExperimentForUser1 == expgroup1
-        assert expgroupInExperimentForUser2 == expgroup2
+        assert expgroupInExperimentForclient1 == expgroup1
+        assert expgroupInExperimentForclient2 == expgroup2

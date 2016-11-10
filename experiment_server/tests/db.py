@@ -5,7 +5,7 @@ from sqlalchemy import and_
 from sqlalchemy import func
 from experiment_server.models.experimentgroups import ExperimentGroup
 from experiment_server.models.experiments import Experiment
-from experiment_server.models.users import User
+from experiment_server.models.clients import Client
 from experiment_server.models.dataitems import DataItem
 from experiment_server.models.configurations import Configuration
 
@@ -48,7 +48,7 @@ class DatabaseInterface:
             return False
         experimentgroups = experiment.experimentgroups
         for experimentgroup in experimentgroups:
-            self.delete_experimentgroup_in_users(experimentgroup.id)
+            self.delete_experimentgroup_in_clients(experimentgroup.id)
         self.dbsession.delete(experiment)
         return [] == self.dbsession.query(Experiment).filter_by(id=id).all()
 
@@ -81,9 +81,9 @@ class DatabaseInterface:
             and_(Experiment.startDatetime <= date_time_now,
                  date_time_now <= Experiment.endDatetime)).all()
 
-    def get_user_experiments_list(self, id):
-        """ return the experiment list of specific user """
-        experimentgroups = self.get_experimentgroups_for_user(id)
+    def get_client_experiments_list(self, id):
+        """ return the experiment list of specific client """
+        experimentgroups = self.get_experimentgroups_for_client(id)
         experiments = []
         for experimentgroup in experimentgroups:
             experiments.append(experimentgroup.experiment)
@@ -105,118 +105,118 @@ class DatabaseInterface:
         experimentgroup = self.dbsession.query(ExperimentGroup).filter_by(id=id).first()
         if experimentgroup is None:
             return False
-        self.delete_experimentgroup_in_users(id)
+        self.delete_experimentgroup_in_clients(id)
         experimentgroup.experiment.experimentgroups.remove(experimentgroup)
         self.dbsession.delete(experimentgroup)
         return [] == self.dbsession.query(ExperimentGroup).filter_by(id=id).all()
 
-    def delete_experimentgroup_in_users(self, experimentgroup_id):
-        """ delete experiment group in every user """
+    def delete_experimentgroup_in_clients(self, experimentgroup_id):
+        """ delete experiment group in every client """
         experimentgroup = ExperimentGroup.get(experimentgroup_id)
         if experimentgroup is None:
             return False
-        for user in experimentgroup.users:
-            user.experimentgroups.remove(experimentgroup)
+        for client in experimentgroup.clients:
+            client.experimentgroups.remove(experimentgroup)
 
-    def get_experimentgroup_for_user_in_experiment(self, user_id, experiment_id):
-        """ get experiment group from experiment groups if user is in the experiment """
-        expgroups = self.get_experimentgroups_for_user(user_id)
+    def get_experimentgroup_for_client_in_experiment(self, client_id, experiment_id):
+        """ get experiment group from experiment groups if client is in the experiment """
+        expgroups = self.get_experimentgroups_for_client(client_id)
         if expgroups is None:
             return None
         for expgroup in expgroups:
             if expgroup.experiment_id == experiment_id:
                 return expgroup
 
-    def get_experimentgroups_for_user(self, id):
-        """ get user's experiment groups """
-        user = self.dbsession.query(User).filter_by(id=id).first()
-        if user is None:
+    def get_experimentgroups_for_client(self, id):
+        """ get client's experiment groups """
+        client = self.dbsession.query(client).filter_by(id=id).first()
+        if client is None:
             return None
-        return user.experimentgroups
+        return client.experimentgroups
 
     # ---------------------------------------------------------------------------------
-    #                                      Users
+    #                                      clients
     # ---------------------------------------------------------------------------------
 
-    def create_user(self, data):
-        """ create user """
-        keys = ['username', 'password', 'experimentgroups', 'dataitems']
+    def create_client(self, data):
+        """ create client """
+        keys = ['clientname', 'password', 'experimentgroups', 'dataitems']
         for key in keys:
             try:
                 data[key]
             except KeyError:
                 data[key] = []
-        user = User(username=data['username'],
+        client = Client(clientname=data['clientname'],
                     experimentgroups=data['experimentgroups'],
                     dataitems=data['dataitems'])
-        self.dbsession.add(user)
-        return self.dbsession.query(User).order_by(User.id.desc()).first()
+        self.dbsession.add(client)
+        return self.dbsession.query(Client).order_by(client.id.desc()).first()
 
-    def delete_user(self, id):
-        """ delete user by id """
-        user = self.dbsession.query(User).filter_by(id=id).first()
-        if user is None:
+    def delete_client(self, id):
+        """ delete client by id """
+        client = self.dbsession.query(Client).filter_by(id=id).first()
+        if client is None:
             return False
-        for experimentgroup in user.experimentgroups:
-            experimentgroup.users.remove(user)
-        self.dbsession.delete(user)
-        return [] == self.dbsession.query(User).filter_by(id=id).all()
+        for experimentgroup in client.experimentgroups:
+            experimentgroup.clients.remove(client)
+        self.dbsession.delete(client)
+        return [] == self.dbsession.query(Client).filter_by(id=id).all()
 
-    def get_user(self, username):
-        """ get user by username """
-        user = self.dbsession.query(User).filter_by(username=username).all()
-        if not user:
-            return self.create_user({'username': username})
+    def get_client(self, clientname):
+        """ get client by clientname """
+        client = self.dbsession.query(Client).filter_by(clientname=clientname).all()
+        if not client:
+            return self.create_client({'clientname': clientname})
         else:
-            return user[0]
+            return client[0]
 
-    def assign_user_to_experiment(self, user_id, experiment_id):
-        """ randomly assign user to different experiment """
+    def assign_client_to_experiment(self, client_id, experiment_id):
+        """ randomly assign client to different experiment """
         experimentgroups = Experiment.get(experiment_id).experimentgroups
         if len(experimentgroups) == 1:
             experimentgroup = experimentgroups[0]
         else:
             experimentgroup = experimentgroups[random.randint(0, len(experimentgroups) - 1)]
-        self.dbsession.query(User)\
-            .filter_by(id=user_id).first()\
+        self.dbsession.query(Client)\
+            .filter_by(id=client_id).first()\
             .experimentgroups.append(experimentgroup)
 
-    def assign_user_to_experiments(self, id):
-        """ We are (now) assigning users only for running experiments """
+    def assign_client_to_experiments(self, id):
+        """ We are (now) assigning clients only for running experiments """
         all_experiments = self.get_all_running_experiments()
-        experiments_user_participates = self.get_user_experiments_list(id)
-        experiments_user_does_not_participate = []
+        experiments_client_participates = self.get_client_experiments_list(id)
+        experiments_client_does_not_participate = []
         for experiment in all_experiments:
-            if experiment not in experiments_user_participates:
-                experiments_user_does_not_participate.append(experiment)
-        experiments_user_should_participate = experiments_user_does_not_participate
-        for experiment in experiments_user_should_participate:
-            self.assign_user_to_experiment(id, experiment.id)
+            if experiment not in experiments_client_participates:
+                experiments_client_does_not_participate.append(experiment)
+        experiments_client_should_participate = experiments_client_does_not_participate
+        for experiment in experiments_client_should_participate:
+            self.assign_client_to_experiment(id, experiment.id)
 
-    def get_users_for_experiment(self, id):
-        """ get users from the specific experiment """
+    def get_clients_for_experiment(self, id):
+        """ get clients from the specific experiment """
         experiment = Experiment.get(id)
         if experiment is None:
             return None
-        users = []
+        clients = []
         for experimentgroup in experiment.experimentgroups:
-            users.extend(experimentgroup.users)
-        return users
+            clients.extend(experimentgroup.clients)
+        return clients
 
-    def delete_user_from_experiment(self, user_id, experiment_id):
-        """ delete user from experiment """
-        expgroup = self.get_experimentgroup_for_user_in_experiment(user_id, experiment_id)
-        user = User.get(user_id)
-        if expgroup is None or user is None:
+    def delete_client_from_experiment(self, client_id, experiment_id):
+        """ delete client from experiment """
+        expgroup = self.get_experimentgroup_for_client_in_experiment(client_id, experiment_id)
+        client = client.get(client_id)
+        if expgroup is None or client is None:
             return None
-        user.experimentgroups.remove(expgroup)
-        result = expgroup not in self.dbsession.query(User).filter_by(
-            id=user_id).first().experimentgroups and user not in expgroup.users
+        client.experimentgroups.remove(expgroup)
+        result = expgroup not in self.dbsession.query(Client).filter_by(
+            id=client_id).first().experimentgroups and client not in expgroup.clients
         return result
 
-    def get_users_for_experimentgroup(self, experimentgroup_id):
-        """ get all users from specific experiment group """
-        return self.dbsession.query(ExperimentGroup).filter_by(id=experimentgroup_id).first().users
+    def get_clients_for_experimentgroup(self, experimentgroup_id):
+        """ get all clients from specific experiment group """
+        return self.dbsession.query(ExperimentGroup).filter_by(id=experimentgroup_id).first().clients
 
     # ---------------------------------------------------------------------------------
     #                                    Dataitems
@@ -224,7 +224,7 @@ class DatabaseInterface:
 
     def create_dataitem(self, data):
         """ create dataitem """
-        user = data['user']
+        client = data['client']
         value = data['value']
         key = data['key']
         start_datetime = datetime.datetime.strptime(data['startDatetime'], "%Y-%m-%d %H:%M:%S")
@@ -232,7 +232,7 @@ class DatabaseInterface:
         dataitem = DataItem(
             value=value,
             key=key,
-            user=user,
+            client=client,
             startDatetime=start_datetime,
             endDatetime=end_datetime)
         self.dbsession.add(dataitem)
@@ -250,43 +250,43 @@ class DatabaseInterface:
         """ get total dataitems from the specific experiment group """
         count = 0
         expgroup = ExperimentGroup.get(experimentgroup_id)
-        for user in expgroup.users:
-            count += self.get_total_dataitems_for_user_in_experiment(user.id,
+        for client in expgroup.clients:
+            count += self.get_total_dataitems_for_client_in_experiment(client.id,
                                                                      expgroup.experiment_id)
         return count
 
-    def get_total_dataitems_for_user_in_experiment(self, user_id, exp_id):
-        """ get total dataitems for specific user in specific experiment """
+    def get_total_dataitems_for_client_in_experiment(self, client_id, exp_id):
+        """ get total dataitems for specific client in specific experiment """
         experiment = Experiment.get(exp_id)
         start_datetime = experiment.startDatetime
         end_datetime = experiment.endDatetime
         count = DataItem.query().filter(
-            and_(DataItem.user_id == user_id,
+            and_(DataItem.client_id == client_id,
                  start_datetime <= DataItem.startDatetime,
                  DataItem.endDatetime <= end_datetime)).count()
         return count
 
-    def get_dataitems_for_user_on_period(self, id, start_datetime, end_datetime):
-        """ get dataitems from specific user on a specific period """
+    def get_dataitems_for_client_on_period(self, id, start_datetime, end_datetime):
+        """ get dataitems from specific client on a specific period """
         return self.dbsession.query(DataItem).filter(
-            and_(DataItem.user_id == id,
+            and_(DataItem.client_id == id,
                  start_datetime <= DataItem.startDatetime,
                  DataItem.endDatetime <= end_datetime)).all()
 
-    def get_dataitems_for_user_in_experiment(self, user_id, exp_id):
-        """ get dataitems from specific user in specific experiment """
+    def get_dataitems_for_client_in_experiment(self, client_id, exp_id):
+        """ get dataitems from specific client in specific experiment """
         experiment = Experiment.get(exp_id)
         start_datetime = experiment.startDatetime
         end_datetime = experiment.endDatetime
-        return self.get_dataitems_for_user_on_period(user_id, start_datetime, end_datetime)
+        return self.get_dataitems_for_client_on_period(client_id, start_datetime, end_datetime)
 
     def get_dataitems_for_experimentgroup(self, id):
         """ get dataitems list from a specific experiment group """
         expgroup = ExperimentGroup.get(id)
         experiment = expgroup.experiment
         dataitems = []
-        for user in expgroup.users:
-            dataitems.extend(self.get_dataitems_for_user_in_experiment(user.id, experiment.id))
+        for client in expgroup.clients:
+            dataitems.extend(self.get_dataitems_for_client_in_experiment(client.id, experiment.id))
         return dataitems
 
     def get_dataitems_for_experiment(self, id):
@@ -300,7 +300,7 @@ class DatabaseInterface:
     def delete_dataitem(self, id):
         """ delete one dataitem """
         dataitem = self.dbsession.query(DataItem).filter_by(id=id).first()
-        dataitem.user.dataitems.remove(dataitem)
+        dataitem.client.dataitems.remove(dataitem)
         self.dbsession.delete(dataitem)
 
     # ---------------------------------------------------------------------------------
@@ -327,9 +327,9 @@ class DatabaseInterface:
         return self.dbsession.query(ExperimentGroup)\
             .filter_by(id=experimentgroup_id).first().configurations
 
-    def get_total_configuration_for_user(self, id):
+    def get_total_configuration_for_client(self, id):
         """ get all configurations list from experiment groups """
-        expgroups = self.get_experimentgroups_for_user(id)
+        expgroups = self.get_experimentgroups_for_client(id)
         confs = []
         for expgroup in expgroups:
             for conf in expgroup.configurations:

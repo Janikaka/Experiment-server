@@ -14,7 +14,7 @@ class DataItem(Base):
     """ This is definition of class dataitem """
     __tablename__ = 'dataitems'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    client_id = Column(Integer, ForeignKey('clients.id'))
     key = Column(Text)
     value = Column(JSONType())
     startDatetime = Column(DateTime)

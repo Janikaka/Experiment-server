@@ -1,6 +1,6 @@
 import datetime
 from .base_test import BaseTest
-from ..models import (User, DataItem)
+from ..models import (Client, DataItem)
 
 
 def strToDatetime(date):
@@ -18,28 +18,28 @@ class TestDataitems(BaseTest):
 
     def test_createDataitem(self):
         dataitemsFromDB = self.dbsession.query(DataItem).all()
-        user1 = self.dbsession.query(User).filter_by(id=1).one()
-        user2 = self.dbsession.query(User).filter_by(id=2).one()
+        client1 = self.dbsession.query(Client).filter_by(id=1).one()
+        client2 = self.dbsession.query(Client).filter_by(id=2).one()
         dt1 = {'key': 'key1',
                'value': 10,
                'startDatetime': strToDatetime('2016-01-01 00:00:00'),
                'endDatetime': strToDatetime('2016-01-01 01:01:01'),
-               'user': user1}
+               'client': client1}
         dt2 = {'key': 'key2',
                'value': 0.5,
                'startDatetime': strToDatetime('2016-02-02 01:01:02'),
                'endDatetime': strToDatetime('2016-02-02 02:02:02'),
-               'user': user1}
+               'client': client1}
         dt3 = {'key': 'key3',
                'value': 'liked',
                'startDatetime': strToDatetime('2016-03-03 00:00:00'),
                'endDatetime': strToDatetime('2016-03-03 03:03:03'),
-               'user': user2}
+               'client': client2}
         dt4 = {'key': 'key4',
                'value': False,
                'startDatetime': strToDatetime('2016-04-04 03:03:04'),
                'endDatetime': strToDatetime('2016-04-04 04:04:04'),
-               'user': user2}
+               'client': client2}
         dataitems = [dt1, dt2, dt3, dt4]
 
         for i in range(len(dataitemsFromDB)):
@@ -58,27 +58,27 @@ class TestDataitems(BaseTest):
         assert totalDataitemsForExpgroup1 == 2
         assert totalDataitemsForExpgroup2 == 2
 
-    def test_getTotalDataitemsForUserInExperiment(self):
-        totalDataitemsForUser1InExperiment = self.DB.get_total_dataitems_for_user_in_experiment(1, 1)
-        totalDataitemsForUser2InExperiment = self.DB.get_total_dataitems_for_user_in_experiment(2, 1)
+    def test_getTotalDataitemsForclientInExperiment(self):
+        totalDataitemsForclient1InExperiment = self.DB.get_total_dataitems_for_client_in_experiment(1, 1)
+        totalDataitemsForclient2InExperiment = self.DB.get_total_dataitems_for_client_in_experiment(2, 1)
 
-        assert totalDataitemsForUser1InExperiment == 2
-        assert totalDataitemsForUser2InExperiment == 2
+        assert totalDataitemsForclient1InExperiment == 2
+        assert totalDataitemsForclient2InExperiment == 2
 
-    def test_getDataitemsForUserOnPeriod(self):
-        user1 = self.dbsession.query(User).filter_by(id=1).one()
+    def test_getDataitemsForclientOnPeriod(self):
+        client1 = self.dbsession.query(Client).filter_by(id=1).one()
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
         startDatetime = strToDatetime('2016-01-01 00:00:00')
         endDatetime = strToDatetime('2016-01-01 02:01:01')
-        dataitems = self.DB.get_dataitems_for_user_on_period(user1.id, startDatetime, endDatetime)
+        dataitems = self.DB.get_dataitems_for_client_on_period(client1.id, startDatetime, endDatetime)
 
         assert dataitems == [dt1]
 
-    def test_getDataitemsForUserInExperiment(self):
-        user1 = self.dbsession.query(User).filter_by(id=1).one()
+    def test_getDataitemsForclientInExperiment(self):
+        client1 = self.dbsession.query(Client).filter_by(id=1).one()
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
         dt2 = self.dbsession.query(DataItem).filter_by(id=2).one()
-        dataitems = self.DB.get_dataitems_for_user_in_experiment(1, 1)
+        dataitems = self.DB.get_dataitems_for_client_in_experiment(1, 1)
 
         assert dataitems == [dt1, dt2]
 
@@ -100,9 +100,9 @@ class TestDataitems(BaseTest):
 
     def test_deleteDataitem(self):
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).one()
-        user1 = self.dbsession.query(User).filter_by(id=1).one()
-        assert dt1 in user1.dataitems
+        client1 = self.dbsession.query(Client).filter_by(id=1).one()
+        assert dt1 in client1.dataitems
         self.DB.delete_dataitem(dt1.id)
-        assert dt1 not in user1.dataitems
+        assert dt1 not in client1.dataitems
         dt1 = self.dbsession.query(DataItem).filter_by(id=1).all()
         assert [] == dt1

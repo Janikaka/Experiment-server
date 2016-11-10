@@ -60,8 +60,8 @@ class TestConfigurations(BaseTest):
 
         assert configurations == [conf1, conf2]
 
-    def test_getTotalConfigurationForUser(self):
-        configurations = self.DB.get_total_configuration_for_user(1)
+    def test_getTotalConfigurationForClient(self):
+        configurations = self.DB.get_total_configuration_for_client(1)
         conf1 = self.dbsession.query(Configuration).filter_by(id=1).one()
         conf2 = self.dbsession.query(Configuration).filter_by(id=2).one()
 

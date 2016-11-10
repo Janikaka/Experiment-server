@@ -4,14 +4,14 @@ from pyramid.view import view_config, view_defaults
 import datetime
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
-from experiment_server.models.users import User
+from experiment_server.models.clients import client
 from experiment_server.models.dataitems import DataItem
 
 from fn import _
 from toolz import *
 
 @view_defaults(renderer='json')
-class Users(WebUtils):
+class clients(WebUtils):
     def __init__(self, request):
         self.request = request
 
@@ -19,86 +19,86 @@ class Users(WebUtils):
     """
         CORS-options
     """
-    @view_config(route_name='users', request_method="OPTIONS")
+    @view_config(route_name='clients', request_method="OPTIONS")
     def all_OPTIONS(self):
         res = Response()
         res.headers.add('Access-Control-Allow-Origin', '*')
         res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
         return res
 
-    @view_config(route_name='user', request_method="OPTIONS")
+    @view_config(route_name='client', request_method="OPTIONS")
     def all_OPTIONS(self):
         res = Response()
         res.headers.add('Access-Control-Allow-Origin', '*')
         res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
         return res
 
-    # List all users
-    @view_config(route_name='users', request_method="GET", renderer='json')
-    def users_GET(self):
+    # List all clients
+    @view_config(route_name='clients', request_method="GET", renderer='json')
+    def clients_GET(self):
         """
-            Explanation: maps as_dict() -function to every User-object (this is returned by User.all())
+            Explanation: maps as_dict() -function to every client-object (this is returned by client.all())
             Creates a list and returns it. In future we might would like general json-serialization to make this even
             more simpler.
         """
-        return list(map(lambda _: _.as_dict(), User.all()))
+        return list(map(lambda _: _.as_dict(), client.all()))
 
-    # Create new user
-    @view_config(route_name='users', request_method="POST", renderer='json')
-    def create_user(self):
-        req_user = self.request.swagger_data['user']
-        user = User(
-            username=req_user.username
+    # Create new client
+    @view_config(route_name='clients', request_method="POST", renderer='json')
+    def create_client(self):
+        req_client = self.request.swagger_data['client']
+        client = client(
+            clientname=req_client.clientname
         )
-        User.save(user)
-        return user.as_dict()
+        client.save(client)
+        return client.as_dict()
 
-    # Get one user
-    @view_config(route_name='user', request_method="GET", renderer='json')
-    def user_GET(self):
+    # Get one client
+    @view_config(route_name='client', request_method="GET", renderer='json')
+    def client_GET(self):
         id = self.request.swagger_data['id']
-        result = User.get(id)
+        result = client.get(id)
         if not result:
-            print_log('/users/%s failed' % id)
+            print_log('/clients/%s failed' % id)
             return self.createResponse(None, 400)
         return result.as_dict()
 
-    # Delete user
-    @view_config(route_name='user', request_method="DELETE")
-    def user_DELETE(self):
+    # Delete client
+    @view_config(route_name='client', request_method="DELETE")
+    def client_DELETE(self):
         id = self.request.swagger_data['id']
-        result = User.get(id)
+        result = client.get(id)
         if not result:
-            print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Failed')
+            print_log(datetime.datetime.now(), 'DELETE', '/clients/' + str(id), 'Delete client', 'Failed')
             return self.createResponse(None, 400)
-        User.destroy(result)
-        print_log(datetime.datetime.now(), 'DELETE', '/users/' + str(id), 'Delete user', 'Succeeded')
+        client.destroy(result)
+        print_log(datetime.datetime.now(), 'DELETE', '/clients/' + str(id), 'Delete client', 'Succeeded')
         return {}
 
-    # List configurations for specific user
+    # List configurations for specific client
     @view_config(route_name='configurations', request_method="GET")
     def configurations_GET(self):
         id = self.request.swagger_data['id']
-        user = User.get(id)
-        if user is None:
-            print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific user', None)
+        client = client.get(id)
+        if client is None:
+            print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific client', None)
             return self.createResponse(None, 400)
 
-        current_groups = user.experimentgroups
+        current_groups = client.experimentgroups
         configs = list(map(lambda _: _.configurations, current_groups))
         result = list(map(lambda _: _.as_dict(), list(concat(configs))))
         return result
 
-    # List all experiments for specific user
-    @view_config(route_name='experiments_for_user', request_method="GET")
-    def experiments_for_user_GET(self):
+    # List all experiments for specific client
+    @view_config(route_name='experiments_for_client', request_method="GET")
+    def experiments_for_client_GET(self):
         id = self.request.swagger_data['id']
-        user = User.get(id)
-        if not user:
+        client = client.get(id)
+        if not client:
             return self.createResponse(None, 400)
-        users_experimentgroups = user.experimentgroups
-        experiments = map(lambda _: _.experiment, users_experimentgroups)
-        # TODO: Add experimentgroups (= user's experimentgroups of that experiment) to experiment
+        clients_experimentgroups = client.experimentgroups
+        experiments = map(lambda _: _.experiment, clients_experimentgroups)
+        # TODO: Add experimentgroups (= client's experimentgroups of that experiment) to experiment
         result = map(lambda _: _.as_dict(), experiments)
         return list(result)
 
@@ -110,13 +110,13 @@ class Users(WebUtils):
         key = json['key']
         startDatetime = json['startDatetime']
         endDatetime = json['endDatetime']
-        username = self.request.headers['username']
-        user = User.get_by('username', username)
-        if user is None:
+        clientname = self.request.headers['clientname']
+        client = client.get_by('clientname', clientname)
+        if client is None:
             print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', None)
             return self.createResponse(None, 400)
         result = DataItem(
-            user=user,
+            client=client,
             value=value,
             key=key,
             startDatetime=startDatetime,

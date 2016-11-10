@@ -8,7 +8,7 @@ from sqlalchemy import (
 
 from sqlalchemy.orm import relationship
 from .meta import Base
-from .users_experimentgroups import users_experimentgroups
+from .clients_experimentgroups import clients_experimentgroups
 
 
 class ExperimentGroup(Base):
@@ -18,8 +18,8 @@ class ExperimentGroup(Base):
     name = Column(Text)
     experiment_id = Column(Integer, ForeignKey('experiments.id'))
     configurations = relationship("Configuration", backref="experimentgroup", cascade="delete")
-    users = relationship("User",
-                         secondary=users_experimentgroups,
+    clients = relationship("client",
+                         secondary=clients_experimentgroups,
                          back_populates="experimentgroups"
                         )
 
@@ -30,10 +30,10 @@ class ExperimentGroup(Base):
     def get_total_dataitems(self):
         """
         Get total dataitems from the specific experiment group
-        Calls each user to count their total dataitems
+        Calls each client to count their total dataitems
         Return: count of total dataitems in ExperimentGroup
         """
         count = 0
-        for user in self.users:
-            count += user.get_total_dataitems_in_experiment(self.experiment_id)
+        for client in self.clients:
+            count += client.get_total_dataitems_in_experiment(self.experiment_id)
         return count

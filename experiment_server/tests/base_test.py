@@ -3,7 +3,7 @@ import transaction
 
 from pyramid import testing
 from .db import DatabaseInterface
-from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration,
+from ..models import (Experiment, Client, DataItem, ExperimentGroup, Configuration,
 
                       Application, ConfigurationKey, Operator, RangeConstraint, ExclusionConstraint)
 
@@ -112,12 +112,12 @@ class BaseTest(unittest.TestCase):
              'experimentgroups': [expgroup1, expgroup2]
              })
 
-        user1 = self.DB.create_user(
-            {'username': 'First user',
+        client1 = self.DB.create_client(
+            {'clientname': 'First client',
              'experimentgroups': [expgroup1]
              })
-        user2 = self.DB.create_user(
-            {'username': 'Second user',
+        client2 = self.DB.create_client(
+            {'clientname': 'Second client',
              'experimentgroups': [expgroup2]
              })
 
@@ -126,28 +126,28 @@ class BaseTest(unittest.TestCase):
              'value': 10,
              'startDatetime': '2016-01-01 00:00:00',
              'endDatetime': '2016-01-01 01:01:01',
-             'user': user1
+             'client': client1
              })
         dt2 = self.DB.create_dataitem(
             {'key': 'key2',
              'value': 0.5,
              'startDatetime': '2016-02-02 01:01:02',
              'endDatetime': '2016-02-02 02:02:02',
-             'user': user1
+             'client': client1
              })
         dt3 = self.DB.create_dataitem(
             {'key': 'key3',
              'value': 'liked',
              'startDatetime': '2016-03-03 00:00:00',
              'endDatetime': '2016-03-03 03:03:03',
-             'user': user2
+             'client': client2
              })
         dt4 = self.DB.create_dataitem(
             {'key': 'key4',
              'value': False,
              'startDatetime': '2016-04-04 03:03:04',
              'endDatetime': '2016-04-04 04:04:04',
-             'user': user2
+             'client': client2
              })
 
     def tearDown(self):

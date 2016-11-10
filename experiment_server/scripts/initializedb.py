@@ -15,7 +15,7 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import (Experiment, User, DataItem, ExperimentGroup, Configuration,
+from ..models import (Experiment, client, DataItem, ExperimentGroup, Configuration,
                       Application, ConfigurationKey, Operator, RangeConstraint, ExclusionConstraint)
 
 def usage(argv):
@@ -180,7 +180,7 @@ def main(argv=sys.argv):
         dbsession.add(op9)
         dbsession.add(op10)
 
-        us1 =User(username='Julio')
+        us1 =client(clientname='Julio')
 
         dbsession.add(us1)
 
