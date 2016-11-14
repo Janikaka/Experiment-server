@@ -13,10 +13,10 @@ def includeme(config):
     config.add_route('rangeconstraints_for_app', '/applications/{id}/rangeconstraints')
     config.add_route('exclusionconstraints_for_app', '/applications/{id}/exclusionconstraints')
 
-    config.add_route('clients', '/clients')
-    config.add_route('client', '/clients/{id}')
-    config.add_route('experiments_for_client', '/clients/{id}/experiments')
-    config.add_route('configurations', 'clients/{id}/configurations')
+    config.add_route('clients', '/applications/{appId}/clients')
+    config.add_route('client', '/applications/{appId}/clients/{clientId}')
+    config.add_route('experiments_for_client', '/applications/{appId}/clients/{clientId}/experiments')
+    config.add_route('configurations_for_client', '/applications/{appId}clients/{clientId}/configurations')
 
     config.add_route('configurationkeys', '/configurationkeys')
     config.add_route('rangeconstraints_for_configurationkey', '/configurationkeys/{id}/rangeconstraints')

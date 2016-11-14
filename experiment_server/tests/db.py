@@ -33,7 +33,7 @@ class DatabaseInterface:
         experiment = Experiment(
             name=name,
             startDatetime=start_datetime,
-            endDatetime=end_datetime,            
+            endDatetime=end_datetime,
             experimentgroups=experimentgroups)
         self.dbsession.add(experiment)
         return self.dbsession.query(Experiment).filter(

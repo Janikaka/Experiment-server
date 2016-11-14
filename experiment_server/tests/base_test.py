@@ -1,3 +1,4 @@
+import datetime
 import unittest
 import transaction
 
@@ -103,13 +104,17 @@ class BaseTest(unittest.TestCase):
              'experimentgroup': expgroup2
              })
 
-        experiment = self.DB.create_experiment(
-            {'name': 'Test experiment',
-             'application': app1,
-             'startDatetime': '2016-01-01 00:00:00',
-             'endDatetime': '2017-01-01 00:00:00',
-             'experimentgroups': [expgroup1, expgroup2]
-             })
+#        experiment = self.DB.create_experiment(
+#            {'name': 'Test experiment',
+#             'application': app1,
+#             'startDatetime': '2016-01-01 00:00:00',
+#             'endDatetime': '2017-01-01 00:00:00',
+#             'experimentgroups': [expgroup1, expgroup2]
+#             })
+        experiment = Experiment(name='Test experiment', application_id=1,
+        startDatetime=datetime.datetime.strptime('2016-01-01 00:00:00', "%Y-%m-%d %H:%M:%S"),
+        endDatetime=datetime.datetime.strptime('2017-01-01 00:00:00', "%Y-%m-%d %H:%M:%S"),
+        experimentgroups=[expgroup1, expgroup2])
 
         client1 = self.DB.create_client(
             {'clientname': 'First client',

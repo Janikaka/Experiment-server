@@ -6,9 +6,30 @@ from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 from experiment_server.models.clients import Client
 from experiment_server.models.dataitems import DataItem
+from experiment_server.models.applications import Application
+from experiment_server.models.experiments import Experiment
+from experiment_server.models.experimentgroups import ExperimentGroup
 
 from fn import _
 from toolz import *
+
+# Helper functions
+def get_client_by_id_and_app(data):
+    try:
+        app_id = data['appId']
+        client_id = data['clientId']
+
+        return Client.query()\
+        .join(Client.experimentgroups)\
+        .join(Experiment)\
+        .join(Application)\
+        .filter(Application.id == app_id)\
+        .filter(Client.id == client_id)\
+        .one()
+    except Exception as e:
+        print_log(e)
+        return None
+
 
 @view_defaults(renderer='json')
 class Clients(WebUtils):
@@ -33,7 +54,7 @@ class Clients(WebUtils):
         res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
         return res
 
-    # List all clients
+    # List application's clients
     @view_config(route_name='clients', request_method="GET", renderer='json')
     def clients_GET(self):
         """
@@ -41,7 +62,19 @@ class Clients(WebUtils):
             Creates a list and returns it. In future we might would like general json-serialization to make this even
             more simpler.
         """
-        return list(map(lambda _: _.as_dict(), Client.all()))
+        app_id = self.request.swagger_data['appId']
+
+        if not Application.get(app_id):
+            print_log('/applications/%s/clients failed' %app_id)
+            return self.createResponse(None,400)
+
+        clients = Client.query()\
+        .join(Client.experimentgroups)\
+        .join(Experiment)\
+        .join(Application)\
+        .filter(Application.id == app_id)
+
+        return list(map(lambda _: _.as_dict(), clients))
 
     # Create new client
     @view_config(route_name='clients', request_method="POST", renderer='json')
@@ -56,10 +89,10 @@ class Clients(WebUtils):
     # Get one client
     @view_config(route_name='client', request_method="GET", renderer='json')
     def client_GET(self):
-        id = self.request.swagger_data['id']
-        result = Client.get(id)
+        result = get_client_by_id_and_app(self.request.swagger_data)
+
         if not result:
-            print_log('/clients/%s failed' % id)
+            print_log('applications/%s/clients/%s failed' % (client_id, app_id))
             return self.createResponse(None, 400)
         return result.as_dict()
 
@@ -76,12 +109,13 @@ class Clients(WebUtils):
         return {}
 
     # List configurations for specific client
-    @view_config(route_name='configurations', request_method="GET")
+    @view_config(route_name='configurations_for_client', request_method="GET")
     def configurations_GET(self):
-        id = self.request.swagger_data['id']
-        client = Client.get(id)
+        client = get_client_by_id_and_app(self.request.swagger_data)
+        client_id = self.request.swagger_data['clientId']
+        app_id = self.request.swagger_data['appId']
         if client is None:
-            print_log(datetime.datetime.now(), 'GET', '/configurations', 'List configurations for specific client', None)
+            print_log(datetime.datetime.now(), 'GET', '/applications/%s/clients/%s/configurations failed' % (app_id, client_id), 'List configurations for specific client', None)
             return self.createResponse(None, 400)
 
         current_groups = client.experimentgroups
@@ -92,13 +126,18 @@ class Clients(WebUtils):
     # List all experiments for specific client
     @view_config(route_name='experiments_for_client', request_method="GET")
     def experiments_for_client_GET(self):
-        id = self.request.swagger_data['id']
-        client = Client.get(id)
+        client = get_client_by_id_and_app(self.request.swagger_data)
+        app_id = self.request.swagger_data['appId']
         if not client:
             return self.createResponse(None, 400)
-        clients_experimentgroups = client.experimentgroups
-        experiments = map(lambda _: _.experiment, clients_experimentgroups)
-        # TODO: Add experimentgroups (= client's experimentgroups of that experiment) to experiment
+
+        experiments = Experiment.query()\
+        .filter(Experiment.application_id == app_id)\
+        .join(ExperimentGroup)\
+        .join(ExperimentGroup.clients)\
+        .filter(Client.id == client.id)
+
+        print(experiments)
         result = map(lambda _: _.as_dict(), experiments)
         return list(result)
 

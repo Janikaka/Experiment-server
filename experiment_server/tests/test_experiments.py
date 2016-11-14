@@ -120,7 +120,7 @@ class TestExperimentsREST(BaseTest):
         result = response.json['data']
         experiment = {'id': 1,
                       'name': 'Test experiment',
-                      'application_id': None,
+                      'application_id': 1,
                       'startDatetime': '2016-01-01 00:00:00',
                       'endDatetime': '2017-01-01 00:00:00',
                       'status': 'running',
