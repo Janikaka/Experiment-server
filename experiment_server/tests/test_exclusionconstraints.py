@@ -31,6 +31,17 @@ class TestExclusionConstraints(BaseTest):
 #                                  REST-Inteface
 # ---------------------------------------------------------------------------------
 
+exconst = {'id': 1, 'first_configurationkey_id': 1, 'first_operator_id': 3,
+           'first_value_a': None, 'first_value_b': None,
+           'second_configurationkey_id': 2, 'second_operator_id': None,
+           'second_value_a': None, 'second_value_b': None}
+
+exconst2 = {'id': 2, 'first_configurationkey_id': 1, 'first_operator_id': 3,
+            'first_value_a': None, 'first_value_b': None,
+            'second_configurationkey_id': 2, 'second_operator_id': 2,
+            'second_value_a': '2', 'second_value_b': None}
+exconstraints = [exconst, exconst2]
+
 class TestExclusionConstraintsREST(BaseTest):
 
     exconst = {'id':1, 'first_configurationkey_id': 1, 'first_operator_id': 3,
@@ -50,24 +61,44 @@ class TestExclusionConstraintsREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_exclusionconstraints_GET(self):
+        self.req.swagger_data = {'appId':1, 'ckId': 2}
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_GET()
         exconstraints = [self.exconst, self.exconst2]
         assert response == exconstraints
 
     def test_exclusionconstraints_GET_one(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.swagger_data = {'appId': 1, 'ckId': 2, 'ecId': 1}
         httpRcs = ExclusionConstraints(self.req)
         response = httpRcs.exclusionconstraints_GET_one()
         assert response == self.exconst
 
     def test_exclusionconstraints_DELETE_one(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.swagger_data = {'appId': 1, 'ckId': 2, 'ecId': 1}
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_DELETE_one()
         assert response == {}
 
-        self.req.swagger_data = {'id': 3}
+    def test_exclusionconstraints_DELETE_one_nonexistent_configurationkey(self):
+        self.req.swagger_data = {'appId': 1, 'ckId': 2, 'ecId': 3}
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_DELETE_one()
+        assert response.status_code == 400
+
+    def test_exclusionconstraints_for_confkey_GET_1(self):
+        self.req.swagger_data = {'appId': 1, 'ckId': 1}
+        httpEcs = ExclusionConstraints(self.req)
+        response = httpEcs.exclusionconstraints_GET()
+        assert response == exconstraints
+
+    def test_exclusionconstraints_for_confkey_GET_2(self):
+        self.req.swagger_data = {'appId': 1, 'ckId': 2}
+        httpEcs = ExclusionConstraints(self.req)
+        response = httpEcs.exclusionconstraints_GET()
+        assert response == exconstraints
+
+    def test_exclusionconstraints_for_confkey_GET_nonexistent_configurationkey(self):
+        self.req.swagger_data = {'appId': 1, 'ckId': 3}
+        httpEcs = ExclusionConstraints(self.req)
+        response = httpEcs.exclusionconstraints_GET()
         assert response.status_code == 400

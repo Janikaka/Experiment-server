@@ -5,7 +5,6 @@ from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.applications import Application
-from experiment_server.models.exclusionconstraints import ExclusionConstraint
 
 """
 Helper functions
@@ -92,46 +91,6 @@ class ConfigurationKeys(WebUtils):
             '/configurationkeys/%s' % confkey_id, 'Delete configurationkey', 'Succeeded')
         return {}
 
-    @view_config(route_name='exconstraints_for_configurationkey', request_method="GET")
-    def exclusionconstraints_for_confkey_GET(self):
-        """ List all exclusionconstraints of specific con.key """
-        confkey_id = self.request.swagger_data['id']
-        confkey = ConfigurationKey.get(confkey_id)
-
-        if confkey is None:
-            print_log(datetime.datetime.now(), 'GET', '/configurationkeys/' + str(confkey_id) + '/exclusionconstraints',
-                      'Get exclusionconstraints of one configurationkey', 'Failed')
-            return self.createResponse(None, 400)
-
-        exclusionconstraints = ExclusionConstraint.all()
-        result = list(map(lambda x: x.as_dict()
-        if (x.first_configurationkey_id == confkey_id or x.second_configurationkey_id == confkey_id)
-        else None, exclusionconstraints))
-        return result
-
-    @view_config(route_name='exconstraints_for_configurationkey', request_method="POST")
-    def exclusionconstraints_for_confkey_POST(self):
-        first_config_id = self.request.swagger_data['id']
-        exconstraint = self.request.swagger_data['exclusionconstraint']
-
-        if first_config_id is None or exconstraint is None:
-            print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + str(first_config_id) + '/exclusionconstraints',
-                      'Create new exclusionconstraint for configurationkey', 'Failed')
-            return self.createResponse({}, 400)
-
-        new_exconstraint = ExclusionConstraint(
-            first_configurationkey_id=first_config_id,
-            first_operator_id=exconstraint.first_operator_id,
-            first_value_a=exconstraint.first_value_a,
-            first_value_b=exconstraint.first_value_b,
-
-            second_configurationkey_id=exconstraint.second_configurationkey_id,
-            second_operator_id=exconstraint.second_operator_id,
-            second_value_a=exconstraint.second_value_a,
-            second_value_b=exconstraint.second_value_b
-        )
-        ExclusionConstraint.save(new_exconstraint)
-        return new_exconstraint.as_dict()
 
     @view_config(route_name='configurationkeys_for_app', request_method="POST")
     def configurationkeys_POST(self):

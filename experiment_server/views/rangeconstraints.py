@@ -51,22 +51,38 @@ class RangeConstraints(WebUtils):
     @view_config(route_name='rangeconstraint', request_method="DELETE")
     def rangecontraints_DELETE_one(self):
         """ Find and delete one rangeconstraint by id with DELETE method """
-        rc_id = self.request.swagger_data['id']
+        app_id = self.request.swagger_data['appId']
+        confkey_id = self.request.swagger_data['ckId']
+        rc_id = self.request.swagger_data['rcId']
         rangeconstraint = RangeConstraint.get(rc_id)
-        if not rangeconstraint:
+
+        try:
+            # Checks if ConfigurationKey exists with given Application
+            if not ConfigurationKey.get(confkey_id).application_id == app_id:
+                raise Exception('Application with id %s does not have' % app_id +
+                    ' ConfigurationKey with id %s' % confkey_id)
+            # Checks if given RangeConstraint is owned by ConfigurationKey
+            elif not rangeconstraint.configurationkey_id == confkey_id:
+                raise Exception('ConfigurationKey with id %s does not' % confkey_id +
+                    ' have RangeConstraint with id %s' % rc_id)
+
+            RangeConstraint.destroy(rangeconstraint)
+        except Exception as e:
+            print(e)
             print_log(datetime.datetime.now(), 'DELETE', '/rangeconstraint/' + str(rc_id),
                       'Delete rangeconstraint', 'Failed')
             return self.createResponse(None, 400)
-        RangeConstraint.destroy(rangeconstraint)
+
         print_log(datetime.datetime.now(), 'DELETE', '/rangeconstranit/' + str(rc_id),
                   'Delete rangeconstraint', 'Succeeded')
         return {}
 
-    @view_config(route_name='rangeconstraints_for_configurationkey', request_method="POST")
+    @view_config(route_name='rangeconstraints', request_method="POST")
     def rangecontraints_POST(self):
         """ Create new rangeconstraint for specific configurationkey """
         req_rangec = self.request.swagger_data['rangeconstraint']
-        configkey_id = self.request.swagger_data['id']
+        configkey_id = self.request.swagger_data['ckId']
+        app_id = self.request.swagger_data['appId']
 
         rconstraint = RangeConstraint(
             configurationkey_id=configkey_id,
@@ -75,27 +91,47 @@ class RangeConstraints(WebUtils):
         )
 
         try:
+            # Checks if Configuration with such connection to Application exists
+            if ConfigurationKey.get(configkey_id).application_id != app_id:
+                raise Exception('Application with id %s does not have' % app_id +
+                    ' ConfigurationKey with id %s' % configkey_id)
             RangeConstraint.save(rconstraint)
         except:
+            print(e)
+            print_log(datetime.datetime.now(), 'POST', '/applications/%s/' % app_id +
+                'configurationkeys/%s/rangeconstraints' % confkey_id,
+                'Create new rangeconstraint for configurationkey', 'Failed')
             return self.createResponse({}, 400)
 
-        print_log(datetime.datetime.now(), 'POST', '/configurationkeys/' + '{id}' + '/rangeconstraints',
-                  'Create new rangeconstraint for configurationkey', 'Succeeded')
+        print_log(datetime.datetime.now(), 'POST', '/applications/%s' % app_id +
+            '/configurationkeys/%s/rangeconstraints' % configkey_id,
+            'Create new rangeconstraint for configurationkey', 'Succeeded')
         return rconstraint.as_dict()
 
-    @view_config(route_name='rangeconstraints_for_configurationkey', request_method="DELETE")
+    # To include all the database connection checks which
+    # rangecontraints_DELETE_one contains, it is included in this function
+    @view_config(route_name='rangeconstraints', request_method="DELETE")
     def rangeconstraints_for_configuratinkey_DELETE(self):
         """ Delete all rangeconstraints of one specific configurationkey"""
-        id = self.request.swagger_data['id']
-        con_key = ConfigurationKey.get(id)
-        if not con_key:
-            print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/' + str(id) +'/rangeconstraints',
-                      'Delete rangeconstraints of configurationkey', 'Failed')
-            return self.createResponse(None, 400)
-        is_empty_list = list(map(lambda _: RangeConstraint.destroy(_), con_key.rangeconstraints))
-        for i in is_empty_list:
-            if i != None:
+        configkey_id = self.request.swagger_data['ckId']
+        app_id = self.request.swagger_data['appId']
+        configurationkey = ConfigurationKey.get(configkey_id)
+        errors = 0
+
+        try:
+            for rc in configurationkey.rangeconstraints:
+                # Set rangeconstraint's id, so rangecontraints_DELETE_one can use it
+                self.request.swagger_data['rcId'] = rc.id
+                if not self.rangecontraints_DELETE_one() == {}:
+                    errors += 1
+        except Exception as e:
+            print(e)
+            errors += 1
+        finally:
+            if (errors > 0):
+                print_log(datetime.datetime.now(), 'DELETE', '/application/%s' % app_id +
+                    '/configurationkeys/' + str(configkey_id) +'/rangeconstraints',
+                    'Delete rangeconstraints of configurationkey', 'Failed')
                 return self.createResponse(None, 400)
-        print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/' + str(id) + '/rangeconstraints',
-                  'Delete rangeconstraints of configurationkey', 'Succeeded')
+
         return {}

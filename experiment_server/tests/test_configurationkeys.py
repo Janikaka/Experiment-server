@@ -160,33 +160,6 @@ class TestConfigurationKeysREST(BaseTest):
         response = httpCkeys.configurationkeys_DELETE_one()
         assert response.status_code == 400
 
-    
-
-    def test_exclusionconstraints_for_confkey_GET(self):
-        exconst = {'id': 1, 'first_configurationkey_id': 1, 'first_operator_id': 3,
-                   'first_value_a': None, 'first_value_b': None,
-                   'second_configurationkey_id': 2, 'second_operator_id': None,
-                   'second_value_a': None, 'second_value_b': None}
-
-        exconst2 = {'id': 2, 'first_configurationkey_id': 1, 'first_operator_id': 3,
-                    'first_value_a': None, 'first_value_b': None,
-                    'second_configurationkey_id': 2, 'second_operator_id': 2,
-                    'second_value_a': '2', 'second_value_b': None}
-        exconstraints = [exconst, exconst2]
-
-        self.req.swagger_data = {'id': 1}
-        httpCkeys = ConfigurationKeys(self.req)
-        response = httpCkeys.exclusionconstraints_for_confkey_GET()
-        assert response == exconstraints
-
-        self.req.swagger_data = {'id': 3}
-        response = httpCkeys.exclusionconstraints_for_confkey_GET()
-        assert response.status_code == 400
-
-        self.req.swagger_data = {'id': 2}
-        response = httpCkeys.exclusionconstraints_for_confkey_GET()
-        assert response == exconstraints
-
     def test_configurationkeys_POST(self):
         self.req.swagger_data = {
             'id': 1,

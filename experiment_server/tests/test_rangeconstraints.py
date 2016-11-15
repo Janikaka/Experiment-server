@@ -48,32 +48,40 @@ class TestRangeConstraintsREST(BaseTest):
         assert response == rcs
 
     def test_rangecontraints_DELETE_one(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.swagger_data = {'appId':1, 'ckId':2, 'rcId': 1}
         httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangecontraints_DELETE_one()
         assert response == {}
 
-        self.req.swagger_data = {'id': 3}
+    def test_rangecontraints_DELETE_one_nonexistent(self):
+        self.req.swagger_data = {'appId':1, 'ckId':2, 'rcId': 3}
+        httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangecontraints_DELETE_one()
         assert response.status_code == 400
 
     def test_rangecontraints_POST(self):
         self.req.swagger_data = {
-            'id': 1,
-            'rangeconstraint': RangeConstraint(configurationkey_id=2, operator_id=1, value=10)}
+            'appId': 1,
+            'ckId': 2,
+            'rangeconstraint': RangeConstraint(operator_id=1, value=10)}
         httpCkeys = RangeConstraints(self.req)
         response = httpCkeys.rangecontraints_POST()
-        rc = {'id': 3, 'configurationkey_id': 1, 'operator_id': 1, 'value': 10}
+        rc = RangeConstraint.query()\
+            .filter(RangeConstraint.configurationkey_id == 2, \
+                RangeConstraint.operator_id==1, \
+                RangeConstraint.value==10)\
+            .one().as_dict()
         assert response == rc
 
     def test_rangeconstraints_for_configuratinkey_DELETE(self):
-        self.req.swagger_data = {'id': 2}
+        self.req.swagger_data = {'appId':1, 'ckId': 2}
         httpRcs = RangeConstraints(self.req)
-        assert len(ConfigurationKey.get(2).rangeconstraints) == 2
         response = httpRcs.rangeconstraints_for_configuratinkey_DELETE()
-        assert len(ConfigurationKey.get(2).rangeconstraints) == 0
-        assert response == {}
-        self.req.swagger_data = {'id': 3}
+        assert len(ConfigurationKey.get(2).rangeconstraints) == 0 and response == {}
+
+    def test_rangeconstraints_for_configuratinkey_DELETE_incorrect_confkey_id(self):
+        self.req.swagger_data = {'appId':1, 'ckId': 3}
+        httpRcs = RangeConstraints(self.req)        
         response = httpRcs.rangeconstraints_for_configuratinkey_DELETE()
         assert response.status_code == 400
 
