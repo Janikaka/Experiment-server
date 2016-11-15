@@ -117,12 +117,13 @@ class TestConfigurationKeysREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_configurationkeys_GET_one(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.swagger_data = {'ckId': 1, 'appId':1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_GET_one()
         assert response == self.confkey
 
     def test_configurationkeys_GET(self):
+        self.req.swagger_data = {'id': 1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_GET()
         confkeys = [self.confkey, self.confkey2]
@@ -147,26 +148,19 @@ class TestConfigurationKeysREST(BaseTest):
         assert response.name == 'test name'
 
 
-    def test_configurationkeys_DELETE_one(self):
-        self.req.swagger_data = {'id': 1}
+    def test_configurationkeys_DELETE_one_with_correct_values(self):
+        self.req.swagger_data = {'appId':1, 'ckId': 1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_DELETE_one()
         assert response == {}
 
-        self.req.swagger_data = {'id': 3}
+    def test_configurationkeys_DELETE_one_with_incorrect_values(self):
+        self.req.swagger_data = {'appId':1, 'ckId': 3}
+        httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_DELETE_one()
         assert response.status_code == 400
 
-    def test_rangeconstraints_for_confkey_GET(self):
-        self.req.swagger_data = {'id': 1}
-        httpCkeys = ConfigurationKeys(self.req)
-        response = httpCkeys.rangeconstraints_for_confkey_GET()
-        rconstraints = [{'id': 1, 'configurationkey_id': 2, 'operator_id': 2, 'value': 1},
-                        {'id': 2, 'configurationkey_id': 2, 'operator_id': 1, 'value': 5}]
-        assert response == []
-        self.req.swagger_data = {'id': 2}
-        response = httpCkeys.rangeconstraints_for_confkey_GET()
-        assert response == rconstraints
+    
 
     def test_exclusionconstraints_for_confkey_GET(self):
         exconst = {'id': 1, 'first_configurationkey_id': 1, 'first_operator_id': 3,

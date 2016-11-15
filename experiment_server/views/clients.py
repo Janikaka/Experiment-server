@@ -92,7 +92,8 @@ class Clients(WebUtils):
         result = get_client_by_id_and_app(self.request.swagger_data)
 
         if not result:
-            print_log('applications/%s/clients/%s failed' % (client_id, app_id))
+            print_log(datetime.datetime.now(), 'GET','applications/%s/clients/%s' % (client_id, app_id),
+                'Get client', 'Failed')
             return self.createResponse(None, 400)
         return result.as_dict()
 
@@ -115,7 +116,8 @@ class Clients(WebUtils):
         client_id = self.request.swagger_data['clientId']
         app_id = self.request.swagger_data['appId']
         if client is None:
-            print_log(datetime.datetime.now(), 'GET', '/applications/%s/clients/%s/configurations failed' % (app_id, client_id), 'List configurations for specific client', None)
+            print_log(datetime.datetime.now(), 'GET', '/applications/%s/clients/%s/configurations failed' % (app_id, client_id),
+                'List configurations for specific client', 'Failed')
             return self.createResponse(None, 400)
 
         current_groups = client.experimentgroups
@@ -152,7 +154,8 @@ class Clients(WebUtils):
         clientname = self.request.headers['clientname']
         client = Client.get_by('clientname', clientname)
         if client is None:
-            print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', None)
+            print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data',
+                'Failed')
             return self.createResponse(None, 400)
         result = DataItem(
             client=client,

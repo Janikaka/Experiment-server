@@ -76,3 +76,19 @@ class TestRangeConstraintsREST(BaseTest):
         self.req.swagger_data = {'id': 3}
         response = httpRcs.rangeconstraints_for_configuratinkey_DELETE()
         assert response.status_code == 400
+
+    def test_rangeconstraints_GET_with_incorrect_confkeyid(self):
+        self.req.swagger_data = {'appId': 1, 'ckId': 1}
+        httpRcs = RangeConstraints(self.req)
+        response = httpRcs.rangeconstraints_GET()
+        assert response == []
+
+    def test_rangeconstraints_GET(self):
+        httpRcs = RangeConstraints(self.req)
+        self.req.swagger_data = {'appId': 1, 'ckId': 2}
+        response = httpRcs.rangeconstraints_GET()
+
+        expected = RangeConstraint.query().filter(RangeConstraint.configurationkey_id == 2)
+        expected = list(map(lambda _: _.as_dict(), expected))
+
+        assert response == expected

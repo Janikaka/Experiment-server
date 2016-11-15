@@ -7,6 +7,20 @@ from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.applications import Application
 from experiment_server.models.exclusionconstraints import ExclusionConstraint
 
+"""
+Helper functions
+"""
+def get_conf_key_by_appid_and_ckid(app_id, confkey_id):
+    try:
+        return ConfigurationKey.query()\
+        .filter(ConfigurationKey.id == confkey_id)\
+        .join(Application)\
+        .filter(Application.id == app_id)\
+        .one()
+    except Exception as e:
+        print_log(e)
+        return None
+
 @view_defaults(renderer='json')
 class ConfigurationKeys(WebUtils):
     def __init__(self, request):
@@ -16,13 +30,6 @@ class ConfigurationKeys(WebUtils):
     """
         CORS-options
     """
-    @view_config(route_name='configurationkeys', request_method="OPTIONS")
-    def all_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
-        return res
-
     @view_config(route_name='configurationkey', request_method="OPTIONS")
     def all_OPTIONS(self):
         res = Response()
@@ -37,19 +44,27 @@ class ConfigurationKeys(WebUtils):
         res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
         return res
 
-    @view_config(route_name='configurationkeys', request_method="GET")
+    @view_config(route_name='configurationkeys_for_app', request_method="GET")
     def configurationkeys_GET(self):
         """ List all configurationkeys with GET method """
-        return list(map(lambda _: _.as_dict(), ConfigurationKey.all()))
+        app_id = self.request.swagger_data['id']
+        if Application.get(app_id) is None:
+            print_log(datetime.datetime.now(), 'GET', '/applications/%s/configurationkeys'\
+                % app_id, 'Get configurationkeys', 'Failed')
+            return self.createResponse(None, 400)
+        app_conf_keys = ConfigurationKey.query().join(Application).filter(Application.id == app_id)
+        return list(map(lambda _: _.as_dict(), app_conf_keys))
 
     @view_config(route_name='configurationkey', request_method="GET")
     def configurationkeys_GET_one(self):
         """ Find and return one configurationkey by id with GET method """
-        confkey_id = self.request.swagger_data['id']
-        confkey = ConfigurationKey.get(confkey_id)
+        confkey_id = self.request.swagger_data['ckId']
+        app_id = self.request.swagger_data['appId']
+        confkey = get_conf_key_by_appid_and_ckid(app_id, confkey_id)
         if confkey is None:
-            print_log(datetime.datetime.now(), 'GET', '/configurationkeys/'
-                      + str(confkey_id), 'Get one configurationkey', None)
+            print_log(datetime.datetime.now(), 'GET',\
+                '/applications/%s/configurationkeys/' % app_id
+                + str(confkey_id), 'Get one configurationkey', 'Failed')
             return self.createResponse(None, 400)
         return confkey.as_dict()
 
@@ -64,27 +79,18 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkey', request_method="DELETE")
     def configurationkeys_DELETE_one(self):
         """ Find and delete one configurationkey by id with delete method """
-        confkey_id = self.request.swagger_data['id']
-        confkey = ConfigurationKey.get(confkey_id)
+        confkey_id = self.request.swagger_data['ckId']
+        app_id = self.request.swagger_data['appId']
+        confkey = get_conf_key_by_appid_and_ckid(app_id, confkey_id)
         if not confkey:
-            print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/'
-                      + str(confkey_id), 'Delete configurationkey', 'Failed')
+            print_log(datetime.datetime.now(), 'DELETE', '/applications/%s/' % app_id +
+                '/configurationkeys/%s/' % confkey_id,
+                 'Delete configurationkey', 'Failed')
             return self.createResponse(None, 400)
         ConfigurationKey.destroy(confkey)
-        print_log(datetime.datetime.now(), 'DELETE', '/configurationkeys/'
-                  + str(confkey_id), 'Delete configurationkey', 'Succeeded')
+        print_log(datetime.datetime.now(), 'DELETE', '/applications/%s' % app_id +
+            '/configurationkeys/%s' % confkey_id, 'Delete configurationkey', 'Succeeded')
         return {}
-
-    @view_config(route_name='rangeconstraints_for_configurationkey', request_method="GET")
-    def rangeconstraints_for_confkey_GET(self):
-        """ List all rangeconstraints of specific conf.key """
-        confkey_id = self.request.swagger_data['id']
-        confkey = ConfigurationKey.get(confkey_id)
-        if confkey is None:
-            print_log(datetime.datetime.now(), 'GET', '/configurationkeys/' + str(confkey_id) + '/rangeconstraints',
-                      'Get rangeconstraints of one configurationkey', 'Failed')
-            return self.createResponse(None, 400)
-        return list(map(lambda _: _.as_dict(), confkey.rangeconstraints))
 
     @view_config(route_name='exconstraints_for_configurationkey', request_method="GET")
     def exclusionconstraints_for_confkey_GET(self):
@@ -94,7 +100,7 @@ class ConfigurationKeys(WebUtils):
 
         if confkey is None:
             print_log(datetime.datetime.now(), 'GET', '/configurationkeys/' + str(confkey_id) + '/exclusionconstraints',
-                      'Get rangeconstraints of one configurationkey', 'Failed')
+                      'Get exclusionconstraints of one configurationkey', 'Failed')
             return self.createResponse(None, 400)
 
         exclusionconstraints = ExclusionConstraint.all()

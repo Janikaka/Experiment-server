@@ -5,7 +5,7 @@ from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 from experiment_server.models.rangeconstraints import RangeConstraint
 from experiment_server.models.configurationkeys import ConfigurationKey
-
+from experiment_server.models.applications import Application
 
 @view_defaults(renderer='json')
 class RangeConstraints(WebUtils):
@@ -38,8 +38,15 @@ class RangeConstraints(WebUtils):
 
     @view_config(route_name='rangeconstraints', request_method="GET")
     def rangeconstraints_GET(self):
-        """ List all rangeconstraints with GET method """
-        return list(map(lambda _: _.as_dict(), RangeConstraint.all()))
+        """ List all rangeconstraints for ConfigurationKey with GET method """
+        app_id = self.request.swagger_data['appId']
+        confkey_id = self.request.swagger_data['ckId']
+        rangeconstraints = RangeConstraint.query()\
+            .join(ConfigurationKey)\
+            .filter(ConfigurationKey.id == confkey_id)\
+            .join(Application)\
+            .filter(Application.id == app_id)
+        return list(map(lambda _: _.as_dict(), rangeconstraints))
 
     @view_config(route_name='rangeconstraint', request_method="DELETE")
     def rangecontraints_DELETE_one(self):
