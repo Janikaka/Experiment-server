@@ -99,17 +99,6 @@ class TestApplicationsREST(BaseTest):
         app = {'id': 3, 'name': 'App 3'}
         assert response == app
 
-    def test_rangeconstraints_for_app_GET(self):
-        self.req.swagger_data = {'id': 1}
-        httpApps = Applications(self.req)
-        response = httpApps.rangeconstraints_for_app_GET()
-        rconstraints = [{'id': 1, 'configurationkey_id': 2, 'operator_id': 2, 'value': 1},
-                        {'id': 2, 'configurationkey_id': 2, 'operator_id': 1, 'value': 5}]
-        assert response == rconstraints
-        self.req.swagger_data = {'id': 2}
-        response = httpApps.rangeconstraints_for_app_GET()
-        assert response == []
-
     def test_data_for_app_GET(self):
         self.req.swagger_data = {'id': 1}
         httpApps = Applications(self.req)
