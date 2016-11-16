@@ -117,7 +117,7 @@ class TestConfigurationKeysREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_configurationkeys_GET_one(self):
-        self.req.swagger_data = {'ckid': 1, 'appid':1}
+        self.req.swagger_data = {'ckid': 1, 'id':1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_GET_one()
         assert response == self.confkey
