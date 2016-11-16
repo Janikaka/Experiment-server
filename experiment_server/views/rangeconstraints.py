@@ -22,13 +22,6 @@ class RangeConstraints(WebUtils):
         res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
         return res
 
-    @view_config(route_name='rangeconstraints_for_configurationkey', request_method="OPTIONS")
-    def all_OPTIONS(self):
-        res = Response()
-        res.headers.add('Access-Control-Allow-Origin', '*')
-        res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
-        return res
-
     @view_config(route_name='rangeconstraint', request_method="OPTIONS")
     def all_OPTIONS(self):
         res = Response()
