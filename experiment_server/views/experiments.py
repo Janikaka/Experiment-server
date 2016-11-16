@@ -173,7 +173,7 @@ class Experiments(WebUtils):
         """ Show specific experiment group metadata """
         app_id = self.request.swagger_data['appid']
         expid = self.request.swagger_data['expid']
-        expgroupid = self.request.swagger_data['expgroupId']
+        expgroupid = self.request.swagger_data['expgroupid']
 
         #expgroup = ExperimentGroup.get(expgroupid)
         expgroup = ExperimentGroup.query().join(Experiment, Application)\
@@ -208,7 +208,7 @@ class Experiments(WebUtils):
         """ Delete one experimentgroup """
         app_id = self.request.swagger_data['appid']
         exp_id = self.request.swagger_data['expid']
-        expgroupid = self.request.swagger_data['expgroupId']
+        expgroupid = self.request.swagger_data['expgroupid']
 
         experimentgroup = ExperimentGroup.get(expgroupid)
         experimentgroup = ExperimentGroup.query().join(Experiment, Application)\

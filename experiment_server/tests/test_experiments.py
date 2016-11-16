@@ -85,7 +85,7 @@ class TestExperimentsREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_experiments_POST(self):
-        self.req.swagger_data = {'appId': 1,
+        self.req.swagger_data = {'appid': 1,
             'experiment': Experiment(
                 name='Example Experiment',
                 startDatetime=datetime.datetime(2016, 1, 1, 0, 0, 0),
@@ -103,7 +103,7 @@ class TestExperimentsREST(BaseTest):
 
     def test_experiments_GET(self):
         httpExperiments = Experiments(self.req)
-        self.req.swagger_data = {'appId': 1}
+        self.req.swagger_data = {'appid': 1}
         response = httpExperiments.experiments_GET()
         experiment = response[0]
 
@@ -116,20 +116,20 @@ class TestExperimentsREST(BaseTest):
 
     def test_experiments_GET_one(self):
         httpExperiments = Experiments(self.req)
-        self.req.swagger_data = {'appId': 1, 'expId':1}
+        self.req.swagger_data = {'appid': 1, 'expid':1}
         response = httpExperiments.experiments_GET_one()
         expected = Experiment.get(1).as_dict()
         assert response == expected
 
     def test_experiments_GET_one_nonexistent_experiment(self):
         httpExperiments = Experiments(self.req)
-        self.req.swagger_data = {'appId': 1, 'expId':2}
+        self.req.swagger_data = {'appid': 1, 'expid':2}
         response = httpExperiments.experiments_GET_one()
         expected = 400
         assert response.status_code == expected
 
     def test_experiment_metadata_GET(self):
-        self.req.swagger_data = {'appId': 1, 'expId':1}
+        self.req.swagger_data = {'appid': 1, 'expid':1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_metadata_GET()
         result = response.json['data']
@@ -162,20 +162,20 @@ class TestExperimentsREST(BaseTest):
         assert result == experiment
 
     def test_experiment_metadata_GET_nonexistent_experiment(self):
-        self.req.swagger_data = {'appId': 1, 'expId':2}
+        self.req.swagger_data = {'appid': 1, 'expid':2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_metadata_GET()
         assert response.status_code == 400
         assert response.json == None
 
     def test_experiment_DELETE(self):
-        self.req.swagger_data = {'appId': 1, 'expId':1}
+        self.req.swagger_data = {'appid': 1, 'expid':1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_DELETE()
         assert response == {}
 
     def test_experiment_DELETE_nonexistent_experiment(self):
-        self.req.swagger_data = {'appId': 1, 'expId':2}
+        self.req.swagger_data = {'appid': 1, 'expid':2}
         print(self.req.matchdict)
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_DELETE()
@@ -183,7 +183,7 @@ class TestExperimentsREST(BaseTest):
         assert response.json == None
 
     def test_clients_for_experiment_GET(self):
-        self.req.swagger_data = {'appId': 1, 'expId': 1}
+        self.req.swagger_data = {'appid': 1, 'expid': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.clients_for_experiment_GET()
         clients = [{'id': 1,
@@ -193,7 +193,7 @@ class TestExperimentsREST(BaseTest):
         assert response == clients
 
     def test_clients_for_experiment_GET_nonexistent_experiment(self):
-        self.req.swagger_data = {'appId': 1, 'expId': 2}
+        self.req.swagger_data = {'appid': 1, 'expid': 2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.clients_for_experiment_GET()
         assert response.status_code == 400
@@ -204,7 +204,7 @@ class TestExperimentsREST(BaseTest):
         assert 1 == 1
 
     def test_experimentgroup_GET(self):
-        self.req.swagger_data = {'appId': 1, 'expId': 1}
+        self.req.swagger_data = {'appid': 1, 'expid': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_GET()
         expected = list(map(lambda _: _.as_dict(), \
@@ -214,7 +214,7 @@ class TestExperimentsREST(BaseTest):
         assert response == expected
 
     def test_experimentgroup_GET_nonexistent_experiment(self):
-        self.req.swagger_data = {'appId': 1, 'expId': 2}
+        self.req.swagger_data = {'appid': 1, 'expid': 2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_GET()
         expected = list()
@@ -222,7 +222,7 @@ class TestExperimentsREST(BaseTest):
         assert response == expected
 
     def test_experimentgroup_GET_one(self):
-        self.req.swagger_data = {'appId': 1,'expgroupId': 1, 'expId': 1}
+        self.req.swagger_data = {'appid': 1,'expgroupid': 1, 'expid': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_GET_one()
         experimentgroup = {
@@ -254,20 +254,20 @@ class TestExperimentsREST(BaseTest):
         assert response == experimentgroup
 
     def test_experimentgroup_GET_one_nonexistent_experiment(self):
-        self.req.swagger_data = {'appId': 1,'expgroupId': 1, 'expId': 2}
+        self.req.swagger_data = {'appid': 1,'expgroupid': 1, 'expid': 2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_GET_one()
         assert response.status_code == 400
         assert response.json == None
 
     def test_experimentgroup_DELETE(self):
-        self.req.swagger_data = {'appId': 1, 'expId': 1, 'expgroupId': 1}
+        self.req.swagger_data = {'appid': 1, 'expid': 1, 'expgroupid': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_DELETE()
         assert response == {}
 
     def test_experimentgroup_DELETE_nonexistent_experiment_and_experimentgroup(self):
-        self.req.swagger_data = {'appId': 1, 'expId': 2, 'expgroupId': 2}
+        self.req.swagger_data = {'appid': 1, 'expid': 2, 'expgroupid': 2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_DELETE()
         assert response.status_code == 400

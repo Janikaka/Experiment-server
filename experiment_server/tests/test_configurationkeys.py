@@ -117,7 +117,7 @@ class TestConfigurationKeysREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_configurationkeys_GET_one(self):
-        self.req.swagger_data = {'ckId': 1, 'appId':1}
+        self.req.swagger_data = {'ckid': 1, 'appid':1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_GET_one()
         assert response == self.confkey
@@ -149,13 +149,13 @@ class TestConfigurationKeysREST(BaseTest):
 
 
     def test_configurationkeys_DELETE_one_with_correct_values(self):
-        self.req.swagger_data = {'appId':1, 'ckId': 1}
+        self.req.swagger_data = {'appid':1, 'ckid': 1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_DELETE_one()
         assert response == {}
 
     def test_configurationkeys_DELETE_one_with_incorrect_values(self):
-        self.req.swagger_data = {'appId':1, 'ckId': 3}
+        self.req.swagger_data = {'appid':1, 'ckid': 3}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_DELETE_one()
         assert response.status_code == 400

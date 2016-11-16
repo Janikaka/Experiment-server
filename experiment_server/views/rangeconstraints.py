@@ -32,7 +32,7 @@ class RangeConstraints(WebUtils):
     @view_config(route_name='rangeconstraints', request_method="GET")
     def rangeconstraints_GET(self):
         """ List all rangeconstraints for ConfigurationKey with GET method """
-        app_id = self.request.swagger_data['rcid']
+        app_id = self.request.swagger_data['appid']
         confkey_id = self.request.swagger_data['ckid']
         rangeconstraints = RangeConstraint.query()\
             .join(ConfigurationKey)\

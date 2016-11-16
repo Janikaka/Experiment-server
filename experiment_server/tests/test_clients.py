@@ -119,7 +119,7 @@ class TestClientsREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_client_GET(self):
-        self.req.swagger_data = {'appId': 1, 'clientId' : 1}
+        self.req.swagger_data = {'appid': 1, 'clientid' : 1}
         httpclients = Clients(self.req)
         response = httpclients.client_GET()
         client = {'id': 1, 'clientname': 'First client'}
@@ -133,20 +133,20 @@ class TestClientsREST(BaseTest):
         assert response == client
 
     def test_configurations_GET(self):
-        self.req.swagger_data = {'appId': 1, 'clientId': 1}
+        self.req.swagger_data = {'appid': 1, 'clientid': 1}
         httpclients = Clients(self.req)
         response = httpclients.configurations_GET()
         configurations = [{'id': 1, 'experimentgroup_id': 1, 'value': 0.5, 'key': 'v1'},
                           {'id': 2, 'experimentgroup_id': 1, 'value': True, 'key': 'v2'}]
 
         assert response == configurations
-        self.req.swagger_data = {'appId':1, 'clientId': 3}
+        self.req.swagger_data = {'appid':1, 'clientid': 3}
         httpclients = Clients(self.req)
         response = httpclients.configurations_GET()
         assert response.status_code == 400
 
     def test_clients_GET(self):
-        self.req.swagger_data = {'appId': 1}
+        self.req.swagger_data = {'appid': 1}
         httpclients = Clients(self.req)
         response = httpclients.clients_GET()
         result = response
@@ -155,7 +155,7 @@ class TestClientsREST(BaseTest):
         assert result == clients
 
     def test_experiments_for_client_GET(self):
-        self.req.swagger_data = {'appId': 1, 'clientId': 1}
+        self.req.swagger_data = {'appid': 1, 'clientid': 1}
         httpclients = Clients(self.req)
         response = httpclients.experiments_for_client_GET()
         experiments = [{
@@ -198,7 +198,7 @@ class TestClientsREST(BaseTest):
         assert response.status_code == 400
 
     def test_client_DELETE(self):
-        self.req.swagger_data = {'appId': 1, 'clientId': 1}
+        self.req.swagger_data = {'appid': 1, 'clientid': 1}
         httpclients = Clients(self.req)
         response = httpclients.client_DELETE()
 
