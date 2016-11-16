@@ -57,7 +57,7 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkey', request_method="GET")
     def configurationkeys_GET_one(self):
         """ Find and return one configurationkey by id with GET method """
-        app_id = self.request.swagger_data['id']
+        app_id = self.request.swagger_data['appid']
         confkey_id = self.request.swagger_data['ckid']
         confkey = get_conf_key_by_appid_and_ckid(app_id, confkey_id)
         if confkey is None:
