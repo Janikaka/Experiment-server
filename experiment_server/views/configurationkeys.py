@@ -57,8 +57,8 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkey', request_method="GET")
     def configurationkeys_GET_one(self):
         """ Find and return one configurationkey by id with GET method """
-        confkey_id = self.request.swagger_data['ckId']
-        app_id = self.request.swagger_data['appId']
+        confkey_id = self.request.swagger_data['ckid']
+        app_id = self.request.swagger_data['appid']
         confkey = get_conf_key_by_appid_and_ckid(app_id, confkey_id)
         if confkey is None:
             print_log(datetime.datetime.now(), 'GET',\
@@ -78,8 +78,8 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkey', request_method="DELETE")
     def configurationkeys_DELETE_one(self):
         """ Find and delete one configurationkey by id with delete method """
-        confkey_id = self.request.swagger_data['ckId']
-        app_id = self.request.swagger_data['appId']
+        confkey_id = self.request.swagger_data['ckid']
+        app_id = self.request.swagger_data['appid']
         confkey = get_conf_key_by_appid_and_ckid(app_id, confkey_id)
         if not confkey:
             print_log(datetime.datetime.now(), 'DELETE', '/applications/%s/' % app_id +

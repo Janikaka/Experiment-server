@@ -55,8 +55,8 @@ class ExclusionConstraints(WebUtils):
     @view_config(route_name='exconstraints_for_configurationkey', request_method="GET")
     def exclusionconstraints_GET(self):
         """ List all exclusionconstraints with GET method """
-        app_id = self.request.swagger_data['appId']
-        conf_id = self.request.swagger_data['ckId']
+        app_id = self.request.swagger_data['appid']
+        conf_id = self.request.swagger_data['ckid']
         exclusionconstraints = ExclusionConstraint.query()\
             .join(ConfigurationKey, or_\
                 (ExclusionConstraint.first_configurationkey_id == ConfigurationKey.id,\
@@ -76,9 +76,9 @@ class ExclusionConstraints(WebUtils):
     @view_config(route_name='exclusionconstraint', request_method="GET")
     def exclusionconstraints_GET_one(self):
         """ Find and return one configurationkey by id with GET method """
-        app_id = self.request.swagger_data['appId']
-        conf_id = self.request.swagger_data['ckId']
-        exconst_id = self.request.swagger_data['ecId']
+        app_id = self.request.swagger_data['appid']
+        conf_id = self.request.swagger_data['ckid']
+        exconst_id = self.request.swagger_data['ecid']
         exconstraint = self.get_exclusionconstraint(app_id, conf_id, exconst_id)
         if exconstraint is None:
             print_log(datetime.datetime.now(), 'GET', '/exclusionconstraints/'
@@ -89,9 +89,9 @@ class ExclusionConstraints(WebUtils):
     @view_config(route_name='exclusionconstraint', request_method="DELETE")
     def exclusionconstraints_DELETE_one(self):
         """ Find and delete one exclusionconstraint by id with DELETE method """
-        app_id = self.request.swagger_data['appId']
-        conf_id = self.request.swagger_data['ckId']
-        exconst_id = self.request.swagger_data['ecId']
+        app_id = self.request.swagger_data['appid']
+        conf_id = self.request.swagger_data['ckid']
+        exconst_id = self.request.swagger_data['ecid']
         exconstraint = self.get_exclusionconstraint(app_id, conf_id, exconst_id)
 
         logmessage_address = '/applications/%s/configurationkeys/%s/exclusionconstraints/%s'\
@@ -108,8 +108,8 @@ class ExclusionConstraints(WebUtils):
 
     @view_config(route_name='exconstraints_for_configurationkey', request_method="POST")
     def exclusionconstraints_for_confkey_POST(self):
-        app_id = self.request.swagger_data['appId']
-        first_config_id = self.request.swagger_data['ckId']
+        app_id = self.request.swagger_data['appid']
+        first_config_id = self.request.swagger_data['ckid']
         exconstraint = self.request.swagger_data['exclusionconstraint']
 
         try:

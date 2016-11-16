@@ -16,8 +16,8 @@ from toolz import *
 # Helper functions
 def get_client_by_id_and_app(data):
     try:
-        app_id = data['appId']
-        client_id = data['clientId']
+        app_id = data['appid']
+        client_id = data['clientid']
 
         return Client.query()\
         .join(Client.experimentgroups)\
@@ -62,7 +62,7 @@ class Clients(WebUtils):
             Creates a list and returns it. In future we might would like general json-serialization to make this even
             more simpler.
         """
-        app_id = self.request.swagger_data['appId']
+        app_id = self.request.swagger_data['appid']
 
         if not Application.get(app_id):
             print_log('/applications/%s/clients failed' %app_id)
@@ -112,8 +112,8 @@ class Clients(WebUtils):
     @view_config(route_name='configurations_for_client', request_method="GET")
     def configurations_GET(self):
         client = get_client_by_id_and_app(self.request.swagger_data)
-        client_id = self.request.swagger_data['clientId']
-        app_id = self.request.swagger_data['appId']
+        client_id = self.request.swagger_data['clientid']
+        app_id = self.request.swagger_data['appid']
         if client is None:
             print_log(datetime.datetime.now(), 'GET', '/applications/%s/clients/%s/configurations failed' % (app_id, client_id),
                 'List configurations for specific client', 'Failed')
@@ -128,7 +128,7 @@ class Clients(WebUtils):
     @view_config(route_name='experiments_for_client', request_method="GET")
     def experiments_for_client_GET(self):
         client = get_client_by_id_and_app(self.request.swagger_data)
-        app_id = self.request.swagger_data['appId']
+        app_id = self.request.swagger_data['appid']
         if not client:
             return self.createResponse(None, 400)
 
