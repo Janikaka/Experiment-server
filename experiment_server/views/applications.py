@@ -69,17 +69,6 @@ class Applications(WebUtils):
         print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(app_id), 'Delete application', 'Succeeded')
         return {}
 
-    @view_config(route_name='configurationkeys_for_app', request_method="GET")
-    def configurationkeys_for_application_GET(self):
-        """ List all configurationkeys of specific application """
-        app_id = self.request.swagger_data['id']
-        app = Application.get(app_id)
-        if app is None:
-            print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/configurationkeys',
-                      'Get configurationkeys of one application', None)
-            return self.createResponse(None, 400)
-        return list(map(lambda _: _.as_dict(), app.configurationkeys))
-
     @view_config(route_name='rangeconstraints_for_app', request_method='GET')
     def rangeconstraints_for_app_GET(self):
         """ list all rangeconstraints of one application """
