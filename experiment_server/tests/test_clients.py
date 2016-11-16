@@ -198,7 +198,7 @@ class TestClientsREST(BaseTest):
         assert response.status_code == 400
 
     def test_client_DELETE(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.swagger_data = {'appId': 1, 'clientId': 1}
         httpclients = Clients(self.req)
         response = httpclients.client_DELETE()
 

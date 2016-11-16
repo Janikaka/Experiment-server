@@ -5,6 +5,7 @@ from pyramid.response import Response
 from experiment_server.utils.log import print_log
 from experiment_server.views.webutils import WebUtils
 
+from experiment_server.models.applications import Application
 from experiment_server.models.clients import Client
 from experiment_server.models.experiments import Experiment
 from experiment_server.models.experimentgroups import ExperimentGroup
@@ -43,135 +44,142 @@ class Experiments(WebUtils):
     @view_config(route_name='experiments', request_method="POST")
     def experiments_POST(self):
         """ Create new experiment """
+        app_id = self.request.swagger_data['appId']
         req_exp = self.request.swagger_data['experiment']
         exp = Experiment(
                 name=req_exp.name,
                 startDatetime = req_exp.startDatetime,
                 endDatetime = req_exp.endDatetime,
-                application_id = req_exp.application_id
+                application_id = app_id
         )
+
         Experiment.save(exp)
         print_log(req_exp.name, 'POST', '/experiments', 'Create new experiment', exp)
         return exp.as_dict()
 
     @view_config(route_name='experiments', request_method="GET")
     def experiments_GET(self):
-        """ List all experiments """
-        experiments = []
-        for exp in Experiment.all():
-            status = exp.get_status()
-            exp_with_status = assoc(exp.as_dict(), 'status', status)
-            experiments.append(exp_with_status)
-        return experiments
+        """ List all Application's Experiments including Experiments' status """
+        app_id = self.request.swagger_data['appId']
+        experiments = Experiment.query().join(Application)\
+            .filter(Application.id == app_id).all()
+
+        return list(map(lambda _: assoc(_.as_dict(), 'status',\
+            _.get_status()), experiments))
 
     @view_config(route_name='experiment', request_method="GET", renderer='json')
     def experiments_GET_one(self):
-        """ Find and return one experiment by id with GET method """
-        exp_id = self.request.swagger_data['id']
-        exp = Experiment.get(exp_id)
+        """ Find and return one Application's Experiment by id with GET method """
+        app_id = self.request.swagger_data['appId']
+        exp_id = self.request.swagger_data['expId']
+        exp = Experiment.query().join(Application)\
+            .filter(Application.id == app_id, Experiment.id == exp_id).one_or_none()
         if exp is None:
-            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(exp_id), 'Get one experiment', None)
+            print_log(datetime.datetime.now(), 'GET',\
+                '/applications/%s/experiments/%s' % (app_id, exp_id),\
+                'Get one experiment', 'Failed')
             return self.createResponse(None, 400)
         return exp.as_dict()
 
     @view_config(route_name='experiment', request_method="DELETE")
     def experiment_DELETE(self):
         """ Delete one experiment """
-        exp_id = self.request.swagger_data['id']
-        exp = Experiment.get(exp_id)
-        if not exp:
-            print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(exp_id), 'Delete experiment', 'Failed')
+        app_id = self.request.swagger_data['appId']
+        exp_id = self.request.swagger_data['expId']
+        log_address = '/applications/%s/experiments/%s' % (app_id, exp_id)
+
+        exp = Experiment.query().join(Application)\
+            .filter(Application.id == app_id, Experiment.id == exp_id)\
+            .one_or_none()
+        if exp is None:
+            print_log(datetime.datetime.now(), 'DELETE', log_address,\
+                'Delete experiment', 'Failed')
             return self.createResponse(None, 400)
+
         Experiment.destroy(exp)
-        print_log(datetime.datetime.now(), 'DELETE', '/experiments/' + str(exp_id), 'Delete experiment', 'Succeeded')
+        print_log(datetime.datetime.now(), 'DELETE', log_address,\
+            'Delete experiment', 'Succeeded')
         return {}
 
     @view_config(route_name='experiment_metadata', request_method="GET")
     def experiment_metadata_GET(self):
-        id = int(self.request.matchdict['id'])
-        experiment = Experiment.get(id)
+        app_id = self.request.swagger_data['appId']
+        exp_id = self.request.swagger_data['expId']
+        experiment = Experiment.query().join(Application)\
+            .filter(Application.id == app_id, Experiment.id == exp_id)\
+            .one_or_none()
+        log_address = '/applications/%s/experiments/%s/metadata' % (app_id,exp_id)
         if experiment is None:
-            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
-                     'Show specific experiment metadata', None)
+            print_log(datetime.datetime.now(), 'GET', log_address,
+                     'Show specific experiment metadata', 'Failed')
             return self.createResponse(None, 400)
+
         experimentAsJSON = experiment.as_dict()
         totalDataitems = experiment.get_total_dataitems()
         experimentgroups = []
-        for i in range(len(experiment.experimentgroups)):
-            expgroup = experiment.experimentgroups[i]
+
+        for expgroup in experiment.experimentgroups:
             expgroupAsJSON = expgroup.as_dict()
             confs = expgroup.configurations
-            clients = []
-            for i in range(len(expgroup.clients)):
-                clients.append(expgroup.clients[i].as_dict())
-            configurations = []
-            for i in range(len(confs)):
-                configurations.append(confs[i].as_dict())
+
+            clients = Client.query().join(Client.experimentgroups)\
+                .filter(ExperimentGroup.id == expgroup.id).count()
+
+            configurations = list(map(lambda _: _.as_dict(), expgroup.configurations))
+
             expgroupAsJSON['configurations'] = configurations
             expgroupAsJSON['clients'] = clients
             experimentgroups.append(expgroupAsJSON)
+
         experimentAsJSON['experimentgroups'] = experimentgroups
         experimentAsJSON['totalDataitems'] = totalDataitems
         experimentAsJSON['status'] = experiment.get_status()
         result = {'data': experimentAsJSON}
-        print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/metadata',
+        print_log(datetime.datetime.now(), 'GET', log_address,
                  'Show specific experiment metadata', result)
         return self.createResponse(result, 200)
 
     @view_config(route_name='clients_for_experiment', request_method="GET")
     def clients_for_experiment_GET(self):
         """ List all clients for specific experiment """
-        id = self.request.swagger_data['id']
-        exp = Experiment.get(id)
-        if exp is None:
+        app_id = self.request.swagger_data['appId']
+        exp_id = self.request.swagger_data['expId']
+        exp = Experiment.query().join(Application)\
+            .filter(Experiment.id == exp_id, Application.id == app_id).count()
+
+        if exp == 0:
             print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/clients',
                       'List all clients for specific experiment', None)
             return self.createResponse(None, 400)
-        clients = []
-        for expgroup in exp.experimentgroups:
-            clients.extend(map(lambda _: _.as_dict(), expgroup.clients))
-        return list(clients)
 
-    @view_config(route_name='client_for_experiment', request_method="DELETE")
-    def client_for_experiment_DELETE(self):
-        """ Delete client from specific experiment """
-        expid = self.request.swagger_data['expid']
-        clientid = self.request.swagger_data['clientid']
-        client = Client.get(clientid)
-        exp = Experiment.get(expid)
-        if not exp or not clientid or not client:
-            print_log(datetime.datetime.now(),
-                      'GET', '/experiments/' + str(expid) + '/clients/' + str(clientid),
-                      'Delete client from specific experiment', 'Failed')
-            return self.createResponse(None, 400)
+        clients = Client.query()\
+            .join(Client.experimentgroups, Experiment, Application)\
+            .filter(Experiment.id == exp_id, Application.id == app_id).all()
+        return list(map(lambda _: _.as_dict(), clients))
 
-        clients_exp_groups = list(filter(lambda expgroup: expgroup.experiment_id == expid, client.experimentgroups))
+    @view_config(route_name='experimentgroups', request_method="GET")
+    def experimentgroup_GET(self):
+        app_id = self.request.swagger_data['appId']
+        exp_id = self.request.swagger_data['expId']
 
-        for eg in clients_exp_groups:
-            client.experimentgroups.remove(eg)
+        experimentgroups = ExperimentGroup.query().join(Experiment, Application)\
+            .filter(Experiment.id == exp_id, Application.id ==app_id).all()
 
-        return {}
+        return list(map(lambda _: _.as_dict(), experimentgroups))
 
-    @view_config(route_name='experiment_data', request_method="GET")
-    def experiment_data_GET(self):
-        """ Show one experiment data, including experiment and experimentgroups """
-        expId = self.request.swagger_data['id']
-        experiment = Experiment.get(expId)
-        if experiment is None:
-            print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/data',
-                      'Get all things and experimentgroups of one experiment', None)
-            return self.createResponse(None, 400)
-        expgroups = list(map(lambda _: _.as_dict(), experiment.experimentgroups))
-        experimentAsJSON = experiment.as_dict()
-        result = assoc(experimentAsJSON, 'experimentgroups', expgroups)
-        return result
 
     @view_config(route_name='experimentgroup', request_method="GET")
-    def experimentgroup_GET(self):
+    def experimentgroup_GET_one(self):
         """ Show specific experiment group metadata """
-        expgroupid = self.request.swagger_data['expgroupid']
-        expid = self.request.swagger_data['expid']
-        expgroup = ExperimentGroup.get(expgroupid)
+        app_id = self.request.swagger_data['appId']
+        expid = self.request.swagger_data['expId']
+        expgroupid = self.request.swagger_data['expgroupId']
+
+        #expgroup = ExperimentGroup.get(expgroupid)
+        expgroup = ExperimentGroup.query().join(Experiment, Application)\
+            .filter(ExperimentGroup.id == expgroupid, Experiment.id == expid,\
+                Application.id == app_id)\
+            .one_or_none()
 
         if expgroup is None or expgroup.experiment.id != expid:
             print_log(datetime.datetime.now(), 'GET',
@@ -198,16 +206,26 @@ class Experiments(WebUtils):
     @view_config(route_name='experimentgroup', request_method="DELETE")
     def experimentgroup_DELETE(self):
         """ Delete one experimentgroup """
-        expgroupid = self.request.swagger_data['expgroupid']
+        app_id = self.request.swagger_data['appId']
+        exp_id = self.request.swagger_data['expId']
+        expgroupid = self.request.swagger_data['expgroupId']
+
         experimentgroup = ExperimentGroup.get(expgroupid)
-        expid = self.request.swagger_data['expid']
-        if not experimentgroup or experimentgroup.experiment.id != expid:
+        experimentgroup = ExperimentGroup.query().join(Experiment, Application)\
+            .filter(ExperimentGroup.id == expgroupid, Experiment.id == exp_id,\
+                Application.id == app_id)\
+            .one_or_none()
+
+        log_address = '/applications/%s/experiments/%s/experimentgroups/%s'\
+            % (app_id, exp_id, expgroupid)
+
+        if not experimentgroup or experimentgroup.experiment.id != exp_id:
             print_log(datetime.datetime.now(), 'DELETE',
-                      '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
+                      log_address,
                       'Delete experimentgroup', 'Failed')
             return self.createResponse(None, 400)
         ExperimentGroup.destroy(experimentgroup)
         print_log(datetime.datetime.now(), 'DELETE',
-                  '/experiments/' + str(expid) + '/experimentgroups/' + str(expgroupid),
+                  log_address,
                   'Delete experimentgroup', 'Succeeded')
         return {}

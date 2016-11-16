@@ -1,7 +1,7 @@
 
 import datetime
 from .base_test import BaseTest
-from ..models import (Experiment, Client, ExperimentGroup, Configuration)
+from ..models import (Application, Experiment, Client, ExperimentGroup, Configuration)
 from experiment_server.views.experiments import Experiments
 
 
@@ -85,11 +85,11 @@ class TestExperimentsREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_experiments_POST(self):
-        self.req.swagger_data = {'experiment': Experiment(
-            name='Example Experiment',
-            application_id=1,
-            startDatetime=datetime.datetime(2016, 1, 1, 0, 0, 0),
-            endDatetime=datetime.datetime(2017, 1, 1, 0, 0, 0))}
+        self.req.swagger_data = {'appId': 1,
+            'experiment': Experiment(
+                name='Example Experiment',
+                startDatetime=datetime.datetime(2016, 1, 1, 0, 0, 0),
+                endDatetime=datetime.datetime(2017, 1, 1, 0, 0, 0))}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiments_POST()
         experiment = {'id': 2,
@@ -103,6 +103,7 @@ class TestExperimentsREST(BaseTest):
 
     def test_experiments_GET(self):
         httpExperiments = Experiments(self.req)
+        self.req.swagger_data = {'appId': 1}
         response = httpExperiments.experiments_GET()
         experiment = response[0]
 
@@ -113,8 +114,22 @@ class TestExperimentsREST(BaseTest):
         assert experiment['endDatetime'] == '2017-01-01 00:00:00'
         assert experiment['status'] == 'running'
 
+    def test_experiments_GET_one(self):
+        httpExperiments = Experiments(self.req)
+        self.req.swagger_data = {'appId': 1, 'expId':1}
+        response = httpExperiments.experiments_GET_one()
+        expected = Experiment.get(1).as_dict()
+        assert response == expected
+
+    def test_experiments_GET_one_nonexistent_experiment(self):
+        httpExperiments = Experiments(self.req)
+        self.req.swagger_data = {'appId': 1, 'expId':2}
+        response = httpExperiments.experiments_GET_one()
+        expected = 400
+        assert response.status_code == expected
+
     def test_experiment_metadata_GET(self):
-        self.req.matchdict = {'id': 1}
+        self.req.swagger_data = {'appId': 1, 'expId':1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_metadata_GET()
         result = response.json['data']
@@ -128,7 +143,7 @@ class TestExperimentsREST(BaseTest):
                       'experimentgroups':
                           [{'id': 1,
                             'name': 'Group A',
-                            'clients': [{'id': 1, 'clientname': 'First client'}],
+                            'clients': 1,
                             'experiment_id': 1,
                             'configurations':
                                 [{'id': 1, 'key': 'v1', 'value': 0.5, 'experimentgroup_id': 1},
@@ -136,7 +151,7 @@ class TestExperimentsREST(BaseTest):
                             },
                            {'id': 2,
                             'name': 'Group B',
-                            'clients': [{'id': 2, 'clientname': 'Second client'}],
+                            'clients': 1,
                             'experiment_id': 1,
                             'configurations':
                                 [{'id': 3, 'key': 'v1', 'value': 1.0, 'experimentgroup_id': 2},
@@ -146,19 +161,21 @@ class TestExperimentsREST(BaseTest):
 
         assert result == experiment
 
-        self.req.matchdict = {'id': 2}
+    def test_experiment_metadata_GET_nonexistent_experiment(self):
+        self.req.swagger_data = {'appId': 1, 'expId':2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_metadata_GET()
         assert response.status_code == 400
         assert response.json == None
 
     def test_experiment_DELETE(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.swagger_data = {'appId': 1, 'expId':1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_DELETE()
         assert response == {}
 
-        self.req.swagger_data = {'id': 2}
+    def test_experiment_DELETE_nonexistent_experiment(self):
+        self.req.swagger_data = {'appId': 1, 'expId':2}
         print(self.req.matchdict)
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiment_DELETE()
@@ -166,7 +183,7 @@ class TestExperimentsREST(BaseTest):
         assert response.json == None
 
     def test_clients_for_experiment_GET(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.swagger_data = {'appId': 1, 'expId': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.clients_for_experiment_GET()
         clients = [{'id': 1,
@@ -175,7 +192,8 @@ class TestExperimentsREST(BaseTest):
                   'clientname': 'Second client'}]
         assert response == clients
 
-        self.req.swagger_data = {'id': 2}
+    def test_clients_for_experiment_GET_nonexistent_experiment(self):
+        self.req.swagger_data = {'appId': 1, 'expId': 2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.clients_for_experiment_GET()
         assert response.status_code == 400
@@ -186,9 +204,27 @@ class TestExperimentsREST(BaseTest):
         assert 1 == 1
 
     def test_experimentgroup_GET(self):
-        self.req.swagger_data = {'expgroupid': 1, 'expid': 1}
+        self.req.swagger_data = {'appId': 1, 'expId': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_GET()
+        expected = list(map(lambda _: _.as_dict(), \
+                    ExperimentGroup.query().join(Experiment).join(Application)\
+                    .filter(Application.id == 1, Experiment.id == 1).all()))
+
+        assert response == expected
+
+    def test_experimentgroup_GET_nonexistent_experiment(self):
+        self.req.swagger_data = {'appId': 1, 'expId': 2}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experimentgroup_GET()
+        expected = list()
+
+        assert response == expected
+
+    def test_experimentgroup_GET_one(self):
+        self.req.swagger_data = {'appId': 1,'expgroupId': 1, 'expId': 1}
+        httpExperiments = Experiments(self.req)
+        response = httpExperiments.experimentgroup_GET_one()
         experimentgroup = {
                             'id': 1,
                             'name': 'Group A',
@@ -217,30 +253,21 @@ class TestExperimentsREST(BaseTest):
                            'clients': [{'id': 1, 'clientname': 'First client'}]}
         assert response == experimentgroup
 
-        self.req.swagger_data = {'expgroupid': 1, 'expid': 2}
+    def test_experimentgroup_GET_one_nonexistent_experiment(self):
+        self.req.swagger_data = {'appId': 1,'expgroupId': 1, 'expId': 2}
         httpExperiments = Experiments(self.req)
-        response = httpExperiments.experimentgroup_GET()
+        response = httpExperiments.experimentgroup_GET_one()
         assert response.status_code == 400
         assert response.json == None
 
     def test_experimentgroup_DELETE(self):
-        self.req.swagger_data = {'expgroupid': 1, 'expid': 1}
+        self.req.swagger_data = {'appId': 1, 'expId': 1, 'expgroupId': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_DELETE()
         assert response == {}
 
-        self.req.swagger_data = {'expgroupid': 2, 'expid': 2}
+    def test_experimentgroup_DELETE_nonexistent_experiment_and_experimentgroup(self):
+        self.req.swagger_data = {'appId': 1, 'expId': 2, 'expgroupId': 2}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experimentgroup_DELETE()
-        assert response.status_code == 400
-
-    def test_client_for_experiment_DELETE(self):
-        self.req.swagger_data = {'clientid': 1, 'expid': 1}
-        httpExperiments = Experiments(self.req)
-        response = httpExperiments.client_for_experiment_DELETE()
-        assert response == {}
-
-        self.req.swagger_data = {'clientid': 2, 'expid': 2}
-        httpExperiments = Experiments(self.req)
-        response = httpExperiments.client_for_experiment_DELETE()
         assert response.status_code == 400

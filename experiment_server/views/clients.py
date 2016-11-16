@@ -100,8 +100,7 @@ class Clients(WebUtils):
     # Delete client
     @view_config(route_name='client', request_method="DELETE")
     def client_DELETE(self):
-        id = self.request.swagger_data['id']
-        result = Client.get(id)
+        result = get_client_by_id_and_app(self.request.swagger_data)
         if not result:
             print_log(datetime.datetime.now(), 'DELETE', '/clients/' + str(id), 'Delete client', 'Failed')
             return self.createResponse(None, 400)
