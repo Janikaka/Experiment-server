@@ -32,8 +32,8 @@ class RangeConstraints(WebUtils):
     @view_config(route_name='rangeconstraints', request_method="GET")
     def rangeconstraints_GET(self):
         """ List all rangeconstraints for ConfigurationKey with GET method """
-        app_id = self.request.swagger_data['appid']
-        confkey_id = self.request.swagger_data['ckid']
+        app_id = self.request.matchdict['appid']
+        confkey_id = self.request.matchdict['ckid']
         rangeconstraints = RangeConstraint.query()\
             .join(ConfigurationKey)\
             .filter(ConfigurationKey.id == confkey_id)\
@@ -44,9 +44,9 @@ class RangeConstraints(WebUtils):
     @view_config(route_name='rangeconstraint', request_method="DELETE")
     def rangecontraints_DELETE_one(self):
         """ Find and delete one rangeconstraint by id with DELETE method """
-        app_id = self.request.swagger_data['appid']
-        confkey_id = self.request.swagger_data['ckid']
-        rc_id = self.request.swagger_data['rcid']
+        app_id = self.request.matchdict['appid']
+        confkey_id = self.request.matchdict['ckid']
+        rc_id = self.request.matchdict['rcid']
         rangeconstraint = RangeConstraint.get(rc_id)
 
         try:
@@ -73,9 +73,9 @@ class RangeConstraints(WebUtils):
     @view_config(route_name='rangeconstraints', request_method="POST")
     def rangecontraints_POST(self):
         """ Create new rangeconstraint for specific configurationkey """
-        req_rangec = self.request.swagger_data['rangeconstraint']
-        configkey_id = self.request.swagger_data['ckid']
-        app_id = self.request.swagger_data['appid']
+        req_rangec = self.request.matchdict['rangeconstraint']
+        configkey_id = self.request.matchdict['ckid']
+        app_id = self.request.matchdict['appid']
 
         rconstraint = RangeConstraint(
             configurationkey_id=configkey_id,
@@ -106,15 +106,15 @@ class RangeConstraints(WebUtils):
     @view_config(route_name='rangeconstraints', request_method="DELETE")
     def rangeconstraints_for_configuratinkey_DELETE(self):
         """ Delete all rangeconstraints of one specific configurationkey"""
-        configkey_id = self.request.swagger_data['ckid']
-        app_id = self.request.swagger_data['appid']
+        configkey_id = self.request.matchdict['ckid']
+        app_id = self.request.matchdict['appid']
         configurationkey = ConfigurationKey.get(configkey_id)
         errors = 0
 
         try:
             for rc in configurationkey.rangeconstraints:
                 # Set rangeconstraint's id, so rangecontraints_DELETE_one can use it
-                self.request.swagger_data['rcid'] = rc.id
+                self.request.matchdict['rcid'] = rc.id
                 if not self.rangecontraints_DELETE_one() == {}:
                     errors += 1
         except Exception as e:

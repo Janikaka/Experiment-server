@@ -34,7 +34,7 @@ class Applications(WebUtils):
     @view_config(route_name='application', request_method="GET")
     def applications_GET_one(self):
         """ Find and return one application by id with GET method """
-        app_id = self.request.swagger_data['id']
+        app_id = self.request.matchdict['id']
         app = Application.get(app_id)
         if app is None:
             print_log(datetime.datetime.now(), 'GET', '/applications/' + str(app_id), 'Get one application', None)
@@ -49,7 +49,7 @@ class Applications(WebUtils):
     @view_config(route_name='applications', request_method="POST")
     def applications_POST(self):
         """ Create new application with POST method """
-        req_app = self.request.swagger_data['application']
+        req_app = self.request.matchdict['application']
         app = Application(
             name=req_app.name
         )
@@ -60,7 +60,7 @@ class Applications(WebUtils):
     @view_config(route_name='application', request_method="DELETE")
     def applications_DELETE_one(self):
         """ Find and delete one application by id with delete method """
-        app_id = self.request.swagger_data['id']
+        app_id = self.request.matchdict['id']
         app = Application.get(app_id)
         if not app:
             print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(app_id), 'Delete application', 'Failed')
@@ -74,7 +74,7 @@ class Applications(WebUtils):
         """ List all configurationkeys and rangeconstraints of specific application.
             Returns application with configurationkeys and rangeconstraints of conf.keys
         """
-        app_id = self.request.swagger_data['id']
+        app_id = self.request.matchdict['id']
         app = Application.get(app_id)
         if app is None:
             print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/rangeconstraints',

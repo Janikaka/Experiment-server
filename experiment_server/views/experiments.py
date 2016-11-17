@@ -44,8 +44,8 @@ class Experiments(WebUtils):
     @view_config(route_name='experiments', request_method="POST")
     def experiments_POST(self):
         """ Create new experiment """
-        app_id = self.request.swagger_data['appid']
-        req_exp = self.request.swagger_data['experiment']
+        app_id = self.request.matchdict['appid']
+        req_exp = self.request.matchdict['experiment']
         exp = Experiment(
                 name=req_exp.name,
                 startDatetime = req_exp.startDatetime,
@@ -60,7 +60,7 @@ class Experiments(WebUtils):
     @view_config(route_name='experiments', request_method="GET")
     def experiments_GET(self):
         """ List all Application's Experiments including Experiments' status """
-        app_id = self.request.swagger_data['appid']
+        app_id = self.request.matchdict['appid']
         experiments = Experiment.query().join(Application)\
             .filter(Application.id == app_id).all()
 
@@ -70,8 +70,8 @@ class Experiments(WebUtils):
     @view_config(route_name='experiment', request_method="GET", renderer='json')
     def experiments_GET_one(self):
         """ Find and return one Application's Experiment by id with GET method """
-        app_id = self.request.swagger_data['appid']
-        exp_id = self.request.swagger_data['expid']
+        app_id = self.request.matchdict['appid']
+        exp_id = self.request.matchdict['expid']
         exp = Experiment.query().join(Application)\
             .filter(Application.id == app_id, Experiment.id == exp_id).one_or_none()
         if exp is None:
@@ -84,8 +84,8 @@ class Experiments(WebUtils):
     @view_config(route_name='experiment', request_method="DELETE")
     def experiment_DELETE(self):
         """ Delete one experiment """
-        app_id = self.request.swagger_data['appid']
-        exp_id = self.request.swagger_data['expid']
+        app_id = self.request.matchdict['appid']
+        exp_id = self.request.matchdict['expid']
         log_address = '/applications/%s/experiments/%s' % (app_id, exp_id)
 
         exp = Experiment.query().join(Application)\
@@ -103,8 +103,8 @@ class Experiments(WebUtils):
 
     @view_config(route_name='experiment_metadata', request_method="GET")
     def experiment_metadata_GET(self):
-        app_id = self.request.swagger_data['appid']
-        exp_id = self.request.swagger_data['expid']
+        app_id = self.request.matchdict['appid']
+        exp_id = self.request.matchdict['expid']
         experiment = Experiment.query().join(Application)\
             .filter(Application.id == app_id, Experiment.id == exp_id)\
             .one_or_none()
@@ -142,8 +142,8 @@ class Experiments(WebUtils):
     @view_config(route_name='clients_for_experiment', request_method="GET")
     def clients_for_experiment_GET(self):
         """ List all clients for specific experiment """
-        app_id = self.request.swagger_data['appid']
-        exp_id = self.request.swagger_data['expid']
+        app_id = self.request.matchdict['appid']
+        exp_id = self.request.matchdict['expid']
         exp = Experiment.query().join(Application)\
             .filter(Experiment.id == exp_id, Application.id == app_id).count()
 
@@ -159,8 +159,8 @@ class Experiments(WebUtils):
 
     @view_config(route_name='experimentgroups', request_method="GET")
     def experimentgroup_GET(self):
-        app_id = self.request.swagger_data['appid']
-        exp_id = self.request.swagger_data['expid']
+        app_id = self.request.matchdict['appid']
+        exp_id = self.request.matchdict['expid']
 
         experimentgroups = ExperimentGroup.query().join(Experiment, Application)\
             .filter(Experiment.id == exp_id, Application.id ==app_id).all()
@@ -171,9 +171,9 @@ class Experiments(WebUtils):
     @view_config(route_name='experimentgroup', request_method="GET")
     def experimentgroup_GET_one(self):
         """ Show specific experiment group metadata """
-        app_id = self.request.swagger_data['appid']
-        expid = self.request.swagger_data['expid']
-        expgroupid = self.request.swagger_data['expgroupid']
+        app_id = self.request.matchdict['appid']
+        expid = self.request.matchdict['expid']
+        expgroupid = self.request.matchdict['expgroupid']
 
         #expgroup = ExperimentGroup.get(expgroupid)
         expgroup = ExperimentGroup.query().join(Experiment, Application)\
@@ -206,9 +206,9 @@ class Experiments(WebUtils):
     @view_config(route_name='experimentgroup', request_method="DELETE")
     def experimentgroup_DELETE(self):
         """ Delete one experimentgroup """
-        app_id = self.request.swagger_data['appid']
-        exp_id = self.request.swagger_data['expid']
-        expgroupid = self.request.swagger_data['expgroupid']
+        app_id = self.request.matchdict['appid']
+        exp_id = self.request.matchdict['expid']
+        expgroupid = self.request.matchdict['expgroupid']
 
         experimentgroup = ExperimentGroup.get(expgroupid)
         experimentgroup = ExperimentGroup.query().join(Experiment, Application)\

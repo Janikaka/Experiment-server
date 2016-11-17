@@ -62,7 +62,7 @@ class Clients(WebUtils):
             Creates a list and returns it. In future we might would like general json-serialization to make this even
             more simpler.
         """
-        app_id = self.request.swagger_data['appid']
+        app_id = self.request.matchdict['appid']
 
         if not Application.get(app_id):
             print_log('/applications/%s/clients failed' %app_id)
@@ -79,7 +79,7 @@ class Clients(WebUtils):
     # Create new client
     @view_config(route_name='clients', request_method="POST", renderer='json')
     def create_client(self):
-        req_client = self.request.swagger_data['client']
+        req_client = self.request.matchdict['client']
         client = Client(
             clientname=req_client.clientname
         )
@@ -89,7 +89,7 @@ class Clients(WebUtils):
     # Get one client
     @view_config(route_name='client', request_method="GET", renderer='json')
     def client_GET(self):
-        result = get_client_by_id_and_app(self.request.swagger_data)
+        result = get_client_by_id_and_app(self.request.matchdict)
 
         if not result:
             print_log(datetime.datetime.now(), 'GET','applications/%s/clients/%s' % (client_id, app_id),
@@ -100,7 +100,7 @@ class Clients(WebUtils):
     # Delete client
     @view_config(route_name='client', request_method="DELETE")
     def client_DELETE(self):
-        result = get_client_by_id_and_app(self.request.swagger_data)
+        result = get_client_by_id_and_app(self.request.matchdict)
         if not result:
             print_log(datetime.datetime.now(), 'DELETE', '/clients/' + str(id), 'Delete client', 'Failed')
             return self.createResponse(None, 400)
@@ -111,9 +111,9 @@ class Clients(WebUtils):
     # List configurations for specific client
     @view_config(route_name='configurations_for_client', request_method="GET")
     def configurations_GET(self):
-        client = get_client_by_id_and_app(self.request.swagger_data)
-        client_id = self.request.swagger_data['clientid']
-        app_id = self.request.swagger_data['appid']
+        client = get_client_by_id_and_app(self.request.matchdict)
+        client_id = self.request.matchdict['clientid']
+        app_id = self.request.matchdict['appid']
         if client is None:
             print_log(datetime.datetime.now(), 'GET', '/applications/%s/clients/%s/configurations failed' % (app_id, client_id),
                 'List configurations for specific client', 'Failed')
@@ -127,8 +127,8 @@ class Clients(WebUtils):
     # List all experiments for specific client
     @view_config(route_name='experiments_for_client', request_method="GET")
     def experiments_for_client_GET(self):
-        client = get_client_by_id_and_app(self.request.swagger_data)
-        app_id = self.request.swagger_data['appid']
+        client = get_client_by_id_and_app(self.request.matchdict)
+        app_id = self.request.matchdict['appid']
         if not client:
             return self.createResponse(None, 400)
 
