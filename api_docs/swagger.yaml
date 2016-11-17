@@ -5,7 +5,7 @@ info:
   description: API for experiments
   license:
     name: MIT
-    url: http://opensource.org/licenses/MIT
+    url: http:/opensource.org/licenses/MIT
 host: experiment-server2016.herokuapp.com
 schemes:
   - http
@@ -14,8 +14,8 @@ produces:
 consumes:
   - application/json
 tags:
-  - name: user
-    description: User-related routes
+  - name: client
+    description: client-related routes
   - name: application
     description: Application-related routes
   - name: configuration-keys
@@ -37,78 +37,100 @@ paths:
         200:
           description: OK
           schema:
-              $ref: "#/definitions/API-info"
+              $ref: "../definitions.yaml#/API-info"
 
 
-  /users:
+  /applications/{appid}/clients:
     get:
       tags:
-        - user
-      summary: Get all users
-      description: Gets all users from the database
+        - client
+      summary: Get all clients
+      description: Gets all clients from the database
+      parameters:
+        - name: appid
+          in: path
+          description: Application id where client belongs to
+          required: true
       responses:
         200:
           description: OK
           schema:
             type: array
             items:
-              $ref: "#/definitions/User"
+              $ref: "../definitions.yaml#/Client"
 
     post:
       tags:
-        - user
-      summary: Create new user
+        - client
+      summary: Create new client
       parameters:
-        - name: user
+        - name: appid
+          in: path
+          description: Application id where client belongs to
+          required: true
+        - name: client
           in: body
-          description: User to create
+          description: client to create
           required: true
           schema:
-            $ref: '#/definitions/NewUser'
+            $ref: '../definitions.yaml#/Newclient'
       responses:
         200:
           description: OK
 
 
-  /users/{id}:
+  applications/{appid}/clients/{clientid}:
     get:
       tags:
-        - user
-      summary: Get one user
+        - client
+      summary: Get one client
       parameters:
-        - name: id
+        - name: appid
+          in: path
+          description: Application id where client belongs to
+          required: true
+        - name: clientid
           type: integer
-          description: id of the user
+          description: id of the client
           in: path
           required: true
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/User"
+            $ref: "../definitions.yaml#/Client"
     delete:
       tags:
-        - user
-      summary: Delete one user
+        - client
+      summary: Delete one client
       parameters:
-        - name: id
+        - name: appid
+          in: path
+          description: Application id where client belongs to
+          required: true
+        - name: clientid
           type: integer
-          description: id of the user
+          description: id of the client
           in: path
           required: true
       responses:
         200:
           description: OK
 
-  /users/{id}/configurations:
+  /applications/{appid}/clients/{clientid}/configurations:
     get:
       tags:
-        - user
-      summary: Get users currenct configurations
+        - client
+      summary: Get clients currenct configurations
       parameters:
-        - name: id
+        - name: appid
           type: integer
-          description: id of the current user
+          description: if of Application Client was created to
+          in: path
+          required: true
+        - name: clientid
+          type: integer
+          description: id of the current client
           in: path
           required: true
       responses:
@@ -117,17 +139,22 @@ paths:
           schema:
              type: array
              items:
-              $ref: "#/definitions/Configuration"
+              $ref: "../definitions.yaml#/Configuration"
 
-  /users/{id}/experiments:
+  /applications/{appid}/clients/{id}/experiments:
     get:
       tags:
-        - user
-      summary: Get users current experiments
+        - client
+      summary: Get clients current experiments
       parameters:
-        - name: id
+        - name: appid
           type: integer
-          description: id of the current user
+          description: if of Application Client was created to
+          in: path
+          required: true
+        - name: clientid
+          type: integer
+          description: id of the current client
           in: path
           required: true
       responses:
@@ -136,7 +163,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/Experiment"
+              $ref: "../definitions.yaml#/Experiment"
 
   /applications:
     get:
@@ -149,7 +176,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/Application"
+              $ref: "../definitions.yaml#/Application"
     post:
       tags:
         - application
@@ -160,12 +187,12 @@ paths:
           description: Application to create
           required: true
           schema:
-            $ref: '#/definitions/NewApplication'
+            $ref: '../definitions.yaml#/NewApplication'
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/Application"
+            $ref: "../definitions.yaml#/Application"
 
 
   /applications/{id}:
@@ -183,7 +210,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/Application"
+            $ref: "../definitions.yaml#/Application"
         400:
           description: Bad Request
     delete:
@@ -219,7 +246,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/ConfigurationKey"
+              $ref: "../definitions.yaml#/ConfigurationKey"
         400:
           description: Bad Request
     post:
@@ -237,12 +264,12 @@ paths:
           description: Conf.key to create
           required: true
           schema:
-            $ref: '#/definitions/NewConfigurationKey'
+            $ref: '../definitions.yaml#/NewConfigurationKey'
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/ConfigurationKey'
+            $ref: '../definitions.yaml#/ConfigurationKey'
 
         400:
           description: Bad Request
@@ -262,35 +289,27 @@ paths:
         400:
           description: Bad Request
 
-  /configurationkeys:
+  /applications/{appid}/configurationkeys/{ckid}:
     get:
       tags:
         - configuration-keys
-      summary: Get all configurationkeys
-      responses:
-        200:
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/ConfigurationKey"
-
-  /configurationkeys/{id}:
-    get:
-      tags:
-        - configuration-keys
-      summary: Get one configurationkey
+      summary: Get one configurationkey by application
       parameters:
-        - name: id
+        - name: ckid
           type: integer
           description: id of the configurationkey
+          in: path
+          required: true
+        - name: appid
+          type: integer
+          description: id of the Application configurationkey belongs to
           in: path
           required: true
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/ConfigurationKey"
+            $ref: "../definitions.yaml#/ConfigurationKey"
         400:
           description: Bad Request
     put:
@@ -298,9 +317,14 @@ paths:
         - configuration-keys
       summary: Modify excisting configuration key
       parameters:
-        - name: id
+        - name: ckid
           type: integer
           description: id of the configurationkey
+          in: path
+          required: true
+        - name: appid
+          type: integer
+          description: id of the Application configurationkey belongs to
           in: path
           required: true
         - name: configurationkey
@@ -308,12 +332,12 @@ paths:
           description: Configurationkey to modify
           required: true
           schema:
-            $ref: '#/definitions/ConfigurationKey'
+            $ref: '../definitions.yaml#/ConfigurationKey'
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/ConfigurationKey'
+            $ref: '../definitions.yaml#/ConfigurationKey'
         400:
           description: Bad Request
     delete:
@@ -321,9 +345,14 @@ paths:
         - configuration-keys
       summary: Delete one configurationkey
       parameters:
-        - name: id
+        - name: ckid
           type: integer
           description: id of the configurationkey
+          in: path
+          required: true
+        - name: appid
+          type: integer
+          description: id of the Application configurationkey belongs to
           in: path
           required: true
       responses:
@@ -332,15 +361,20 @@ paths:
         400:
           description: Bad Request
 
-  /configurationkeys/{id}/rangeconstraints:
+  /applications/{appid}/configurationkeys/{ckid}/rangeconstraints:
     get:
       tags:
         - configuration-keys
       summary: Get rangeconstraints of one configurationkey
       parameters:
-        - name: id
+        - name: ckid
           type: integer
           description: id of the configurationkey
+          in: path
+          required: true
+        - name: appid
+          type: integer
+          description: id of the application where configuration key belongs to
           in: path
           required: true
       responses:
@@ -349,7 +383,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/RangeConstraint"
+              $ref: "../definitions.yaml#/RangeConstraint"
         400:
           description: Bad Request
     delete:
@@ -357,9 +391,14 @@ paths:
         - configuration-keys
       summary: Delete all rangeconstraints of one configurationkey
       parameters:
-        - name: id
+        - name: ckid
           type: integer
           description: id of the configurationkey
+          in: path
+          required: true
+        - name: appid
+          type: integer
+          description: id of the application where configuration key belongs to
           in: path
           required: true
       responses:
@@ -372,9 +411,14 @@ paths:
         - configuration-keys
       summary: Create new rangeconstraint
       parameters:
-        - name: id
+        - name: ckid
           type: integer
-          description: id of the conf.key
+          description: id of the configurationkey
+          in: path
+          required: true
+        - name: appid
+          type: integer
+          description: id of the application where configuration key belongs to
           in: path
           required: true
         - name: rangeconstraint
@@ -382,33 +426,30 @@ paths:
           description: Rangeconstraint to create
           required: true
           schema:
-            $ref: '#/definitions/NewRangeConstraint'
+            $ref: '../definitions.yaml#/NewRangeConstraint'
       responses:
         200:
           description: OK
         400:
           description: Bad Request
 
-  /rangeconstraints:
-    get:
-      tags:
-        - range-constraints
-      summary: Get all rangeconstraints
-      responses:
-        200:
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/RangeConstraint"
-
-  /rangeconstraints/{id}:
+  applications/{appid}/configurationkeys/{ckid}/rangeconstraints/{rcid}:
     delete:
       tags:
         - range-constraints
       summary: Delete one rangeconstraint
       parameters:
-        - name: id
+        - name: appid
+          type: integer
+          description: id of the Application where ConfigurationKey belongs
+          in: path
+          required: true
+        - name : ckid
+          type: integer
+          description: id of the ConfigurationKey where RangeConstraint belongs to
+          in: path
+          required: true
+        - name: rcid
           type: integer
           description: id of the rangeconstraint
           in: path
@@ -419,26 +460,69 @@ paths:
         400:
           description: Bad Request
 
-  /exclusionconstraints:
+  /applications/{appid}/configurationkeys/{ckid}/exclusionconstraints:
     get:
       tags:
         - exclusion-constraint
-      summary: Get all exclusionconstraints
+      summary: Get all exclusionconstraints by Application and ConfigurationKey
+      parameters:
+        - name: appid
+          type: integer
+          description: id of the Application where ConfigurationKey belongs
+          in: path
+          required: true
+        - name: ckid
+          type: integer
+          description: id of ConfigurationKey
+          in: path
+          required: true
       responses:
         200:
           description: OK
           schema:
             type: array
             items:
-              $ref: "#/definitions/ExclusionConstraint"
+              $ref: "../definitions.yaml#/ExclusionConstraint"
+    post:
+      tags:
+        - exclusion-constraint
+      summary: Create new ExclusionConstraint to Application
+        parameters:
+          - name: appid
+            type: integer
+            description: id of the Application where ConfigurationKey belongs
+            in: path
+            required: true
+          - name: ckid
+            type: integer
+            description: id of ConfigurationKey
+            in: path
+            required: true
+        responses:
+          200:
+            description: OK
+            schema:
+              $ref: "../definitions.yaml#/ExclusionConstraint"
+          400:
+            description: Bad request
 
-  /exclusionconstraints/{id}:
+  /applications/{appid}/configurationkeys/{ckid}/exclusionconstraints/{ecid}:
     get:
       tags:
         - exclusion-constraint
       summary: Get one exclusionconstraint
       parameters:
-        - name: id
+        - name: appid
+          type: integer
+          description: id of the Application ConfigurationKey belongs to
+          in: path
+          required: true
+        - name: ckid
+          type: integer
+          description: id of the ConfigurationKey where ExclusionConstraint belongs
+          in: path
+          required: true
+        - name: ecid
           type: integer
           description: id of the exclusionconstraint
           in: path
@@ -447,7 +531,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/ExclusionConstraint"
+            $ref: "../definitions.yaml#/ExclusionConstraint"
         400:
           description: Bad Request
     delete:
@@ -455,7 +539,17 @@ paths:
         - exclusion-constraint
       summary: Delete one exclusionconstraint
       parameters:
-        - name: id
+        - name: appid
+          type: integer
+          description: id of the Application ConfigurationKey belongs to
+          in: path
+          required: true
+        - name: ckid
+          type: integer
+          description: id of the ConfigurationKey where ExclusionConstraint belongs
+          in: path
+          required: true
+        - name: ecid
           type: integer
           description: id of the exclusionconstraint
           in: path
@@ -477,20 +571,26 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/Operator"
+              $ref: "../definitions.yaml#/Operator"
 
-  /experiments:
+  applications/{appid}/experiments:
     get:
       tags:
         - experiments
       summary: List all experiments
+      parameters:
+        - name: appid
+          in: path
+          description: id of Application where Experiment is on
+          required: true
+          type: integer
       responses:
         200:
           description: OK
           schema:
             type: array
             items:
-              $ref: "#/definitions/Experiment"
+              $ref: "../definitions.yaml#/Experiment"
         400:
           description: Bad Request
     post:
@@ -498,28 +598,38 @@ paths:
         - experiments
       summary: Create new experiment
       parameters:
+        - name: appid
+          in: path
+          description: id of Application where Experiment is on
+          required: true
+          type: integer
         - name: experiment
           in: body
           description: Experiment to create
           required: true
           schema:
-            $ref: '#/definitions/NewExperiment'
+            $ref: '../definitions.yaml#/NewExperiment'
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/Experiment"
+            $ref: "../definitions.yaml#/Experiment"
         400:
           description: Bad Request
 
 
-  /experiments/{id}:
+  /applications/{appid}/experiments/{expid}:
     get:
       tags:
         - experiments
       summary: Get one experiment
       parameters:
-        - name: id
+        - name: appid
+          in: path
+          description: id of Application where Experiment is on
+          required: true
+          type: integer
+        - name: expid
           type: integer
           description: id of the experiment
           in: path
@@ -528,7 +638,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/Experiment"
+            $ref: "../definitions.yaml#/Experiment"
         400:
           description: Bad Request
     delete:
@@ -536,7 +646,12 @@ paths:
         - experiments
       summary: Delete one experiment
       parameters:
-        - name: id
+        - name: appid
+          in: path
+          description: id of Application where Experiment is on
+          required: true
+          type: integer
+        - name: expid
           type: integer
           description: id of the experiment
           in: path
@@ -547,15 +662,96 @@ paths:
         400:
           description: Bad Request
 
-  /experiments/{id}/users:
+  /applications/{appid}/experiments/{expid}/clients:
     get:
       tags:
         - experiments
-      summary: List all users for one experiment
+      summary: List all clients for one experiment
       parameters:
-        - name: id
+        - name: appid
+        in: path
+        description: id of Application where Experiment is on
+        required: true
+        type: integer
+      - name: expid
+        type: integer
+        description: id of the experiment
+        in: path
+        required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "../definitions.yaml#/Client"
+        400:
+          description: Bad Request
+
+  /applications/{appid}/experiments/{expid}/metadata:
+    get:
+      tags:
+        - experiments
+      summary: return Experiment's metadata
+      parameters:
+        - name: appid
+          in: path
+          description: id of Application where Experiment is on
+          required: true
+          type: integer
+        - name: expid
           type: integer
           description: id of the experiment
+          in: path
+          required: true
+      responses:
+        200:
+          schema:
+            type: object               
+        400:
+          description: Bad Request
+
+  /applications/{appid}/experiments/{expid}/experimentgroups:
+    get:
+      tags:
+        - experiments
+      summary: List ExperimentGroups by Application and Experiment
+      parameters:
+        - name: appid
+          type: integer
+          description: id of Application where Experiment belongs
+          in: path
+          required: true
+        - name: expid
+          type: integer
+          description: id of Experiment
+          in: path
+          required: true
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+
+  /applications/{appid}/experiments/{expid}/experimentgroups/{expgroupid}:
+    get:
+      tags:
+        - experiments
+      summary: Get one ExperimentGroup by Application and Experiment
+      parameters:
+        - name: appid
+          type: integer
+          description: id of Application where Experiment belongs
+          in: path
+          required: true
+        - name: expid
+          type: integer
+          description: id of the experiment
+          in: path
+          required: true
+        - name: expgroupid
+          type: integer
+          description: id of the experimentgroup
           in: path
           required: true
       responses:
@@ -564,16 +760,20 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/User"
+              $ref: "../definitions.yaml#/ExperimentGroup"
         400:
           description: Bad Request
 
-  /experiments/{expid}/experimentgroups/{expgroupid}:
     delete:
       tags:
         - experiments
       summary: Delete experimentgroup from one experiment
       parameters:
+        - name: appid
+          type: integer
+          description: id of Application where Experiment belongs
+          in: path
+          required: true
         - name: expid
           type: integer
           description: id of the experiment
@@ -589,278 +789,3 @@ paths:
           description: OK
         400:
           description: Bad Request
-
-definitions:
-
-  API-info:
-    type: object
-    required: 
-      - version
-      - description
-    properties:
-      version:
-        type: string
-      description:
-        type: string
-
-  Application:
-    type: object
-    allOf:
-      - $ref: '#/definitions/NewApplication'
-      - required:
-        - id
-        properties:
-          id:
-            type: integer
-          experiments:
-            type: array
-            items:
-              $ref: "#/definitions/Experiment"
-          configurationkeys:
-            type: array
-            items:
-              $ref: "#/definitions/ConfigurationKey"
-
-  NewApplication:
-    type: object
-    required:
-      - name
-    properties:
-      name:
-        type: string
-
-  ConfigurationKey:
-    type: object
-    allOf:
-      - $ref: '#/definitions/NewConfigurationKey'
-      - required:
-        - id
-        properties:
-          id:
-            type: integer
-          rangeconstraints:
-            type: array
-            items:
-              $ref: "#/definitions/RangeConstraint"
-
-  NewConfigurationKey:
-    type: object
-    required:
-      - name
-      - type
-    properties:
-      name:
-        type: string
-      type:
-        type: string
-      application_id:
-        type: integer
-
-  Configuration:
-    type: object
-    required:
-      - id
-      - experimentgroup_id
-      - key
-      - value
-    properties:
-      id:
-        type: integer
-      experimentgroup_id:
-        type: integer
-      key:
-        type: string
-      value:
-        type:
-          - integer
-          - string
-          - boolean
-
-  DataItem:
-    type: object
-    required:
-      - id
-    properties:
-      id:
-        type: integer
-      user_id:
-        type: integer
-      key:
-        type: string
-      value:
-        type:
-          - integer
-          - string
-          - boolean
-      startDateTime:
-        type: string
-      endDateTime:
-        type: string
-
-  ExclusionConstraint:
-    type: object
-    required:
-      - id
-      - first_configurationkey_id
-      - first_operator_id
-      - second_configurationkey_id
-    properties:
-      id:
-        type: integer
-      first_configurationkey_id:
-        type: integer
-      first_operator_id:
-        type: integer
-      first_value_a:
-        type:
-          - string
-          - "null"
-      first_value_b:
-        type:
-          - string
-          - "null"
-      second_configurationkey_id:
-        type: integer
-      second_operator_id:
-        type:
-          - integer
-          - "null"
-      second_value_a:
-        type:
-          - string
-          - "null"
-      second_value_b:
-        type:
-          - string
-          - "null"
-
-  ExperimentGroup:
-    type: object
-    required:
-      - id
-    properties:
-      id:
-        type: integer
-      experiment_id:
-        type: integer
-      name:
-        type: string
-      configurations:
-        type: array
-        items:
-          $ref: "#/definitions/Configuration"
-      users:
-        type: array
-        items:
-          $ref: "#/definitions/User"
-
-
-  Experiment:
-    type: object
-    required:
-      - id
-    properties:
-      id:
-        type: integer
-      application_id:
-        type: integer
-      name:
-        type: string
-      startDatetime:
-        type: string
-        format: date-time
-      endDatetime:
-        type: string
-        format: date-time
-      experimentgroups:
-        type: array
-        items:
-          $ref: "#/definitions/ExperimentGroup"
-      size:
-        type: integer
-
-  NewExperiment:
-    type: object
-    required:
-      - name
-      - application_id
-      - startDatetime
-      - endDatetime
-      - size
-    properties:
-      application_id:
-        type: integer
-      name:
-        type: string
-      startDatetime:
-        type: string
-        format: date-time
-      endDatetime:
-        type: string
-        format: date-time
-      size:
-        type: integer
-
-  Operator:
-    type: object
-    required:
-      - id
-    properties:
-      id:
-        type: integer
-      math_value:
-        type: string
-      human_value:
-        type: string
-      rangeconstraints:
-        type: array
-        items:
-          $ref: "#/definitions/RangeConstraint"
-
-  RangeConstraint:
-    type: object
-    allOf:
-      - $ref: '#/definitions/NewRangeConstraint'
-      - required:
-        - id
-        properties:
-          id:
-            type: integer
-
-  NewRangeConstraint:
-    type: object
-    required:
-      - value
-    properties:
-      configurationkey_id:
-        type: integer
-      operator_id:
-        type: integer
-      value:
-        type: integer
-
-  User:
-    allOf:
-      - $ref: '#/definitions/NewUser'
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            type: integer
-          dataitems:
-            type: array
-            items:
-              $ref: "#/definitions/DataItem"
-          experimentgroups:
-            type: array
-            items:
-              $ref: "#/definitions/ExperimentGroup"
-
-  NewUser:
-    type: object
-    required:
-      - username
-    properties:
-      username:
-        type: string
