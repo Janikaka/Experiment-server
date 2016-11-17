@@ -117,51 +117,51 @@ class TestConfigurationKeysREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_configurationkeys_GET_one(self):
-        self.req.swagger_data = {'ckid': 1, 'appid':1}
+        self.req.matchdict = {'ckid': 1, 'appid':1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_GET_one()
         assert response == self.confkey
 
     def test_configurationkeys_GET(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.matchdict = {'id': 1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_GET()
         confkeys = [self.confkey, self.confkey2]
         assert response == confkeys
 
     def test_configurationkeys_PUT_one(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.matchdict = {'id': 1}
         httpCkeys = ConfigurationKeys(self.req)
         response = ConfigurationKey.get(1)
         assert response.id == 1
         assert response.name == 'highscore'
 
-        self.req.swagger_data = {
+        self.req.matchdict = {
             'id': 1,
             'configurationkey': ConfigurationKey(id=1, application_id=1, name='test name', type='boolean')}
         response = httpCkeys.configurationkeys_PUT_one()
         assert response != self.confkey
 
-        self.req.swagger_data = {'id': 1}
+        self.req.matchdict = {'id': 1}
         response = ConfigurationKey.get(1)
         assert response.id == 1
         assert response.name == 'test name'
 
 
     def test_configurationkeys_DELETE_one_with_correct_values(self):
-        self.req.swagger_data = {'appid':1, 'ckid': 1}
+        self.req.matchdict = {'appid':1, 'ckid': 1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_DELETE_one()
         assert response == {}
 
     def test_configurationkeys_DELETE_one_with_incorrect_values(self):
-        self.req.swagger_data = {'appid':1, 'ckid': 3}
+        self.req.matchdict = {'appid':1, 'ckid': 3}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_DELETE_one()
         assert response.status_code == 400
 
     def test_configurationkeys_POST(self):
-        self.req.swagger_data = {
+        self.req.matchdict = {
             'id': 1,
             'configurationkey': ConfigurationKey(application_id=1, name='test name', type='test type')}
         httpCkeys = ConfigurationKeys(self.req)
@@ -169,18 +169,18 @@ class TestConfigurationKeysREST(BaseTest):
         ckey = {'id': 3, 'application_id': 1, 'type': 'test type', 'name': 'test name'}
         assert response == ckey
 
-        self.req.swagger_data = {
+        self.req.matchdict = {
             'id': 5,
             'configurationkey': ConfigurationKey(application_id=1, name='test name', type='test type')}
         response = httpCkeys.configurationkeys_POST()
         assert response.status_code == 400
 
     def test_configurationkeys_for_application_DELETE(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.matchdict = {'id': 1}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_for_application_DELETE()
         assert response == {}
 
-        self.req.swagger_data = {'id': 3}
+        self.req.matchdict = {'id': 3}
         response = httpCkeys.configurationkeys_for_application_DELETE()
         assert response.status_code == 400

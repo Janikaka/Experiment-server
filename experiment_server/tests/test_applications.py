@@ -70,7 +70,7 @@ class TestApplicationsREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_applications_GET_one(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.matchdict = {'id': 1}
         httpApps = Applications(self.req)
         response = httpApps.applications_GET_one()
         app = {'id': 1, 'name': 'App 1'}
@@ -83,24 +83,24 @@ class TestApplicationsREST(BaseTest):
         assert response == apps
 
     def test_applications_DELETE_one(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.matchdict = {'id': 1}
         httpApps = Applications(self.req)
         response = httpApps.applications_DELETE_one()
         assert response == {}
 
-        self.req.swagger_data = {'id': 3}
+        self.req.matchdict = {'id': 3}
         response = httpApps.applications_DELETE_one()
         assert response.status_code == 400
 
     def test_applications_POST(self):
-        self.req.swagger_data = {'application': Application(name='App 3')}
+        self.req.matchdict = {'application': Application(name='App 3')}
         httpApps = Applications(self.req)
         response = httpApps.applications_POST()
         app = {'id': 3, 'name': 'App 3'}
         assert response == app
 
     def test_data_for_app_GET(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.matchdict = {'id': 1}
         httpApps = Applications(self.req)
         response = httpApps.data_for_app_GET()
         app_data = {

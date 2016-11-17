@@ -61,44 +61,44 @@ class TestExclusionConstraintsREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_exclusionconstraints_GET(self):
-        self.req.swagger_data = {'appid':1, 'ckid': 2}
+        self.req.matchdict = {'appid':1, 'ckid': 2}
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_GET()
         exconstraints = [self.exconst, self.exconst2]
         assert response == exconstraints
 
     def test_exclusionconstraints_GET_one(self):
-        self.req.swagger_data = {'appid': 1, 'ckid': 2, 'ecid': 1}
+        self.req.matchdict = {'appid': 1, 'ckid': 2, 'ecid': 1}
         httpRcs = ExclusionConstraints(self.req)
         response = httpRcs.exclusionconstraints_GET_one()
         assert response == self.exconst
 
     def test_exclusionconstraints_DELETE_one(self):
-        self.req.swagger_data = {'appid': 1, 'ckid': 2, 'ecid': 1}
+        self.req.matchdict = {'appid': 1, 'ckid': 2, 'ecid': 1}
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_DELETE_one()
         assert response == {}
 
     def test_exclusionconstraints_DELETE_one_nonexistent_configurationkey(self):
-        self.req.swagger_data = {'appid': 1, 'ckid': 2, 'ecid': 3}
+        self.req.matchdict = {'appid': 1, 'ckid': 2, 'ecid': 3}
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_DELETE_one()
         assert response.status_code == 400
 
     def test_exclusionconstraints_for_confkey_GET_1(self):
-        self.req.swagger_data = {'appid': 1, 'ckid': 1}
+        self.req.matchdict = {'appid': 1, 'ckid': 1}
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_GET()
         assert response == exconstraints
 
     def test_exclusionconstraints_for_confkey_GET_2(self):
-        self.req.swagger_data = {'appid': 1, 'ckid': 2}
+        self.req.matchdict = {'appid': 1, 'ckid': 2}
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_GET()
         assert response == exconstraints
 
     def test_exclusionconstraints_for_confkey_GET_nonexistent_configurationkey(self):
-        self.req.swagger_data = {'appid': 1, 'ckid': 3}
+        self.req.matchdict = {'appid': 1, 'ckid': 3}
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_GET()
         assert response.status_code == 400
