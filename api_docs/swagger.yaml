@@ -30,137 +30,18 @@ tags:
     description: Experiment-related routes
 paths:
 
-  /applications/{appid}/clients:
+  /operators:
     get:
       tags:
-        - client
-      summary: Get all clients
-      description: Gets all clients from the database
-      parameters:
-        - name: appid
-          type: integer
-          description: id of the application
-          in: path
-          required: true
+        - operators
+      summary: Get available operators
       responses:
         200:
           description: OK
           schema:
             type: array
             items:
-              $ref: "#/definitions/client"
-
-    post:
-      tags:
-        - client
-      summary: Create new client
-      parameters:
-        - name: appid
-          type: integer
-          description: id of the application
-          in: path
-          required: true
-        - name: client
-          in: body
-          description: client to create
-          required: true
-          schema:
-            $ref: '#/definitions/Newclient'
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/client"
-
-
-
-  /applications/{appid}/clients/{clientid}:
-    get:
-      tags:
-        - client
-      summary: Get one client
-      parameters:
-        - name: clientid
-          type: integer
-          description: id of the client
-          in: path
-          required: true
-        - name: appid
-          type: integer
-          description: id of the application
-          in: path
-          required: true
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/client"
-    delete:
-      tags:
-        - client
-      summary: Delete one client
-      parameters:
-        - name: clientid
-          type: integer
-          description: id of the client
-          in: path
-          required: true
-        - name: appid
-          type: integer
-          description: id of the application
-          in: path
-          required: true
-      responses:
-        200:
-          description: OK
-
-  /applications/{appid}/clients/{clientid}/configurations:
-    get:
-      tags:
-        - client
-      summary: Get clients currenct configurations
-      parameters:
-        - name: clientid
-          type: integer
-          description: id of the client
-          in: path
-          required: true
-        - name: appid
-          type: integer
-          description: id of the application
-          in: path
-          required: true
-      responses:
-        200:
-          description: OK
-          schema:
-             type: array
-             items:
-              $ref: "#/definitions/Configuration"
-
-  /applications/{appid}/clients/{clientid}/experiments:
-    get:
-      tags:
-        - client
-      summary: Get clients current experiments
-      parameters:
-        - name: clientid
-          type: integer
-          description: id of the client
-          in: path
-          required: true
-        - name: appid
-          type: integer
-          description: id of the application
-          in: path
-          required: true
-      responses:
-        200:
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/Experiment"
+              $ref: "#/definitions/Operator"
 
   /applications:
     get:
@@ -255,6 +136,138 @@ paths:
                   $ref: "#/definitions/ConfigurationKey"
         400:
           description: Bad Request
+
+  /applications/{appid}/clients:
+    get:
+      tags:
+        - client
+      summary: Get all clients
+      description: Gets all clients from the database
+      parameters:
+        - name: appid
+          type: integer
+          description: id of the application
+          in: path
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/client"
+
+    post:
+      tags:
+        - client
+      summary: Create new client
+      parameters:
+        - name: appid
+          type: integer
+          description: id of the application
+          in: path
+          required: true
+        - name: client
+          in: body
+          description: client to create
+          required: true
+          schema:
+            $ref: '#/definitions/Newclient'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/client"
+
+  /applications/{appid}/clients/{clientid}:
+    get:
+      tags:
+        - client
+      summary: Get one client
+      parameters:
+        - name: clientid
+          type: integer
+          description: id of the client
+          in: path
+          required: true
+        - name: appid
+          type: integer
+          description: id of the application
+          in: path
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/client"
+    delete:
+      tags:
+        - client
+      summary: Delete one client
+      parameters:
+        - name: clientid
+          type: integer
+          description: id of the client
+          in: path
+          required: true
+        - name: appid
+          type: integer
+          description: id of the application
+          in: path
+          required: true
+      responses:
+        200:
+          description: OK
+
+  /applications/{appid}/clients/{clientid}/configurations:
+    get:
+      tags:
+        - client
+      summary: Get clients currenct configurations
+      parameters:
+        - name: clientid
+          type: integer
+          description: id of the client
+          in: path
+          required: true
+        - name: appid
+          type: integer
+          description: id of the application
+          in: path
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+             type: array
+             items:
+              $ref: "#/definitions/Configuration"
+
+  /applications/{appid}/clients/{clientid}/applications/{appid}/experiments:
+    get:
+      tags:
+        - client
+      summary: Get clients current experiments
+      parameters:
+        - name: clientid
+          type: integer
+          description: id of the client
+          in: path
+          required: true
+        - name: appid
+          type: integer
+          description: id of the application
+          in: path
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Experiment"
+
+
 
   /applications/{id}/configurationkeys:
     get:
@@ -603,25 +616,18 @@ paths:
           description: OK
         400:
           description: Bad Request
-          
-  /operators:
-    get:
-      tags:
-        - operators
-      summary: Get available operators
-      responses:
-        200:
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/Operator"
 
-  /experiments:
+  /applications/{appid}/experiments:
     get:
       tags:
         - experiments
       summary: List all experiments
+      parameters:
+        - name: appid
+          type: integer
+          description: id of the Application
+          in: path
+          required: true
       responses:
         200:
           description: OK
@@ -636,6 +642,12 @@ paths:
         - experiments
       summary: Create new experiment
       parameters:
+        parameters:
+          - name: appid
+            type: integer
+            description: id of the Application
+            in: path
+            required: true
         - name: experiment
           in: body
           description: Experiment to create
@@ -651,12 +663,17 @@ paths:
           description: Bad Request
 
 
-  /experiments/{id}:
+  /applications/{appid}/experiments/{id}:
     get:
       tags:
         - experiments
       summary: Get one experiment
       parameters:
+        - name: appid
+          type: integer
+          description: id of the Application
+          in: path
+          required: true
         - name: id
           type: integer
           description: id of the experiment
@@ -674,6 +691,11 @@ paths:
         - experiments
       summary: Delete one experiment
       parameters:
+        - name: appid
+          type: integer
+          description: id of the Application
+          in: path
+          required: true
         - name: id
           type: integer
           description: id of the experiment
@@ -685,12 +707,17 @@ paths:
         400:
           description: Bad Request
 
-  /experiments/{id}/applications/{appid}/clients:
+  /applications/{appid}/experiments/{id}/applications/{appid}/clients:
     get:
       tags:
         - experiments
       summary: List all clients for one experiment
       parameters:
+        - name: appid
+          type: integer
+          description: id of the Application
+          in: path
+          required: true
         - name: id
           type: integer
           description: id of the experiment
@@ -706,35 +733,17 @@ paths:
         400:
           description: Bad Request
 
-  /experiments/{expid}/applications/{appid}/clients/{clientid}:
-    delete:
-      tags:
-        - experiments
-      summary: Delete client from one experiment
-      parameters:
-        - name: expid
-          type: integer
-          description: id of the experiment
-          in: path
-          required: true
-        - name: clientid
-          type: integer
-          description: id of the client
-          in: path
-          required: true
-      responses:
-        200:
-          description: OK
-        400:
-          description: Bad Request
-
-
-  /experiments/{id}/data:
+  /applications/{appid}/experiments/{id}/data:
     get:
       tags:
         - experiments
       summary: List all things and experimentgroups of one experiment
       parameters:
+        - name: appid
+          type: integer
+          description: id of the Application
+          in: path
+          required: true
         - name: id
           type: integer
           description: id of the experiment
@@ -757,12 +766,17 @@ paths:
         400:
           description: Bad Request
 
-  /experiments/{expid}/experimentgroups/{expgroupid}:
+  /applications/{appid}/experiments/{expid}/experimentgroups/{expgroupid}:
     get:
       tags:
         - experiments
       summary: Show one experiment group metadata
       parameters:
+        - name: appid
+          type: integer
+          description: id of the Application
+          in: path
+          required: true
         - name: expid
           type: integer
           description: id of the experiment
@@ -804,6 +818,11 @@ paths:
         - experiments
       summary: Delete experimentgroup from one experiment
       parameters:
+        - name: appid
+          type: integer
+          description: id of the Application
+          in: path
+          required: true
         - name: expid
           type: integer
           description: id of the experiment
@@ -839,6 +858,10 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/ConfigurationKey"
+
+
+
+
 
   NewApplication:
     type: object
