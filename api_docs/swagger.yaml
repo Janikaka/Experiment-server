@@ -18,7 +18,7 @@ tags:
     description: client-related routes
   - name: application
     description: Application-related routes
-  - name: configuration-keyss
+  - name: configuration-keys
     description: Configurations
   - name: range-constraints
     description: Range-related routes
@@ -243,7 +243,7 @@ paths:
              items:
               $ref: "#/definitions/Configuration"
 
-  /applications/{appid}/clients/{clientid}/applications/{appid}/experiments:
+  /applications/{appid}/clients/{clientid}/experiments:
     get:
       tags:
         - client
@@ -642,12 +642,11 @@ paths:
         - experiments
       summary: Create new experiment
       parameters:
-        parameters:
-          - name: appid
-            type: integer
-            description: id of the Application
-            in: path
-            required: true
+        - name: appid
+          type: integer
+          description: id of the Application
+          in: path
+          required: true
         - name: experiment
           in: body
           description: Experiment to create
@@ -858,10 +857,6 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/ConfigurationKey"
-
-
-
-
 
   NewApplication:
     type: object
