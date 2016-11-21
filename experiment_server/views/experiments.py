@@ -145,11 +145,12 @@ class Experiments(WebUtils):
         app_id = self.request.swagger_data['appid']
         exp_id = self.request.swagger_data['expid']
         exp = Experiment.query().join(Application)\
-            .filter(Experiment.id == exp_id, Application.id == app_id).count()
+            .filter(Experiment.id == exp_id, Application.id == app_id)\
+            .one_or_none()
 
-        if exp == 0:
+        if exp == None:
             print_log(datetime.datetime.now(), 'GET', '/experiments/' + str(id) + '/clients',
-                      'List all clients for specific experiment', None)
+                      'List all clients for specific experiment', 'Failed')
             return self.createResponse(None, 400)
 
         clients = Client.query()\

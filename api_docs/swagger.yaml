@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "2.0"
+  version: "2.0.1"
   title: Experiment server
   description: API for experiments
   license:
@@ -407,7 +407,7 @@ paths:
   /applications/{appid}/configurationkeys/{ckid}/exclusionconstraints:
     get:
       tags:
-        - exclusion-constraint
+        - exclusion-constrains
       summary: Get exclusionconstraints of one configurationkey
       parameters:
         - name: appid
@@ -460,7 +460,7 @@ paths:
   /applications/{appid}/configurationkeys/{ckid}/exclusionconstraints/{ecid}:
     get:
       tags:
-        - exclusion-constraint
+        - exclusion-constrains
       summary: Get one exclusionconstraint
       parameters:
         - name: appid
@@ -662,7 +662,7 @@ paths:
           description: Bad Request
 
 
-  /applications/{appid}/experiments/{id}:
+  /applications/{appid}/experiments/{expid}:
     get:
       tags:
         - experiments
@@ -673,7 +673,7 @@ paths:
           description: id of the Application
           in: path
           required: true
-        - name: id
+        - name: expid
           type: integer
           description: id of the experiment
           in: path
@@ -695,7 +695,7 @@ paths:
           description: id of the Application
           in: path
           required: true
-        - name: id
+        - name: expid
           type: integer
           description: id of the experiment
           in: path
@@ -706,7 +706,7 @@ paths:
         400:
           description: Bad Request
 
-  /applications/{appid}/experiments/{id}/applications/{appid}/clients:
+  /applications/{appid}/experiments/{expid}/clients:
     get:
       tags:
         - experiments
@@ -717,7 +717,7 @@ paths:
           description: id of the Application
           in: path
           required: true
-        - name: id
+        - name: expid
           type: integer
           description: id of the experiment
           in: path
@@ -732,7 +732,7 @@ paths:
         400:
           description: Bad Request
 
-  /applications/{appid}/experiments/{id}/data:
+  /applications/{appid}/experiments/{expid}/metadata:
     get:
       tags:
         - experiments
@@ -743,7 +743,7 @@ paths:
           description: id of the Application
           in: path
           required: true
-        - name: id
+        - name: expid
           type: integer
           description: id of the experiment
           in: path
@@ -754,14 +754,10 @@ paths:
           schema:
             type: object
             properties:
-              experiment:
-                type: array
-                items:
-                  $ref: "#/definitions/Experiment"
-              experimentgroups:
-                type: array
-                items:
-                  $ref: "#/definitions/ExperimentGroup"
+              data:
+                type: object
+                allOf:
+                  - $ref: "#/definitions/Experiment"
         400:
           description: Bad Request
 
@@ -980,7 +976,6 @@ definitions:
   NewExclusionConstraint:
     type: object
     required:
-      - first_configurationkey_id
       - first_operator_id
       - first_value_a
       - first_value_b
@@ -1027,34 +1022,25 @@ definitions:
         items:
           $ref: "#/definitions/Configuration"
       clients:
-        type: array
-        items:
-          $ref: "#/definitions/client"
-
+        type: integer
 
   Experiment:
     type: object
+    allOf:
+      - $ref: '#/definitions/NewExperiment'
     required:
       - id
     properties:
       id:
         type: integer
-      application_id:
-        type: integer
-      name:
-        type: string
-      startDatetime:
-        type: string
-        format: date-time
-      endDatetime:
-        type: string
-        format: date-time
       experimentgroups:
         type: array
         items:
           $ref: "#/definitions/ExperimentGroup"
-      size:
+      totalDataitems:
         type: integer
+      status:
+        type: string
 
   NewExperiment:
     type: object
@@ -1063,7 +1049,6 @@ definitions:
       - application_id
       - startDatetime
       - endDatetime
-      - size
     properties:
       application_id:
         type: integer
@@ -1075,8 +1060,6 @@ definitions:
       endDatetime:
         type: string
         format: date-time
-      size:
-        type: integer
 
   Operator:
     type: object

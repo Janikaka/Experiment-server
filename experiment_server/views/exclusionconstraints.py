@@ -57,19 +57,24 @@ class ExclusionConstraints(WebUtils):
         """ List all exclusionconstraints with GET method """
         app_id = self.request.swagger_data['appid']
         conf_id = self.request.swagger_data['ckid']
-        exclusionconstraints = ExclusionConstraint.query()\
-            .join(ConfigurationKey, or_\
-                (ExclusionConstraint.first_configurationkey_id == ConfigurationKey.id,\
-                ExclusionConstraint.second_configurationkey_id == ConfigurationKey.id))\
-            .join(Application)\
-            .filter(ConfigurationKey.id == conf_id, Application.id == app_id)
+        config = ConfigurationKey.query().join(Application)\
+            .filter(ConfigurationKey.id == conf_id, Application.id == app_id)\
+            .one_or_none()
 
-        if exclusionconstraints.count() == 0:
+        if config == None:
             print_log(datetime.datetime.now(), 'GET',
                 '/applications/%s/configurationkeys/%s/exclusionconstraints'\
                     % (app_id, conf_id),
                 'Get exclusionconstraints of one configurationkey', 'Failed')
             return self.createResponse(None, 400)
+
+        exclusionconstraints = ExclusionConstraint.query()\
+            .join(ConfigurationKey, \
+                or_(ConfigurationKey.id == ExclusionConstraint.first_configurationkey_id, \
+                    ConfigurationKey.id == ExclusionConstraint.second_operator_id))\
+            .join(Application)\
+            .filter(Application.id == app_id)\
+            .all()
 
         return list(map(lambda _: _.as_dict(), exclusionconstraints))
 
@@ -118,15 +123,15 @@ class ExclusionConstraints(WebUtils):
             elif not ConfigurationKey.get(first_config_id).application_id == app_id:
                 raise Exception('Application with id %s does not have ConfigurationKey with id %s'\
                     % (app_id, first_config_id))
-            elif not ConfigurationKey.get(exconstraint.second_configurationkey_id).applionid == app_id:
+            elif not ConfigurationKey.get(exconstraint.second_configurationkey_id).application_id == app_id:
                 raise Exception('Application with id %s does not have ConfigurationKey with id %s'\
                     % (app_id, exconstraint.second_configurationkey_id))
         except Exception as e:
-            print(e)
             print_log(datetime.datetime.now(), 'POST',
                 '/application/%s/configurationkeys/%s/exclusionconstraints'\
                     % (app_id, first_config_id),
                 'Create new exclusionconstraint for configurationkey', 'Failed')
+            print_log(e)
             return self.createResponse({}, 400)
 
         new_exconstraint = ExclusionConstraint(

@@ -17,7 +17,7 @@ def includeme(config):
     config.add_route('configurationkeys_for_app', '/applications/{id}/configurationkeys')
 
     config.add_route('rangeconstraints', '/applications/{appid}/configurationkeys/{ckid}/rangeconstraints')
-    config.add_route('rangeconstraint', '/applications/{appid}/configurationkeys/{ckid}/rangeconstraints/{rcId}')
+    config.add_route('rangeconstraint', '/applications/{appid}/configurationkeys/{ckid}/rangeconstraints/{rcid}')
 
     config.add_route('exconstraints_for_configurationkey', '/applications/{appid}/configurationkeys/{ckid}/exclusionconstraints')
     config.add_route('exclusionconstraint', '/applications/{appid}/configurationkeys/{ckid}/exclusionconstraints/{ecid}')
