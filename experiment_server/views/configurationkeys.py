@@ -46,7 +46,7 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkeys_for_app', request_method="GET")
     def configurationkeys_GET(self):
         """ List all configurationkeys with GET method """
-        app_id = self.request.matchdict['id']
+        app_id = self.request.swagger_data['id']
         if Application.get(app_id) is None:
             print_log(datetime.datetime.now(), 'GET', '/applications/%s/configurationkeys'\
                 % app_id, 'Get configurationkeys', 'Failed')
@@ -57,8 +57,8 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkey', request_method="GET")
     def configurationkeys_GET_one(self):
         """ Find and return one configurationkey by id with GET method """
-        app_id = self.request.matchdict['appid']
-        confkey_id = self.request.matchdict['ckid']
+        app_id = self.request.swagger_data['appid']
+        confkey_id = self.request.swagger_data['ckid']
         confkey = get_conf_key_by_appid_and_ckid(app_id, confkey_id)
         if confkey is None:
             print_log(datetime.datetime.now(), 'GET',\
@@ -70,7 +70,7 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkey', request_method="PUT")
     def configurationkeys_PUT_one(self):
         """ Updates only the name of configurationkey"""
-        configkey_req = self.request.matchdict['configurationkey']
+        configkey_req = self.request.swagger_data['configurationkey']
         ConfigurationKey.update(configkey_req.id, "name", configkey_req.name)
         updated = ConfigurationKey.get(configkey_req.id)
         return updated.as_dict()
@@ -78,8 +78,8 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkey', request_method="DELETE")
     def configurationkeys_DELETE_one(self):
         """ Find and delete one configurationkey by id with delete method """
-        confkey_id = self.request.matchdict['ckid']
-        app_id = self.request.matchdict['appid']
+        confkey_id = self.request.swagger_data['ckid']
+        app_id = self.request.swagger_data['appid']
         confkey = get_conf_key_by_appid_and_ckid(app_id, confkey_id)
         if not confkey:
             print_log(datetime.datetime.now(), 'DELETE', '/applications/%s/' % app_id +
@@ -95,15 +95,15 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkeys_for_app', request_method="POST")
     def configurationkeys_POST(self):
         """ Create new configurationkey to application.
-            request.matchdict['id'] takes the id and Application.get(app_id) returns the application by id.
+            request.swagger_data['id'] takes the id and Application.get(app_id) returns the application by id.
         """
-        app_id = self.request.matchdict['id']
+        app_id = self.request.swagger_data['id']
         application = Application.get(app_id)
         if application is None:
             print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/configurationkeys',
                       'Create new configurationkey for application', 'Failed')
             return self.createResponse({}, 400)
-        new_confkey = self.request.matchdict['configurationkey']
+        new_confkey = self.request.swagger_data['configurationkey']
         name = new_confkey.name
         type = new_confkey.type
         configurationkey = ConfigurationKey(
@@ -119,7 +119,7 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkeys_for_app', request_method="DELETE")
     def configurationkeys_for_application_DELETE(self):
         """ Delete all configurationkeys of one specific application """
-        id = self.request.matchdict['id']
+        id = self.request.swagger_data['id']
         app = Application.get(id)
         if not app:
             print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(id) + '/configurationkeys',

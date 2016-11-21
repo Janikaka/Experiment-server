@@ -48,19 +48,19 @@ class TestRangeConstraintsREST(BaseTest):
         assert response == rcs
 
     def test_rangecontraints_DELETE_one(self):
-        self.req.matchdict = {'appid':1, 'ckid':2, 'rcid': 1}
+        self.req.swagger_data = {'appid':1, 'ckid':2, 'rcid': 1}
         httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangecontraints_DELETE_one()
         assert response == {}
 
     def test_rangecontraints_DELETE_one_nonexistent(self):
-        self.req.matchdict = {'appid':1, 'ckid':2, 'rcid': 3}
+        self.req.swagger_data = {'appid':1, 'ckid':2, 'rcid': 3}
         httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangecontraints_DELETE_one()
         assert response.status_code == 400
 
     def test_rangecontraints_POST(self):
-        self.req.matchdict = {
+        self.req.swagger_data = {
             'appid': 1,
             'ckid': 2,
             'rangeconstraint': RangeConstraint(operator_id=1, value=10)}
@@ -74,26 +74,26 @@ class TestRangeConstraintsREST(BaseTest):
         assert response == rc
 
     def test_rangeconstraints_for_configuratinkey_DELETE(self):
-        self.req.matchdict = {'appid':1, 'ckid': 2}
+        self.req.swagger_data = {'appid':1, 'ckid': 2}
         httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangeconstraints_for_configuratinkey_DELETE()
         assert len(ConfigurationKey.get(2).rangeconstraints) == 0 and response == {}
 
     def test_rangeconstraints_for_configuratinkey_DELETE_incorrect_confkey_id(self):
-        self.req.matchdict = {'appid':1, 'ckid': 3}
+        self.req.swagger_data = {'appid':1, 'ckid': 3}
         httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangeconstraints_for_configuratinkey_DELETE()
         assert response.status_code == 400
 
     def test_rangeconstraints_GET_with_incorrect_confkeyid(self):
-        self.req.matchdict = {'appid': 1, 'ckid': 1}
+        self.req.swagger_data = {'appid': 1, 'ckid': 1}
         httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangeconstraints_GET()
         assert response == []
 
     def test_rangeconstraints_GET(self):
         httpRcs = RangeConstraints(self.req)
-        self.req.matchdict = {'appid': 1, 'ckid': 2}
+        self.req.swagger_data = {'appid': 1, 'ckid': 2}
         response = httpRcs.rangeconstraints_GET()
 
         expected = RangeConstraint.query().filter(RangeConstraint.configurationkey_id == 2)
