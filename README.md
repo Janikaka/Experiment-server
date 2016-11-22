@@ -6,7 +6,7 @@
 
 A simple REST API server for providing runtime configurations for applications and receiving usage-related event data.
 
-See the current API documentation from [here](https://swaggerhub.com/api/wakr/experiment-server/). Remember to check the newest (highest) version.
+See the current API documentation from [here](https://app.swaggerhub.com/api/SoftwareFactory/experiment-server/). Remember to check the newest (highest) version.
 
 The live API will live at heroku: [https://experiment-server2016.herokuapp.com/experiments](https://experiment-server2016.herokuapp.com/experiments). It will be autoupdated everytime master branch is updated at GitHub.
 
@@ -43,6 +43,9 @@ Clone this repository
 - Install dependencies to virtual env (venv-fold)
 `pip install -r requirements.txt`
 
+- Running the next command might be required in some cases
+`python setup.py develop`
+
 - Initialize database:
 `initialize_Experiment-server_db development.ini`
 
@@ -78,3 +81,12 @@ In case the database schema has changed
 - When you feel that you would like the whole team get your code: Make a pull-request
 - Assign somebody to code review your work
 - When the code review is done merge the branch to master via GitHub.com
+
+####Tips on adding or editing API
+
+Since swagger_pyramid is included in this project, additionally to Python Pyramid's
+documentation on adding new API paths, keeping up to date api_docs/swagger.json is 
+essential. Adding a new path to routes.py is not enough to make application work!
+Added path must be added to swagger.json and specify values it returns. Please keep
+[Swagger API]((https://app.swaggerhub.com/api/SoftwareFactory/experiment-server/))
+updated.
