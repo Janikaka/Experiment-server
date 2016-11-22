@@ -82,10 +82,10 @@ In case the database schema has changed
 - Assign somebody to code review your work
 - When the code review is done merge the branch to master via GitHub.com
 
-####Tips on adding or editing API
+####Tips on editing API
 
 Since swagger_pyramid is included in this project, additionally to Python Pyramid's
-documentation on adding new API paths, keeping api_docs/swagger.json up to date is 
+documentation on adding new API paths, keeping api_docs/swagger.json up to date is
 essential. Adding a new path to routes.py is not enough to make application work!
 Added path must be added to swagger.json and specify values it returns. Please keep
 [Swagger API]((https://app.swaggerhub.com/api/SoftwareFactory/experiment-server/))
