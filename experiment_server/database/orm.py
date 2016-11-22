@@ -12,6 +12,7 @@ class ORM:
     def query(cls):
         """
         Builder for custom queries
+        Example: <modelT>.query().join(<modelT2>).all()
         """
         return DBSession.query(cls)
 

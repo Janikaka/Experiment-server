@@ -2,7 +2,8 @@
 from sqlalchemy import (
     Column,
     Integer,
-    Text
+    Text,
+    UniqueConstraint
 )
 
 from sqlalchemy.orm import relationship
@@ -14,6 +15,7 @@ class Application(Base):
     __tablename__ = 'applications'
     id = Column(Integer, primary_key=True)
     name = Column(Text)
+    apikey = Column(Text, unique=True)
     experiments = relationship("Experiment", backref="application", cascade="delete")
     configurationkeys = relationship("ConfigurationKey", backref="application", cascade="delete")
 

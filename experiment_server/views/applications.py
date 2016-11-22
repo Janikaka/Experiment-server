@@ -30,6 +30,29 @@ class Applications(WebUtils):
         res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
         return res
 
+    """
+        Helper functions
+    """
+    def get_unused_apikey(self):
+        import uuid
+        apikey = str(uuid.uuid4())
+
+        while Application.get_by('apikey', apikey) is not None:
+            apikey = str(uuid.uuid4())
+
+        return apikey
+
+    def set_app_apikey(self, application, app_id):
+        apikey = self.get_unused_apikey()
+
+        application.apikey = apikey
+        Application.save(application)
+
+        return Application.get(app_id)
+
+    """
+        Route listeners
+    """
 
     @view_config(route_name='application', request_method="GET")
     def applications_GET_one(self):
@@ -39,19 +62,26 @@ class Applications(WebUtils):
         if app is None:
             print_log(datetime.datetime.now(), 'GET', '/applications/' + str(app_id), 'Get one application', None)
             return self.createResponse(None, 400)
+
+        if app.apikey is None:
+            app = self.set_app_apikey(app, app_id)
+
         return app.as_dict()
 
     @view_config(route_name='applications', request_method="GET")
     def applications_GET(self):
         """ List all applications with GET method """
+        
         return list(map(lambda _: _.as_dict(), Application.all()))
 
     @view_config(route_name='applications', request_method="POST")
     def applications_POST(self):
         """ Create new application with POST method """
         req_app = self.request.swagger_data['application']
+
         app = Application(
-            name=req_app.name
+            name=req_app.name,
+            apikey=self.get_unused_apikey()
         )
         Application.save(app)
         print_log(req_app.name, 'POST', '/applications', 'Create new application', app)
@@ -80,10 +110,10 @@ class Applications(WebUtils):
             print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/rangeconstraints',
                       'Get all things of one application', None)
             return self.createResponse(None, 400)
-        ranges = list(map(lambda _: _.rangeconstraints, app.configurationkeys))
-        ranges_concat = list(concat(ranges))
-        ranges_list = list(map(lambda _: _.as_dict(), ranges_concat))
-        configurationkeys = list(map(lambda _: _.as_dict(), app.configurationkeys))
-        resultwithck = assoc(app.as_dict(), 'configurationkeys', configurationkeys)
+        configurationkeys = app.configurationkeys
+        ranges = list(concat(list(map(lambda _: _.rangeconstraints, configurationkeys))))
+        app_data = app.as_dict()
+        app_data = assoc(app_data, 'configurationkeys', list(map(lambda _: _.as_dict(), configurationkeys)))
+        app_data = assoc(app_data, 'rangeconstraints', list(map(lambda _: _.as_dict(), ranges)))
 
-        return assoc(resultwithck, 'rangeconstraints', ranges_list)
+        return app_data

@@ -1,6 +1,8 @@
 from experiment_server.models.applications import Application
+from experiment_server.models.rangeconstraints import RangeConstraint
 from experiment_server.views.applications import Applications
 from .base_test import BaseTest
+import uuid
 
 
 # ---------------------------------------------------------------------------------
@@ -58,6 +60,30 @@ class TestApplications(BaseTest):
         ck = Application.get(1).configurationkeys[0]
         assert ck.name == 'highscore'
 
+    def test_can_set_apikey(self):
+        apikey = str(uuid.uuid4())
+        app = Application(name='App with UUID', apikey=str(uuid.uuid4()))
+        app = Application.save(app)
+
+        expected = Application.get_by('apikey', apikey)
+
+        assert expected == app
+
+    def test_apikey_is_unique(self):
+        apikey = str(uuid.uuid4())
+        app = Application(name='App with UUID', apikey=str(apikey))
+        app = Application.save(app)
+
+        app = Application(name='Another app with UUID', apikey=str(apikey))
+        was_added = True
+        try:
+            Application.save(app)
+        except Exception as e:
+            was_added = False
+            pass
+
+        assert not was_added
+
 # ---------------------------------------------------------------------------------
 #                                  REST-Inteface
 # ---------------------------------------------------------------------------------
@@ -73,14 +99,20 @@ class TestApplicationsREST(BaseTest):
         self.req.swagger_data = {'id': 1}
         httpApps = Applications(self.req)
         response = httpApps.applications_GET_one()
-        app = {'id': 1, 'name': 'App 1'}
-        assert response == app
+        expected = Application.get(1).as_dict()
+        assert response == expected
+
+    def test_applications_GET_one_apikey_not_none(self):
+        self.req.swagger_data = {'id': 1}
+        httpApps = Applications(self.req)
+        response = httpApps.applications_GET_one()
+        assert response['apikey'] != None
 
     def test_applications_GET(self):
         httpApps = Applications(self.req)
         response = httpApps.applications_GET()
-        apps = [{'id': 1, 'name': 'App 1'}, {'id': 2, 'name': 'App 2'}]
-        assert response == apps
+        expected = list(map(lambda _: _.as_dict(), Application.all()))
+        assert response == expected
 
     def test_applications_DELETE_one(self):
         self.req.swagger_data = {'id': 1}
@@ -96,45 +128,32 @@ class TestApplicationsREST(BaseTest):
         self.req.swagger_data = {'application': Application(name='App 3')}
         httpApps = Applications(self.req)
         response = httpApps.applications_POST()
-        app = {'id': 3, 'name': 'App 3'}
-        assert response == app
+
+        expected = Application.get_by('name', 'App 3').as_dict()
+        assert response == expected
+
+    def test_applications_POST_apikey_is_set(self):
+        self.req.swagger_data = {'application': Application(name='App 3')}
+        httpApps = Applications(self.req)
+        response = httpApps.applications_POST()
+
+        expected = Application.get_by('name', 'App 3').as_dict()
+        assert expected['apikey'] is not None
 
     def test_data_for_app_GET(self):
+        from toolz import assoc, concat
         self.req.swagger_data = {'id': 1}
         httpApps = Applications(self.req)
         response = httpApps.data_for_app_GET()
-        app_data = {
-            'id': 1,
-            'name': 'App 1',
-            'rangeconstraints': [
-                {
-                    'id': 1,
-                    'configurationkey_id': 2,
-                    'operator_id': 2,
-                    'value': 1
-                },
-                {
-                    'id': 2,
-                    'configurationkey_id': 2,
-                    'operator_id': 1,
-                    'value': 5
-                }
-            ],
-            'configurationkeys': [
-                {
-                    'id': 1,
-                    'application_id': 1,
-                    'type': 'boolean',
-                    'name': 'highscore'
-                },
-                {
-                    'id': 2,
-                    'application_id': 1,
-                    'type': 'integer',
-                    'name': 'difficulty'
-                }
-            ],
-        }
+
+        app = Application.get(1)
+        configurationkeys = app.configurationkeys
+        ranges = list(concat(list(map(lambda _: _.rangeconstraints, configurationkeys))))
+
+        app_data = app.as_dict()
+        app_data = assoc(app_data, 'configurationkeys', list(map(lambda _: _.as_dict(), configurationkeys)))
+        app_data = assoc(app_data, 'rangeconstraints', list(map(lambda _: _.as_dict(), ranges)))
+
         assert response == app_data
 
     def test_application_routes(self):

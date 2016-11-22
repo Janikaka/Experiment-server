@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "version": "2.0.1",
+        "version": "2.1",
         "title": "Experiment server",
         "description": "API for experiments",
         "license": {
@@ -1229,6 +1229,9 @@
             "properties": {
                 "id": {
                     "type": "integer"
+                },
+                "apikey": {
+                    "type": "string"
                 },
                 "experiments": {
                     "type": "array",

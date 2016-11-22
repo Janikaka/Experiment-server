@@ -56,7 +56,8 @@ def main(argv=sys.argv):
                 dt.minute,
                 dt.second)
 
-        app1 = Application(name='Math Game')
+        import uuid
+        app1 = Application(name='Math Game', apikey=str(uuid.uuid4()))
 
         dbsession.add(app1)
 
