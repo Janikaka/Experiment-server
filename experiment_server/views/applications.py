@@ -71,7 +71,7 @@ class Applications(WebUtils):
     @view_config(route_name='applications', request_method="GET")
     def applications_GET(self):
         """ List all applications with GET method """
-        
+
         return list(map(lambda _: _.as_dict(), Application.all()))
 
     @view_config(route_name='applications', request_method="POST")
@@ -110,6 +110,8 @@ class Applications(WebUtils):
             print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/rangeconstraints',
                       'Get all things of one application', None)
             return self.createResponse(None, 400)
+        if app.apikey is None:
+            app = self.set_app_apikey(app, app_id)
         configurationkeys = app.configurationkeys
         ranges = list(concat(list(map(lambda _: _.rangeconstraints, configurationkeys))))
         app_data = app.as_dict()
