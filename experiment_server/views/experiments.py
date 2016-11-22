@@ -79,7 +79,10 @@ class Experiments(WebUtils):
                 '/applications/%s/experiments/%s' % (app_id, exp_id),\
                 'Get one experiment', 'Failed')
             return self.createResponse(None, 400)
-        return exp.as_dict()
+        exp_dict = exp.as_dict()
+        exp_dict['status'] = exp.get_status()
+
+        return exp_dict
 
     @view_config(route_name='experiment', request_method="DELETE")
     def experiment_DELETE(self):
@@ -100,44 +103,6 @@ class Experiments(WebUtils):
         print_log(datetime.datetime.now(), 'DELETE', log_address,\
             'Delete experiment', 'Succeeded')
         return {}
-
-    @view_config(route_name='experiment_metadata', request_method="GET")
-    def experiment_metadata_GET(self):
-        app_id = self.request.swagger_data['appid']
-        exp_id = self.request.swagger_data['expid']
-        experiment = Experiment.query().join(Application)\
-            .filter(Application.id == app_id, Experiment.id == exp_id)\
-            .one_or_none()
-        log_address = '/applications/%s/experiments/%s/metadata' % (app_id,exp_id)
-        if experiment is None:
-            print_log(datetime.datetime.now(), 'GET', log_address,
-                     'Show specific experiment metadata', 'Failed')
-            return self.createResponse(None, 400)
-
-        experimentAsJSON = experiment.as_dict()
-        totalDataitems = experiment.get_total_dataitems()
-        experimentgroups = []
-
-        for expgroup in experiment.experimentgroups:
-            expgroupAsJSON = expgroup.as_dict()
-            confs = expgroup.configurations
-
-            clients = Client.query().join(Client.experimentgroups)\
-                .filter(ExperimentGroup.id == expgroup.id).count()
-
-            configurations = list(map(lambda _: _.as_dict(), expgroup.configurations))
-
-            expgroupAsJSON['configurations'] = configurations
-            expgroupAsJSON['clients'] = clients
-            experimentgroups.append(expgroupAsJSON)
-
-        experimentAsJSON['experimentgroups'] = experimentgroups
-        experimentAsJSON['totalDataitems'] = totalDataitems
-        experimentAsJSON['status'] = experiment.get_status()
-        result = {'data': experimentAsJSON}
-        print_log(datetime.datetime.now(), 'GET', log_address,
-                 'Show specific experiment metadata', result)
-        return self.createResponse(result, 200)
 
     @view_config(route_name='clients_for_experiment', request_method="GET")
     def clients_for_experiment_GET(self):
@@ -162,9 +127,17 @@ class Experiments(WebUtils):
     def experimentgroup_GET(self):
         app_id = self.request.swagger_data['appid']
         exp_id = self.request.swagger_data['expid']
+        experiment = Experiment.query().join(Application)\
+            .filter(Application.id == app_id, Experiment.id == exp_id)\
+            .one_or_none()
 
-        experimentgroups = ExperimentGroup.query().join(Experiment, Application)\
-            .filter(Experiment.id == exp_id, Application.id ==app_id).all()
+        if experiment == None:
+            print_log(datetime.datetime.now(), 'GET', \
+                '/applications/%s/experiments/%s/experimentgroups' % ((app_id, exp_id)),
+                      'List all ExperimentGroups for specific experiment', 'Failed')
+            return self.createResponse(None, 400)
+
+        experimentgroups = ExperimentGroup.query().filter(ExperimentGroup.experiment_id == experiment.id)
 
         return list(map(lambda _: _.as_dict(), experimentgroups))
 

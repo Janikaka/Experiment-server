@@ -37,7 +37,7 @@
             "description": "Range-related routes"
         },
         {
-            "name": "exclusion-constrains",
+            "name": "exclusion-constraints",
             "description": "Exclusion-related routes"
         },
         {
@@ -600,7 +600,7 @@
         "/applications/{appid}/configurationkeys/{ckid}/exclusionconstraints": {
             "get": {
                 "tags": [
-                    "exclusion-constrains"
+                    "exclusion-constraints"
                 ],
                 "summary": "Get exclusionconstraints of one configurationkey",
                 "parameters": [
@@ -636,7 +636,7 @@
             },
             "post": {
                 "tags": [
-                    "exclusion-constraint"
+                    "exclusion-constraints"
                 ],
                 "summary": "Create new exclusionconstraint to configurationkey",
                 "parameters": [
@@ -677,7 +677,7 @@
         "/applications/{appid}/configurationkeys/{ckid}/exclusionconstraints/{ecid}": {
             "get": {
                 "tags": [
-                    "exclusion-constrains"
+                    "exclusion-constraints"
                 ],
                 "summary": "Get one exclusionconstraint",
                 "parameters": [
@@ -717,7 +717,7 @@
             },
             "delete": {
                 "tags": [
-                    "exclusion-constraint"
+                    "exclusion-constraints"
                 ],
                 "summary": "Delete one exclusionconstraint",
                 "parameters": [
@@ -1071,24 +1071,24 @@
                 }
             }
         },
-        "/applications/{appid}/experiments/{expid}/metadata": {
+        "/applications/{appid}/experiments/{expid}/experimentgroups": {
             "get": {
                 "tags": [
                     "experiments"
                 ],
-                "summary": "List all things and experimentgroups of one experiment",
+                "summary": "List experimentgroups of one Experiment",
                 "parameters": [
                     {
                         "name": "appid",
                         "type": "integer",
-                        "description": "id of the Application",
+                        "description": "Id of the Application",
                         "in": "path",
                         "required": true
                     },
                     {
                         "name": "expid",
                         "type": "integer",
-                        "description": "id of the experiment",
+                        "description": "Id of the Experiment",
                         "in": "path",
                         "required": true
                     }
@@ -1097,16 +1097,9 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "data": {
-                                    "type": "object",
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/definitions/Experiment"
-                                        }
-                                    ]
-                                }
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ExperimentGroup"
                             }
                         }
                     },
@@ -1121,7 +1114,7 @@
                 "tags": [
                     "experiments"
                 ],
-                "summary": "Show one experiment group metadata",
+                "summary": "Show one experimentgroup metadata. This is intended to be used as interface for analytic tools.",
                 "parameters": [
                     {
                         "name": "appid",
@@ -1495,19 +1488,11 @@
                 }
             ],
             "required": [
-                "id"
+                "id",
+                "status"
             ],
             "properties": {
                 "id": {
-                    "type": "integer"
-                },
-                "experimentgroups": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ExperimentGroup"
-                    }
-                },
-                "totalDataitems": {
                     "type": "integer"
                 },
                 "status": {
