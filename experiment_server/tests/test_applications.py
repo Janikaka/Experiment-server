@@ -153,6 +153,7 @@ class TestApplicationsREST(BaseTest):
         app_data = app.as_dict()
         app_data = assoc(app_data, 'configurationkeys', list(map(lambda _: _.as_dict(), configurationkeys)))
         app_data = assoc(app_data, 'rangeconstraints', list(map(lambda _: _.as_dict(), ranges)))
+        app_data = assoc(app_data, 'exclusionconstraints', list(map(lambda _: _.as_dict(), httpApps.get_app_exclusionconstraints(1))))
 
         assert response == app_data
 
