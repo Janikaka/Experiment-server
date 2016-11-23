@@ -19,7 +19,7 @@ class Experiment(Base):
     name = Column(Text, unique=True, index=True)
     startDatetime = Column(DateTime)
     endDatetime = Column(DateTime)
-    experimentgroups = relationship("ExperimentGroup", backref="experiment", cascade="delete")    
+    experimentgroups = relationship("ExperimentGroup", backref="experiment", cascade="delete")
 
     def as_dict(self):
         result = {}
@@ -58,14 +58,3 @@ class Experiment(Base):
         elif date_time_now < start_datetime:
             return waiting
         return None
-
-    def get_total_dataitems(self):
-        """
-        Get total dataitems from the specific experiment. Calls for each
-        experimentgroup to count their total dataitems.
-        Return: Total count of dataitems in Experiment
-        """
-        count = 0
-        for expgroup in self.experimentgroups:
-            count += expgroup.get_total_dataitems()
-        return count

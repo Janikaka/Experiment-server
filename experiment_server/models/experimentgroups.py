@@ -26,14 +26,3 @@ class ExperimentGroup(Base):
     def as_dict(self):
         """ Transfer data to dictionary """
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-    def get_total_dataitems(self):
-        """
-        Get total dataitems from the specific experiment group
-        Calls each client to count their total dataitems
-        Return: count of total dataitems in ExperimentGroup
-        """
-        count = 0
-        for client in self.clients:
-            count += client.get_total_dataitems_in_experiment(self.experiment_id)
-        return count

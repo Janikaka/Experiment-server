@@ -26,23 +26,3 @@ class Client(Base):
     def as_dict(self):
         """ Transfer data to dictionary """
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-    def get_total_dataitems_in_experiment(self, exp_id):
-        """
-        Get total count of DataItems, which are sent to the service during Experiment's,
-        and in which client has participated to.
-        'running' state.
-        Params: exp_id: Experiment id in which client belongs to
-        Return: total count of DataItems in Experiment sent by client
-        """
-        from .experiments import Experiment
-        from .dataitems import DataItem
-
-        experiment = Experiment.get(exp_id)
-        start_datetime = experiment.startDatetime
-        end_datetime = experiment.endDatetime
-        count = DataItem.query().filter(
-            and_(DataItem.client_id == self.id,
-                 start_datetime <= DataItem.startDatetime,
-                 DataItem.endDatetime <= end_datetime)).count()
-        return count
