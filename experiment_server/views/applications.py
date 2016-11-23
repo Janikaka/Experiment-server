@@ -114,8 +114,10 @@ class Applications(WebUtils):
             app = self.set_app_apikey(app, app_id)
         configurationkeys = app.configurationkeys
         ranges = list(concat(list(map(lambda _: _.rangeconstraints, configurationkeys))))
+        exclusions = list(concat(list(map(lambda _: _.exclusionconstraints, configurationkeys))))
         app_data = app.as_dict()
         app_data = assoc(app_data, 'configurationkeys', list(map(lambda _: _.as_dict(), configurationkeys)))
         app_data = assoc(app_data, 'rangeconstraints', list(map(lambda _: _.as_dict(), ranges)))
+        qpp_data = assoc(app_data, 'exclusionconstraints', list(map(lambda _: _.as_dict(), exclusions)))
 
         return app_data
