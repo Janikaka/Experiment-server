@@ -190,6 +190,12 @@
                                 }
                             ],
                             "properties": {
+                                "exclusionconstraints": {
+                                    "type": "array",
+                                    "items": {
+                                        "${ref}": "#/definitions/ExclusionConstraint"
+                                    }
+                                },
                                 "rangeconstraints": {
                                     "type": "array",
                                     "items": {
