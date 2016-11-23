@@ -57,8 +57,8 @@ class Applications(WebUtils):
 
         exclusions = ExclusionConstraint.query()\
             .join(ConfigurationKey, \
-                or_(ExclusionConstraint.first_configurationkey_id, \
-                    ExclusionConstraint.second_configurationkey_id))\
+                or_(ExclusionConstraint.first_configurationkey_id == ConfigurationKey.id, \
+                    ExclusionConstraint.second_configurationkey_id == ConfigurationKey.id))\
             .join(Application).filter(Application.id == app_id)
 
         return exclusions
