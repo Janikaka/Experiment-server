@@ -84,6 +84,17 @@ class TestApplications(BaseTest):
 
         assert not was_added
 
+    def test_application_has_client_connection(self):
+        app = Application.get(1)
+        is_error = False
+
+        try:
+            app.clients
+        except Exception as e:
+            is_error = True
+
+        assert not is_error
+
 # ---------------------------------------------------------------------------------
 #                                  REST-Inteface
 # ---------------------------------------------------------------------------------

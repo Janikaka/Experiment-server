@@ -21,8 +21,6 @@ def get_client_by_id_and_app(data):
         client_id = data['clientid']
 
         return Client.query()\
-        .join(Client.experimentgroups)\
-        .join(Experiment)\
         .join(Application)\
         .filter(Application.id == app_id)\
         .filter(Client.id == client_id)\
@@ -70,8 +68,6 @@ class Clients(WebUtils):
             return self.createResponse(None,400)
 
         clients = Client.query()\
-        .join(Client.experimentgroups)\
-        .join(Experiment)\
         .join(Application)\
         .filter(Application.id == app_id)\
         .order_by(asc(Client.id))

@@ -16,6 +16,7 @@ class Application(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Text)
     apikey = Column(Text, unique=True)
+    clients = relationship("Client", backref="application")
     experiments = relationship("Experiment", backref="application", cascade="delete")
     configurationkeys = relationship("ConfigurationKey", backref="application", cascade="delete")
 
