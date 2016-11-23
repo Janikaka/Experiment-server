@@ -1,7 +1,7 @@
 ---
 swagger: '2.0'
 info:
-  version: 2.1.1
+  version: "2.1.2"
   title: Experiment server
   description: API for experiments
   license:
@@ -41,7 +41,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Operator"
+              $ref: "#/definitions/Operator"
   "/applications":
     get:
       tags:
@@ -53,7 +53,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Application"
+              $ref: "#/definitions/Application"
     post:
       tags:
       - application
@@ -64,12 +64,12 @@ paths:
         description: Application to create
         required: true
         schema:
-          "$ref": "#/definitions/NewApplication"
+          $ref: "#/definitions/NewApplication"
       responses:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/Application"
+            $ref: "#/definitions/Application"
   "/applications/{id}":
     get:
       tags:
@@ -85,7 +85,7 @@ paths:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/Application"
+            $ref: "#/definitions/Application"
         '400':
           description: Bad Request
     delete:
@@ -120,20 +120,20 @@ paths:
           schema:
             type: object
             allOf:
-            - "$ref": "#/definitions/Application"
+            - $ref: "#/definitions/Application"
             properties:
               exclusionconstraints:
                 type: array
                 items:
-                  "$ref": "#/definitions/ExclusionConstraint"
+                  $ref: "#/definitions/ExclusionConstraint"
               rangeconstraints:
                 type: array
                 items:
-                  "$ref": "#/definitions/RangeConstraint"
+                  $ref: "#/definitions/RangeConstraint"
               configurationkeys:
                 type: array
                 items:
-                  "$ref": "#/definitions/ConfigurationKey"
+                  $ref: "#/definitions/ConfigurationKey"
         '400':
           description: Bad Request
   "/applications/{appid}/clients":
@@ -154,7 +154,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/client"
+              $ref: "#/definitions/client"
     post:
       tags:
       - client
@@ -170,12 +170,12 @@ paths:
         description: client to create
         required: true
         schema:
-          "$ref": "#/definitions/Newclient"
+          $ref: "#/definitions/Newclient"
       responses:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/client"
+            $ref: "#/definitions/client"
   "/applications/{appid}/clients/{clientid}":
     get:
       tags:
@@ -196,7 +196,7 @@ paths:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/client"
+            $ref: "#/definitions/client"
     delete:
       tags:
       - client
@@ -237,7 +237,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Configuration"
+              $ref: "#/definitions/Configuration"
   "/applications/{appid}/clients/{clientid}/experiments":
     get:
       tags:
@@ -260,7 +260,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Experiment"
+              $ref: "#/definitions/Experiment"
   "/applications/{id}/configurationkeys":
     get:
       tags:
@@ -278,7 +278,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/ConfigurationKey"
+              $ref: "#/definitions/ConfigurationKey"
         '400':
           description: Bad Request
     post:
@@ -296,12 +296,12 @@ paths:
         description: Conf.key to create
         required: true
         schema:
-          "$ref": "#/definitions/NewConfigurationKey"
+          $ref: "#/definitions/NewConfigurationKey"
       responses:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/ConfigurationKey"
+            $ref: "#/definitions/ConfigurationKey"
         '400':
           description: Bad Request
     delete:
@@ -339,7 +339,7 @@ paths:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/ConfigurationKey"
+            $ref: "#/definitions/ConfigurationKey"
         '400':
           description: Bad Request
     put:
@@ -362,12 +362,12 @@ paths:
         description: Configurationkey to modify
         required: true
         schema:
-          "$ref": "#/definitions/ConfigurationKey"
+          $ref: "#/definitions/ConfigurationKey"
       responses:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/ConfigurationKey"
+            $ref: "#/definitions/ConfigurationKey"
         '400':
           description: Bad Request
     delete:
@@ -412,7 +412,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/ExclusionConstraint"
+              $ref: "#/definitions/ExclusionConstraint"
         '400':
           description: Bad Request
     post:
@@ -435,12 +435,12 @@ paths:
         description: exclusionconstraint to create
         required: true
         schema:
-          "$ref": "#/definitions/NewExclusionConstraint"
+          $ref: "#/definitions/NewExclusionConstraint"
       responses:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/ExclusionConstraint"
+            $ref: "#/definitions/ExclusionConstraint"
   "/applications/{appid}/configurationkeys/{ckid}/exclusionconstraints/{ecid}":
     get:
       tags:
@@ -466,7 +466,7 @@ paths:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/ExclusionConstraint"
+            $ref: "#/definitions/ExclusionConstraint"
         '400':
           description: Bad Request
     delete:
@@ -516,7 +516,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/RangeConstraint"
+              $ref: "#/definitions/RangeConstraint"
         '400':
           description: Bad Request
     delete:
@@ -559,12 +559,12 @@ paths:
         description: Rangeconstraint to create
         required: true
         schema:
-          "$ref": "#/definitions/NewRangeConstraint"
+          $ref: "#/definitions/NewRangeConstraint"
       responses:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/RangeConstraint"
+            $ref: "#/definitions/RangeConstraint"
         '400':
           description: Bad Request
   "/applications/{appid}/configurationkeys/{ckid}/rangeconstraints/{rcid}":
@@ -610,7 +610,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Experiment"
+              $ref: "#/definitions/Experiment"
         '400':
           description: Bad Request
     post:
@@ -628,12 +628,12 @@ paths:
         description: Experiment to create
         required: true
         schema:
-          "$ref": "#/definitions/NewExperiment"
+          $ref: "#/definitions/NewExperiment"
       responses:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/Experiment"
+            $ref: "#/definitions/Experiment"
         '400':
           description: Bad Request
   "/applications/{appid}/experiments/{expid}":
@@ -656,7 +656,7 @@ paths:
         '200':
           description: OK
           schema:
-            "$ref": "#/definitions/Experiment"
+            $ref: "#/definitions/Experiment"
         '400':
           description: Bad Request
     delete:
@@ -701,7 +701,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/client"
+              $ref: "#/definitions/client"
         '400':
           description: Bad Request
   "/applications/{appid}/experiments/{expid}/experimentgroups":
@@ -726,7 +726,7 @@ paths:
           schema:
             type: array
             items:
-              "$ref": "#/definitions/ExperimentGroup"
+              $ref: "#/definitions/ExperimentGroup"
         '400':
           description: Bad Request
   "/applications/{appid}/experiments/{expid}/experimentgroups/{expgroupid}":
@@ -760,19 +760,19 @@ paths:
               experimentgroup:
                 type: object
                 items:
-                  "$ref": "#/definitions/ExperimentGroup"
+                  $ref: "#/definitions/ExperimentGroup"
               configurations:
                 type: array
                 items:
-                  "$ref": "#/definitions/Configuration"
+                  $ref: "#/definitions/Configuration"
               clients:
                 type: array
                 items:
-                  "$ref": "#/definitions/client"
+                  $ref: "#/definitions/client"
               dataitems:
                 type: array
                 items:
-                  "$ref": "#/definitions/DataItem"
+                  $ref: "#/definitions/DataItem"
         '400':
           description: Bad Request
     delete:
@@ -804,7 +804,7 @@ definitions:
   Application:
     type: object
     allOf:
-    - "$ref": "#/definitions/NewApplication"
+    - $ref: "#/definitions/NewApplication"
     required:
     - id
     properties:
@@ -812,14 +812,6 @@ definitions:
         type: integer
       apikey:
         type: string
-      experiments:
-        type: array
-        items:
-          "$ref": "#/definitions/Experiment"
-      configurationkeys:
-        type: array
-        items:
-          "$ref": "#/definitions/ConfigurationKey"
   NewApplication:
     type: object
     required:
@@ -830,16 +822,12 @@ definitions:
   ConfigurationKey:
     type: object
     allOf:
-    - "$ref": "#/definitions/NewConfigurationKey"
+    - $ref: "#/definitions/NewConfigurationKey"
     required:
     - id
     properties:
       id:
         type: integer
-      rangeconstraints:
-        type: array
-        items:
-          "$ref": "#/definitions/RangeConstraint"
   NewConfigurationKey:
     type: object
     required:
@@ -979,13 +967,13 @@ definitions:
       configurations:
         type: array
         items:
-          "$ref": "#/definitions/Configuration"
+          $ref: "#/definitions/Configuration"
       clients:
         type: integer
   Experiment:
     type: object
     allOf:
-    - "$ref": "#/definitions/NewExperiment"
+    - $ref: "#/definitions/NewExperiment"
     required:
     - id
     - status
@@ -1026,11 +1014,11 @@ definitions:
       rangeconstraints:
         type: array
         items:
-          "$ref": "#/definitions/RangeConstraint"
+          $ref: "#/definitions/RangeConstraint"
   RangeConstraint:
     type: object
     allOf:
-    - "$ref": "#/definitions/NewRangeConstraint"
+    - $ref: "#/definitions/NewRangeConstraint"
     required:
     - id
     properties:
@@ -1050,7 +1038,7 @@ definitions:
   client:
     type: object
     allOf:
-    - "$ref": "#/definitions/Newclient"
+    - $ref: "#/definitions/Newclient"
     required:
     - id
     properties:
@@ -1059,11 +1047,11 @@ definitions:
       dataitems:
         type: array
         items:
-          "$ref": "#/definitions/DataItem"
+          $ref: "#/definitions/DataItem"
       experimentgroups:
         type: array
         items:
-          "$ref": "#/definitions/ExperimentGroup"
+          $ref: "#/definitions/ExperimentGroup"
   Newclient:
     type: object
     required:
