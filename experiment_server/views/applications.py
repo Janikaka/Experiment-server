@@ -50,6 +50,19 @@ class Applications(WebUtils):
 
         return Application.get(app_id)
 
+    def get_app_exclusionconstraints(self, app_id):
+        from experiment_server.models.exclusionconstraints import ExclusionConstraint
+        from experiment_server.models.configurationkeys import ConfigurationKey
+        from sqlalchemy import or_
+
+        exclusions = ExclusionConstraint.query()\
+            .join(ConfigurationKey, \
+                or_(ExclusionConstraint.first_configurationkey_id, \
+                    ExclusionConstraint.second_configurationkey_id))\
+            .join(Application).filter(Application.id == app_id)
+
+        return exclusions
+
     """
         Route listeners
     """
@@ -114,7 +127,8 @@ class Applications(WebUtils):
             app = self.set_app_apikey(app, app_id)
         configurationkeys = app.configurationkeys
         ranges = list(concat(list(map(lambda _: _.rangeconstraints, configurationkeys))))
-        exclusions = list(concat(list(map(lambda _: _.exclusionconstraints, configurationkeys))))
+        exclusions = self.get_app_exclusionconstraints(app_id)
+
         app_data = app.as_dict()
         app_data = assoc(app_data, 'configurationkeys', list(map(lambda _: _.as_dict(), configurationkeys)))
         app_data = assoc(app_data, 'rangeconstraints', list(map(lambda _: _.as_dict(), ranges)))
