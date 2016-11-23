@@ -109,14 +109,10 @@ class BaseTest(unittest.TestCase):
         endDatetime=datetime.datetime.strptime('2017-01-01 00:00:00', "%Y-%m-%d %H:%M:%S"),
         experimentgroups=[expgroup1, expgroup2])
 
-        client1 = self.DB.create_client(
-            {'clientname': 'First client',
-             'experimentgroups': [expgroup1]
-             })
-        client2 = self.DB.create_client(
-            {'clientname': 'Second client',
-             'experimentgroups': [expgroup2]
-             })
+        client1 = Client(clientname='First client', experimentgroups=[expgroup1],\
+            application_id=1)
+        client2 = Client(clientname='Second client', experimentgroups=[expgroup2],\
+            application_id=1)
 
         dt1 = self.DB.create_dataitem(
             {'key': 'key1',

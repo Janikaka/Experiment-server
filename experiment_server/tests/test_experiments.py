@@ -147,10 +147,11 @@ class TestExperimentsREST(BaseTest):
         self.req.swagger_data = {'appid': 1, 'expid': 1}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.clients_for_experiment_GET()
-        clients = [{'id': 1,
-                  'clientname': 'First client'},
-                 {'id': 2,
-                  'clientname': 'Second client'}]
+        clients = list(map(lambda _: _.as_dict(), \
+                    Client.query()\
+                        .join(Client.experimentgroups, Experiment, Application)\
+                        .filter(Experiment.id == 1, Application.id == 1).all()))
+        
         assert response == clients
 
     def test_clients_for_experiment_GET_nonexistent_experiment(self):
@@ -200,7 +201,7 @@ class TestExperimentsREST(BaseTest):
                                 'value': 10,
                                 'startDatetime': '2016-01-01 00:00:00',
                                 'endDatetime': '2016-01-01 01:01:01',
-                                'client': {'id': 1, 'clientname': 'First client'}
+                                'client': {'id': 1, 'clientname': 'First client', 'application_id': 1}
                                 },
                                {'id': 2,
                                 'client_id':1,
@@ -208,10 +209,10 @@ class TestExperimentsREST(BaseTest):
                                 'value': 0.5,
                                 'startDatetime': '2016-02-02 01:01:02',
                                 'endDatetime': '2016-02-02 02:02:02',
-                                'client': {'id': 1, 'clientname': 'First client'}
+                                'client': {'id': 1, 'clientname': 'First client', 'application_id': 1}
                                 }
                            ],
-                           'clients': [{'id': 1, 'clientname': 'First client'}]}
+                           'clients': [{'id': 1, 'clientname': 'First client', 'application_id': 1}]}
         assert response == experimentgroup
 
     def test_experimentgroup_GET_one_nonexistent_experiment(self):

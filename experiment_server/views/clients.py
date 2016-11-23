@@ -9,6 +9,7 @@ from experiment_server.models.dataitems import DataItem
 from experiment_server.models.applications import Application
 from experiment_server.models.experiments import Experiment
 from experiment_server.models.experimentgroups import ExperimentGroup
+from sqlalchemy import asc
 
 from fn import _
 from toolz import *
@@ -72,7 +73,8 @@ class Clients(WebUtils):
         .join(Client.experimentgroups)\
         .join(Experiment)\
         .join(Application)\
-        .filter(Application.id == app_id)
+        .filter(Application.id == app_id)\
+        .order_by(asc(Client.id))
 
         return list(map(lambda _: _.as_dict(), clients))
 

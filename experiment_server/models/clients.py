@@ -1,6 +1,7 @@
 """ This is a schema """
 from sqlalchemy import (
     Column,
+    ForeignKey,
     Integer,
     Text,
 )
@@ -17,6 +18,7 @@ class Client(Base):
     id = Column(Integer, primary_key=True)
     clientname = Column(Text, unique=True, index=True)
     dataitems = relationship("DataItem", backref="client", cascade="delete")
+    application_id = Column(Integer, ForeignKey('applications.id'))
     experimentgroups = relationship(
         "ExperimentGroup",
         secondary=clients_experimentgroups,

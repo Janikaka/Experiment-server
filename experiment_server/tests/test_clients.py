@@ -107,6 +107,26 @@ class TestClients(BaseTest):
 
         assert clients == [client1]
 
+    def test_client_has_applicationid_column(self):
+        client = Client.get(1)
+        is_error = False
+        try:
+            app_id = client.application_id
+        except Exception as e:
+            is_error = True
+            pass
+
+        assert not is_error
+
+    def test_client_applicationid_can_be_set(self):
+        client = Client.get(1)
+
+        client.application_id = 1
+        Client.save(client)
+
+        assert Client.get(1).application_id is 1
+
+
 # ---------------------------------------------------------------------------------
 #                                  REST-Inteface
 # ---------------------------------------------------------------------------------
@@ -122,14 +142,14 @@ class TestClientsREST(BaseTest):
         self.req.swagger_data = {'appid': 1, 'clientid' : 1}
         httpclients = Clients(self.req)
         response = httpclients.client_GET()
-        client = {'id': 1, 'clientname': 'First client'}
+        client = Client.get(1).as_dict()
         assert response == client
 
     def test_create_client(self):
         self.req.swagger_data = {'client': Client(clientname='Test client')}
         httpclients = Clients(self.req)
         response = httpclients.create_client()
-        client = {'id': 3, 'clientname': 'Test client'}
+        client = Client.get(3).as_dict()
         assert response == client
 
     def test_configurations_GET(self):
@@ -146,12 +166,14 @@ class TestClientsREST(BaseTest):
         assert response.status_code == 400
 
     def test_clients_GET(self):
+        from sqlalchemy import asc
         self.req.swagger_data = {'appid': 1}
         httpclients = Clients(self.req)
         response = httpclients.clients_GET()
         result = response
-        clients = [{"id": 1, "clientname": "First client"},
-                 {"id": 2, "clientname": "Second client"}]
+        clients = list(map(lambda _: _.as_dict(), \
+                    Client.query().filter(Client.application_id == 1)\
+                        .order_by(asc(Client.id)).all()))
         assert result == clients
 
     def test_experiments_for_client_GET(self):
