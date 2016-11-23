@@ -1,6 +1,7 @@
+---
 swagger: '2.0'
 info:
-  version: '2.1'
+  version: 2.1.1
   title: Experiment server
   description: API for experiments
   license:
@@ -121,6 +122,10 @@ paths:
             allOf:
             - "$ref": "#/definitions/Application"
             properties:
+              exclusionconstraints:
+                type: array
+                items:
+                  "$ref": "#/definitions/ExclusionConstraint"
               rangeconstraints:
                 type: array
                 items:
