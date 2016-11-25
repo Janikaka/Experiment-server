@@ -34,39 +34,41 @@ class ExclusionConstraints(WebUtils):
     """
         Helper functions
     """
-    def get_exclusionconstraint(self, app_id, conf_id, exconst_id):
+    def get_exclusionconstraint(self, app_id, exconst_id):
         try:
             return ExclusionConstraint.query()\
                 .join(ConfigurationKey, or_\
                     (ExclusionConstraint.first_configurationkey_id == ConfigurationKey.id,\
                     ExclusionConstraint.second_configurationkey_id == ConfigurationKey.id))\
                 .join(Application)\
-                .filter(ExclusionConstraint.id == exconst_id,\
-                    ConfigurationKey.id == conf_id, Application.id == app_id)\
-                .one()
+                .filter(Application.id == app_id, \
+                    ExclusionConstraint.id == exconst_id)\
+                .one_or_none()
         except Exception as e:
             print(e)
             return None
 
+    def is_valid_exclusionconstraint(self, exconstraint, app_id):
+        if (exconstraint.first_configurationkey_id is None) or \
+        (exconstraint.second_configurationkey_id is None) or \
+        (exconstraint is None or app_id is None):
+            raise Exception('Missing parameters')
+
+        elif not ConfigurationKey.get(exconstraint.first_configurationkey_id).application_id == app_id:
+            raise Exception('Application with id %s does not have ConfigurationKey with id %s'\
+                % (app_id, exconstraint.first_configurationkey_id))
+
+        elif not ConfigurationKey.get(exconstraint.second_configurationkey_id).application_id == app_id:
+            raise Exception('Application with id %s does not have ConfigurationKey with id %s'\
+                % (app_id, exconstraint.second_configurationkey_id))
 
     """
         Route listeners
     """
     @view_config(route_name='exconstraints_for_configurationkey', request_method="GET")
     def exclusionconstraints_GET(self):
-        """ List all exclusionconstraints with GET method """
+        """ List all exclusionconstraints for Application with GET method """
         app_id = self.request.swagger_data['appid']
-        conf_id = self.request.swagger_data['ckid']
-        config = ConfigurationKey.query().join(Application)\
-            .filter(ConfigurationKey.id == conf_id, Application.id == app_id)\
-            .one_or_none()
-
-        if config == None:
-            print_log(datetime.datetime.now(), 'GET',
-                '/applications/%s/configurationkeys/%s/exclusionconstraints'\
-                    % (app_id, conf_id),
-                'Get exclusionconstraints of one configurationkey', 'Failed')
-            return self.createResponse(None, 400)
 
         exclusionconstraints = ExclusionConstraint.query()\
             .join(ConfigurationKey, \
@@ -80,14 +82,13 @@ class ExclusionConstraints(WebUtils):
 
     @view_config(route_name='exclusionconstraint', request_method="GET")
     def exclusionconstraints_GET_one(self):
-        """ Find and return one configurationkey by id with GET method """
+        """ Find and return one ExclusionConstraint by id with GET method """
         app_id = self.request.swagger_data['appid']
-        conf_id = self.request.swagger_data['ckid']
         exconst_id = self.request.swagger_data['ecid']
-        exconstraint = self.get_exclusionconstraint(app_id, conf_id, exconst_id)
+        exconstraint = self.get_exclusionconstraint(app_id, exconst_id)
         if exconstraint is None:
-            print_log(datetime.datetime.now(), 'GET', '/exclusionconstraints/'
-                      + str(exconst_id), 'Get one exclusionconstraint', 'Failed')
+            print_log(datetime.datetime.now(), 'GET', '/applications/%s/exclusionconstraints/'
+                      + str(exconst_id) % app_id, 'Get one exclusionconstraint', 'Failed')
             return self.createResponse(None, 400)
         return exconstraint.as_dict()
 
@@ -95,17 +96,17 @@ class ExclusionConstraints(WebUtils):
     def exclusionconstraints_DELETE_one(self):
         """ Find and delete one exclusionconstraint by id with DELETE method """
         app_id = self.request.swagger_data['appid']
-        conf_id = self.request.swagger_data['ckid']
         exconst_id = self.request.swagger_data['ecid']
-        exconstraint = self.get_exclusionconstraint(app_id, conf_id, exconst_id)
+        exconstraint = self.get_exclusionconstraint(app_id, exconst_id)
 
-        logmessage_address = '/applications/%s/configurationkeys/%s/exclusionconstraints/%s'\
-            % (app_id, conf_id, exconst_id)
+        logmessage_address = '/applications/%s/exclusionconstraints/%s'\
+            % (app_id, exconst_id)
 
-        if not exconstraint:
+        if exconstraint is None:
             print_log(datetime.datetime.now(), 'DELETE', logmessage_address,
                 'Delete exclusionconstraint', 'Failed')
             return self.createResponse(None, 400)
+
         ExclusionConstraint.destroy(exconstraint)
         print_log(datetime.datetime.now(), 'DELETE',
             logmessage_address, 'Delete exclusionconstraint', 'Succeeded')
@@ -114,28 +115,10 @@ class ExclusionConstraints(WebUtils):
     @view_config(route_name='exconstraints_for_configurationkey', request_method="POST")
     def exclusionconstraints_for_confkey_POST(self):
         app_id = self.request.swagger_data['appid']
-        first_config_id = self.request.swagger_data['ckid']
         exconstraint = self.request.swagger_data['exclusionconstraint']
 
-        try:
-            if first_config_id is None or exconstraint is None or app_id is None:
-                raise Exception('Missing parameters')
-            elif not ConfigurationKey.get(first_config_id).application_id == app_id:
-                raise Exception('Application with id %s does not have ConfigurationKey with id %s'\
-                    % (app_id, first_config_id))
-            elif not ConfigurationKey.get(exconstraint.second_configurationkey_id).application_id == app_id:
-                raise Exception('Application with id %s does not have ConfigurationKey with id %s'\
-                    % (app_id, exconstraint.second_configurationkey_id))
-        except Exception as e:
-            print_log(datetime.datetime.now(), 'POST',
-                '/application/%s/configurationkeys/%s/exclusionconstraints'\
-                    % (app_id, first_config_id),
-                'Create new exclusionconstraint for configurationkey', 'Failed')
-            print_log(e)
-            return self.createResponse({}, 400)
-
         new_exconstraint = ExclusionConstraint(
-            first_configurationkey_id=first_config_id,
+            first_configurationkey_id=exconstraint.first_configurationkey_id,
             first_operator_id=exconstraint.first_operator_id,
             first_value_a=exconstraint.first_value_a,
             first_value_b=exconstraint.first_value_b,
@@ -145,5 +128,16 @@ class ExclusionConstraints(WebUtils):
             second_value_a=exconstraint.second_value_a,
             second_value_b=exconstraint.second_value_b
         )
-        ExclusionConstraint.save(new_exconstraint)
+
+        try:
+            self.is_valid_exclusionconstraint(self, exconstraint, app_id)
+            ExclusionConstraint.save(new_exconstraint)
+        except Exception as e:
+            print_log(datetime.datetime.now(), 'POST',
+                '/application/%s/configurationkeys/%s/exclusionconstraints'\
+                    % (app_id, first_config_id),
+                'Create new exclusionconstraint for configurationkey', 'Failed')
+            print_log(e)
+            return self.createResponse({}, 400)
+
         return new_exconstraint.as_dict()
