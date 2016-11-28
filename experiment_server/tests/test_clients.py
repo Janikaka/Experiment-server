@@ -231,5 +231,4 @@ class TestClientsREST(BaseTest):
         httpclients = Clients(self.req)
         response = httpclients.configurations_POST()
 
-        #assert Client.query().count() > count_clients_before
-        assert False
+        assert Client.query().count() > count_clients_before        
