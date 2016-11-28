@@ -7,6 +7,7 @@ def includeme(config):
     config.add_route('index', '/')
 
     config.add_route('events', '/events')
+    config.add_route('configurations', '/configurations')
     config.add_route('operators', '/operators')
 
     config.add_route('applications', '/applications')

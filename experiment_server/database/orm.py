@@ -76,3 +76,7 @@ class ORM:
         DBSession.query(cls).filter(getattr(cls, 'id') == primary_id)\
                                    .update({key: new_value})
         DBSession.flush()
+
+    @classmethod
+    def flush(cls):
+        DBSession.flush()

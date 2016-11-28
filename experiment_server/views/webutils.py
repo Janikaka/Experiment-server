@@ -9,4 +9,5 @@ class WebUtils():
         res = HTTPBadRequest()
         res.text = json.dumps(output)
         res.content_type = 'application/json'
+        res.status = status_code
         return res

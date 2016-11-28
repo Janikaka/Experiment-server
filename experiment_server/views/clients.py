@@ -2,6 +2,7 @@ from pyramid.response import Response
 from pyramid.view import view_config, view_defaults
 
 import datetime
+import random
 from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 from experiment_server.models.clients import Client
@@ -14,22 +15,65 @@ from fn import _
 from toolz import *
 
 # Helper functions
+def assign_to_experiment(client, application):
+    experiments = Experiment.query().join(Application)\
+        .filter(Application.id == application.id)
+
+    running_experiments = list(filter(lambda _: _.get_status() == 'running', experiments))
+
+    return random.choice(running_experiments)
+
+def assign_to_experimentgroup(client, application):
+    experiment = assign_to_experiment(client, application)
+    expgroup = random.choice(list(experiment.experimentgroups))
+
+    client.experimentgroups.append(expgroup)
+    Client.flush()
+
+    return expgroup
+
+def get_client_configurations(client, application):
+    expgroup = assign_to_experimentgroup(client, application)
+
+    return expgroup.configurations
+
+def get_client(name, application):
+    client = Client.query()\
+        .join(Client.experimentgroups, Experiment, Application)\
+        .filter(Client.clientname == name, Application.id == application.id)\
+        .one_or_none()
+
+    if client is None and len(name) > 0:
+        client = Client(clientname=name)
+        Client.save(client)
+
+    return client
+
 def get_client_by_id_and_app(data):
     try:
         app_id = data['appid']
         client_id = data['clientid']
-
-        return Client.query()\
-        .join(Client.experimentgroups)\
-        .join(Experiment)\
-        .join(Application)\
-        .filter(Application.id == app_id)\
-        .filter(Client.id == client_id)\
-        .one()
-    except Exception as e:
-        print_log(e)
+    except KeyError as e:
         return None
 
+    return Client.query()\
+    .join(Client.experimentgroups)\
+    .join(Experiment)\
+    .join(Application)\
+    .filter(Application.id == app_id)\
+    .filter(Client.id == client_id)\
+    .one_or_none()
+
+def application_by_apikey_from_header(headers):
+    apikey = None
+    try:
+        apikey = headers['authorization']
+    except KeyError as e:
+        print(e)
+        pass
+
+    app = Application.get_by('apikey', apikey)
+    return app
 
 @view_defaults(renderer='json')
 class Clients(WebUtils):
@@ -52,6 +96,13 @@ class Clients(WebUtils):
         res = Response()
         res.headers.add('Access-Control-Allow-Origin', '*')
         res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
+        return res
+
+    @view_config(route_name='configuratins', request_method="OPTIONS")
+    def all_OPTIONS(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origins', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST')
         return res
 
     # List application's clients
@@ -166,3 +217,27 @@ class Clients(WebUtils):
         DataItem.save(result)
         print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data', result)
         return result.as_dict()
+
+    @view_config(route_name='configurations', request_method="POST")
+    def configurations_POST(self):
+        app = application_by_apikey_from_header(self.request.headers)
+        req_clientname = None
+
+        if app is None:
+            print_log(datetime.datetime.now(), 'POST', '/configurations',
+                'Get client configurations',
+                'Unauthorized')
+            return self.createResponse(None, 401)
+
+        try:
+            req_clientname = self.request.swagger_data['clientname']
+        except KeyError as e:
+            print_log(datetime.datetime.now(), 'POST', '/configurations',
+                'Get client configurations',
+                'Failed')
+            return self.createResponse(None, 400)
+
+        client = get_client(req_clientname, app)
+        configs = list(map(lambda _: _.as_dict(),get_client_configurations(client, app)))
+        
+        return configs

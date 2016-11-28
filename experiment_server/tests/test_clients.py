@@ -1,6 +1,6 @@
 import datetime
 from .base_test import BaseTest
-from ..models import (Experiment, Client, DataItem, ExperimentGroup)
+from ..models import (Application, Experiment, Client, DataItem, ExperimentGroup)
 from experiment_server.views.clients import Clients
 
 
@@ -207,3 +207,29 @@ class TestClientsREST(BaseTest):
         httpclients = Clients(self.req)
         response = httpclients.client_DELETE()
         assert response.status_code == 400
+
+    def test_configurations_POST_no_apikey(self):
+        self.req.swagger_data = {'clientname': 'new Tester'}
+        httpclients = Clients(self.req)
+        response = httpclients.configurations_POST()
+
+        assert response.status_code == 401
+
+    def test_configurations_POST_no_name(self):
+        self.req.headers['authorization'] = Application.get(1).apikey
+        self.req.swagger_data = {}
+        httpclients = Clients(self.req)
+        response = httpclients.configurations_POST()
+
+        assert response.status_code == 400
+
+    def test_configurations_POST_creates_client_if_nonexistent(self):
+        count_clients_before = Client.query().count()
+
+        self.req.headers['authorization'] = Application.get(1).apikey
+        self.req.swagger_data = {'clientname': 'another tester'}
+        httpclients = Clients(self.req)
+        response = httpclients.configurations_POST()
+
+        #assert Client.query().count() > count_clients_before
+        assert False

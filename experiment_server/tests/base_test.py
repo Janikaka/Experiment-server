@@ -1,6 +1,7 @@
 import datetime
 import unittest
 import transaction
+import uuid
 
 from pyramid import testing
 from .db import DatabaseInterface
@@ -37,10 +38,10 @@ class BaseTest(unittest.TestCase):
     def init_databaseData(self):
         self.DB = DatabaseInterface(self.dbsession)
 
-        app1 = Application(name='App 1')
+        app1 = Application(name='App 1', apikey=str(uuid.uuid4()))
         Application.save(app1)
 
-        app2 = Application(name='App 2')
+        app2 = Application(name='App 2', apikey=str(uuid.uuid4()))
         Application.save(app2)
 
         confk1 = ConfigurationKey(application=app1, name='highscore', type='boolean')
