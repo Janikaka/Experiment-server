@@ -1,6 +1,6 @@
 import datetime
 from .base_test import BaseTest
-from ..models import (Application, Experiment, Client, DataItem, ExperimentGroup)
+from ..models import (Application, Configuration, Experiment, Client, DataItem, ExperimentGroup)
 from experiment_server.views.clients import Clients
 
 
@@ -60,22 +60,6 @@ class TestClients(BaseTest):
         assert client1.id == 1 and client1.clientname == 'First client'
         assert client2.id == 2 and client2.clientname == 'Second client'
 
-    def test_assignclientToExperiment(self):
-        client = self.dbsession.query(Client).filter_by(id=1).one()
-        self.DB.create_experimentgroup({'name': 'Example group'})
-        expgroup = self.dbsession.query(ExperimentGroup).filter_by(id=3).one()
-        self.DB.create_experiment(
-            {'name': 'Example experiment',
-             'startDatetime': '2016-01-01 00:00:00',
-             'endDatetime': '2017-01-01 00:00:00',
-             'experimentgroups': [expgroup]
-             })
-        experiment = self.dbsession.query(Experiment).filter_by(id=2).one()
-        self.DB.assign_client_to_experiment(client.id, experiment.id)
-
-        assert expgroup.clients == [client]
-        assert expgroup in client.experimentgroups
-
     def test_assignclientToExperiments(self):
         self.DB.create_client({'clientname': 'Test client'})
         client = self.dbsession.query(Client).filter_by(clientname='Test client').one()
@@ -110,6 +94,16 @@ class TestClients(BaseTest):
 # ---------------------------------------------------------------------------------
 #                                  REST-Inteface
 # ---------------------------------------------------------------------------------
+
+def get_datetime(year, month, day, hour, minute, second):
+    now = datetime.datetime.now()
+    return datetime.datetime(
+            sum([now.year, year]),
+            sum([now.month, month]),
+            sum([now.day, day]),
+            sum([now.hour, hour]),
+            sum([now.minute, minute]),
+            sum([now.second, second]))
 
 class TestClientsREST(BaseTest):
     def setUp(self):
@@ -231,4 +225,146 @@ class TestClientsREST(BaseTest):
         httpclients = Clients(self.req)
         response = httpclients.configurations_POST()
 
-        assert Client.query().count() > count_clients_before        
+        assert Client.query().count() > count_clients_before
+
+    def test_configurations_POST_assigns_user_to_experimentgroup(self):
+        count_experimentgroup_clients_before = Client.query()\
+            .join(Client.experimentgroups)\
+            .filter(ExperimentGroup.id == 42)\
+            .count()
+
+        self.req.headers['authorization'] = Application.get(2).apikey
+        self.req.swagger_data = {'clientname': 'Chell'}
+        httpclients = Clients(self.req)
+        response = httpclients.configurations_POST()
+
+        count_experimentgroup_clients_after = Client.query()\
+            .join(Client.experimentgroups)\
+            .filter(ExperimentGroup.id == 42)\
+            .count()
+
+        assert count_experimentgroup_clients_after > count_experimentgroup_clients_before
+
+    def test_configurations_POST_client_not_created_if_exists_in_application(self):
+        httpclients = Clients(self.req)
+
+        self.req.headers['authorization'] = Application.get(1).apikey
+        self.req.swagger_data = {'clientname': 'Chell'}
+        httpclients.configurations_POST()
+
+        count_clients_before = Client.query().count()
+
+        self.req.headers['authorization'] = Application.get(1).apikey
+        self.req.swagger_data = {'clientname': 'Chell'}
+        httpclients.configurations_POST()
+
+        count_clients_after = Client.query().count()
+
+        assert count_clients_after == count_clients_before
+
+    def test_configurations_POST_no_running_experiments(self):
+        import uuid
+
+        app = Application(name='Science', id=5, apikey=str(uuid.uuid4()))
+        Application.save(app)
+
+        expgroup = ExperimentGroup(name='Cake', id=59)
+        ExperimentGroup.save(expgroup)
+
+        conf = Configuration(key='v9', value=False, experimentgroup_id=expgroup.id)
+        Configuration.save(conf)
+
+        start = get_datetime(-2, 0, 0, 0, 0, 0)
+        end = get_datetime(-1, 0, 0, 0, 0, 0)
+        experiment = Experiment(name='Non-running Test Experiment', application_id=5,
+        startDatetime=start,
+        endDatetime=end,
+        experimentgroups=[ExperimentGroup.get(59)])
+        Experiment.save(experiment)
+
+        httpclients = Clients(self.req)
+        self.req.headers['authorization'] = Application.get(5).apikey
+        self.req.swagger_data = {'clientname': 'Chell'}
+        response = httpclients.configurations_POST()
+
+        assert response.status_code == 400
+
+    def test_configurations_POST_no_experimentgroups(self):
+        import uuid
+
+        app = Application(name='Science', id=5, apikey=str(uuid.uuid4()))
+        Application.save(app)
+
+        start = get_datetime(-1, 0, 0, 0, 0, 0)
+        end = get_datetime(1, 0, 0, 0, 0, 0)
+
+        experiment = Experiment(name='Test Experiment without Experimentgroups', application_id=5,
+        startDatetime=start,
+        endDatetime=end,
+        experimentgroups=[])
+        Experiment.save(experiment)
+
+        httpclients = Clients(self.req)
+        self.req.headers['authorization'] = Application.get(5).apikey
+        self.req.swagger_data = {'clientname': 'Chell'}
+        response = httpclients.configurations_POST()
+
+        assert response.status_code == 400
+
+    def test_configurations_POST_no_configurations(self):
+        import uuid
+
+        app = Application(name='Science', id=5, apikey=str(uuid.uuid4()))
+        Application.save(app)
+
+        expgroup = ExperimentGroup(name='Cake', id=59)
+        ExperimentGroup.save(expgroup)
+
+        start = get_datetime(-2, 0, 0, 0, 0, 0)
+        end = get_datetime(1, 0, 0, 0, 0, 0)
+        experiment = Experiment(name='Test Experiment without Configurations', application_id=5,
+        startDatetime=start,
+        endDatetime=end,
+        experimentgroups=[ExperimentGroup.get(59)])
+        Experiment.save(experiment)
+
+        httpclients = Clients(self.req)
+        self.req.headers['authorization'] = Application.get(5).apikey
+        self.req.swagger_data = {'clientname': 'Chell'}
+        response = httpclients.configurations_POST()
+
+        assert response.status_code == 400
+
+    def test_configurations_POST_new_client(self):
+        httpclients = Clients(self.req)
+        self.req.headers['authorization'] = Application.get(1).apikey
+        self.req.swagger_data = {'clientname': 'Chell'}
+        response = httpclients.configurations_POST()
+
+        expected1 = list(map(lambda _: _.as_dict(), \
+            Configuration.query()\
+                .join(ExperimentGroup)\
+                .filter(ExperimentGroup.id == 1).all()))
+        expected2 = list(map(lambda _: _.as_dict(), \
+            Configuration.query()\
+                .join(ExperimentGroup)\
+                .filter(ExperimentGroup.id == 2).all()))
+
+        assert response == expected1 or response == expected2
+
+    def test_configurations_POST_existing_client(self):
+        httpclients = Clients(self.req)
+        self.req.headers['authorization'] = Application.get(1).apikey
+        self.req.swagger_data = {'clientname': 'First client'}
+        response = httpclients.configurations_POST()
+
+        expected1 = list(map(lambda _: _.as_dict(), \
+            Configuration.query()\
+                .join(ExperimentGroup)\
+                .filter(ExperimentGroup.id == 1).all()))
+        expected2 = list(map(lambda _: _.as_dict(), \
+            Configuration.query()\
+                .join(ExperimentGroup)\
+                .filter(ExperimentGroup.id == 2).all()))
+
+        assert response == expected1 or response == expected2

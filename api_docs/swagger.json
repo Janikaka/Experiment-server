@@ -1,1457 +1,1367 @@
 {
-    "swagger": "2.0",
-    "paths": {
-        "/applications/{appid}/clients/{clientid}/experiments": {
-            "get": {
-                "summary": "Get clients current experiments",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/Experiment"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "clientid",
-                        "type": "integer",
-                        "description": "id of the client"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the application"
-                    }
+    "swagger":"2.0",
+    "info":{
+        "version":"2.3",
+        "title":"Experiment server",
+        "description":"API for experiments",
+        "license":{
+            "name":"MIT",
+            "url":"http://opensource.org/licenses/MIT"
+        }
+    },
+    "host":"experiment-server2016.herokuapp.com",
+    "schemes":[
+        "http"
+    ],
+    "produces":[
+        "application/json"
+    ],
+    "consumes":[
+        "application/json"
+    ],
+    "tags":[
+        {
+            "name":"client",
+            "description":"client-related routes"
+        },
+        {
+            "name":"application",
+            "description":"Application-related routes"
+        },
+        {
+            "name":"configuration-keys",
+            "description":"Configurations"
+        },
+        {
+            "name":"range-constraints",
+            "description":"Range-related routes"
+        },
+        {
+            "name":"exclusion-constraints",
+            "description":"Exclusion-related routes"
+        },
+        {
+            "name":"operators",
+            "description":"Operator-related routes"
+        },
+        {
+            "name":"experiments",
+            "description":"Experiment-related routes"
+        }
+    ],
+    "paths":{
+        "/operators":{
+            "get":{
+                "tags":[
+                    "operators"
                 ],
-                "tags": [
-                    "client"
-                ]
+                "summary":"Get available operators",
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/Operator"
+                            }
+                        }
+                    }
+                }
             }
         },
-        "/applications/{appid}/clients": {
-            "post": {
-                "summary": "Create new client",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/client"
-                        },
-                        "description": "OK"
-                    }
-                },
-                "parameters": [
+        "/configurations":{
+            "post":{
+                "tags":[
+                    "client"
+                ],
+                "summary":"Get configurations for client's application",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the application"
+                        "name":"authorization",
+                        "in":"header",
+                        "required":true,
+                        "description":"API-key which identifies application Client belongs to",
+                        "type":"string"
                     },
                     {
-                        "schema": {
-                            "$ref": "#/definitions/Newclient"
-                        },
-                        "in": "body",
-                        "name": "client",
-                        "required": true,
-                        "description": "client to create"
+                        "name":"clientname",
+                        "in":"body",
+                        "required":true,
+                        "description":"Name of the client",
+                        "schema":{
+                            "type":"string"
+                        }
                     }
                 ],
-                "tags": [
-                    "client"
-                ]
-            },
-            "get": {
-                "summary": "Get all clients",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/client"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/Configuration"
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    },
+                    "401":{
+                        "description":"Unauthorized"
                     }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the application"
-                    }
-                ],
-                "description": "Gets all clients from the database",
-                "tags": [
-                    "client"
-                ]
+                }
             }
         },
-        "/applications/{id}/configurationkeys": {
-            "post": {
-                "summary": "Create new configuration-key",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/ConfigurationKey"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "id",
-                        "type": "integer",
-                        "description": "id of the application"
-                    },
-                    {
-                        "schema": {
-                            "$ref": "#/definitions/NewConfigurationKey"
-                        },
-                        "in": "body",
-                        "name": "configurationkey",
-                        "required": true,
-                        "description": "Conf.key to create"
-                    }
+        "/applications":{
+            "get":{
+                "tags":[
+                    "application"
                 ],
-                "tags": [
-                    "configuration-keys"
-                ]
+                "summary":"Get all applications",
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/Application"
+                            }
+                        }
+                    }
+                }
             },
-            "get": {
-                "summary": "Get configurationkeys of one application",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/ConfigurationKey"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
+            "post":{
+                "tags":[
+                    "application"
+                ],
+                "summary":"Create new application",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "id",
-                        "type": "integer",
-                        "description": "id of the application"
+                        "name":"application",
+                        "in":"body",
+                        "description":"Application to create",
+                        "required":true,
+                        "schema":{
+                            "$ref":"#/definitions/NewApplication"
+                        }
                     }
                 ],
-                "tags": [
-                    "configuration-keys"
-                ]
-            },
-            "delete": {
-                "summary": "Delete all configuration-keys of one app",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/Application"
+                        }
                     }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "id",
-                        "type": "integer",
-                        "description": "id of the application"
-                    }
-                ],
-                "tags": [
-                    "configuration-keys"
-                ]
+                }
             }
         },
-        "/applications/{appid}/clients/{clientid}": {
-            "get": {
-                "summary": "Get one client",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/client"
-                        },
-                        "description": "OK"
-                    }
-                },
-                "parameters": [
+        "/applications/{id}":{
+            "get":{
+                "tags":[
+                    "application"
+                ],
+                "summary":"Get one application",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "clientid",
-                        "type": "integer",
-                        "description": "id of the client"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the application"
+                        "name":"id",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
                     }
                 ],
-                "tags": [
-                    "client"
-                ]
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/Application"
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
             },
-            "delete": {
-                "summary": "Delete one client",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                },
-                "parameters": [
+            "delete":{
+                "tags":[
+                    "application"
+                ],
+                "summary":"Delete one application",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "clientid",
-                        "type": "integer",
-                        "description": "id of the client"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the application"
+                        "name":"id",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
                     }
                 ],
-                "tags": [
-                    "client"
-                ]
+                "responses":{
+                    "200":{
+                        "description":"OK"
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
             }
         },
-        "/applications/{id}/data": {
-            "get": {
-                "summary": "Get all configurationkeys and rangeconstraints of one application",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "allOf": [
+        "/applications/{id}/data":{
+            "get":{
+                "tags":[
+                    "application"
+                ],
+                "summary":"Get all configurationkeys and rangeconstraints of one application",
+                "parameters":[
+                    {
+                        "name":"id",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"object",
+                            "allOf":[
                                 {
-                                    "$ref": "#/definitions/Application"
+                                    "$ref":"#/definitions/Application"
                                 }
                             ],
-                            "properties": {
-                                "configurationkeys": {
-                                    "items": {
-                                        "$ref": "#/definitions/ConfigurationKey"
-                                    },
-                                    "type": "array"
+                            "properties":{
+                                "exclusionconstraints":{
+                                    "type":"array",
+                                    "items":{
+                                        "$ref":"#/definitions/ExclusionConstraint"
+                                    }
                                 },
-                                "rangeconstraints": {
-                                    "items": {
-                                        "$ref": "#/definitions/RangeConstraint"
-                                    },
-                                    "type": "array"
+                                "rangeconstraints":{
+                                    "type":"array",
+                                    "items":{
+                                        "$ref":"#/definitions/RangeConstraint"
+                                    }
                                 },
-                                "exclusionconstraints": {
-                                    "items": {
-                                        "$ref": "#/definitions/ExclusionConstraint"
-                                    },
-                                    "type": "array"
+                                "configurationkeys":{
+                                    "type":"array",
+                                    "items":{
+                                        "$ref":"#/definitions/ConfigurationKey"
+                                    }
                                 }
-                            },
-                            "type": "object"
-                        },
-                        "description": "OK"
+                            }
+                        }
                     },
-                    "400": {
-                        "description": "Bad Request"
+                    "400":{
+                        "description":"Bad Request"
                     }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "id",
-                        "type": "integer",
-                        "description": "id of the application"
-                    }
-                ],
-                "tags": [
-                    "application"
-                ]
+                }
             }
         },
-        "/applications/{appid}/experiments/{expid}/experimentgroups/{expgroupid}": {
-            "get": {
-                "summary": "Show one experimentgroup metadata. This is intended to be used as interface for analytic tools.",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "properties": {
-                                "clients": {
-                                    "items": {
-                                        "$ref": "#/definitions/client"
-                                    },
-                                    "type": "array"
-                                },
-                                "dataitems": {
-                                    "items": {
-                                        "$ref": "#/definitions/DataItem"
-                                    },
-                                    "type": "array"
-                                },
-                                "configurations": {
-                                    "items": {
-                                        "$ref": "#/definitions/Configuration"
-                                    },
-                                    "type": "array"
-                                },
-                                "experimentgroup": {
-                                    "items": {
-                                        "$ref": "#/definitions/ExperimentGroup"
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "expid",
-                        "type": "integer",
-                        "description": "id of the experiment"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "expgroupid",
-                        "type": "integer",
-                        "description": "id of the experimentgroup"
-                    }
-                ],
-                "tags": [
-                    "experiments"
-                ]
-            },
-            "delete": {
-                "summary": "Delete experimentgroup from one experiment",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "expid",
-                        "type": "integer",
-                        "description": "id of the experiment"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "expgroupid",
-                        "type": "integer",
-                        "description": "id of the experimentgroup"
-                    }
-                ],
-                "tags": [
-                    "experiments"
-                ]
-            }
-        },
-        "/applications/{appid}/clients/{clientid}/configurations": {
-            "get": {
-                "summary": "Get clients currenct configurations",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/Configuration"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "clientid",
-                        "type": "integer",
-                        "description": "id of the client"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the application"
-                    }
-                ],
-                "tags": [
+        "/applications/{appid}/clients":{
+            "get":{
+                "tags":[
                     "client"
-                ]
-            }
-        },
-        "/operators": {
-            "get": {
-                "summary": "Get available operators",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/Operator"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
-                    }
-                },
-                "tags": [
-                    "operators"
-                ]
-            }
-        },
-        "/applications/{appid}/exclusionconstraints/{ecid}": {
-            "get": {
-                "summary": "Get one exclusionconstraint",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/ExclusionConstraint"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
+                ],
+                "summary":"Get all clients",
+                "description":"Gets all clients from the database",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "ecid",
-                        "type": "integer",
-                        "description": "id of the exclusionconstraint"
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
                     }
                 ],
-                "tags": [
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/client"
+                            }
+                        }
+                    }
+                }
+            },
+            "post":{
+                "tags":[
+                    "client"
+                ],
+                "summary":"Create new client",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"client",
+                        "in":"body",
+                        "description":"client to create",
+                        "required":true,
+                        "schema":{
+                            "$ref":"#/definitions/Newclient"
+                        }
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/client"
+                        }
+                    }
+                }
+            }
+        },
+        "/applications/{appid}/clients/{clientid}":{
+            "get":{
+                "tags":[
+                    "client"
+                ],
+                "summary":"Get one client",
+                "parameters":[
+                    {
+                        "name":"clientid",
+                        "type":"integer",
+                        "description":"id of the client",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/client"
+                        }
+                    }
+                }
+            },
+            "delete":{
+                "tags":[
+                    "client"
+                ],
+                "summary":"Delete one client",
+                "parameters":[
+                    {
+                        "name":"clientid",
+                        "type":"integer",
+                        "description":"id of the client",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK"
+                    }
+                }
+            }
+        },
+        "/applications/{appid}/clients/{clientid}/configurations":{
+            "get":{
+                "tags":[
+                    "client"
+                ],
+                "summary":"Get clients currenct configurations",
+                "parameters":[
+                    {
+                        "name":"clientid",
+                        "type":"integer",
+                        "description":"id of the client",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/Configuration"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/applications/{appid}/clients/{clientid}/experiments":{
+            "get":{
+                "tags":[
+                    "client"
+                ],
+                "summary":"Get clients current experiments",
+                "parameters":[
+                    {
+                        "name":"clientid",
+                        "type":"integer",
+                        "description":"id of the client",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/Experiment"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/applications/{appid}/exclusionconstraints":{
+            "get":{
+                "tags":[
                     "exclusion-constraints"
-                ]
-            },
-            "delete": {
-                "summary": "Delete one exclusionconstraint",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
+                ],
+                "summary":"Get exclusionconstraints of one application",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "ecid",
-                        "type": "integer",
-                        "description": "id of the exclusionconstraint"
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
                     }
                 ],
-                "tags": [
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/ExclusionConstraint"
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            },
+            "post":{
+                "tags":[
                     "exclusion-constraints"
-                ]
+                ],
+                "summary":"Create new exclusionconstraint to application",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"exclusionconstraint",
+                        "in":"body",
+                        "description":"exclusionconstraint to create",
+                        "required":true,
+                        "schema":{
+                            "$ref":"#/definitions/NewExclusionConstraint"
+                        }
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/ExclusionConstraint"
+                        }
+                    }
+                }
             }
         },
-        "/applications/{id}": {
-            "get": {
-                "summary": "Get one application",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/Application"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "id",
-                        "type": "integer",
-                        "description": "id of the application"
-                    }
-                ],
-                "tags": [
-                    "application"
-                ]
-            },
-            "delete": {
-                "summary": "Delete one application",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "id",
-                        "type": "integer",
-                        "description": "id of the application"
-                    }
-                ],
-                "tags": [
-                    "application"
-                ]
-            }
-        },
-        "/applications/{appid}/experiments/{expid}/experimentgroups": {
-            "get": {
-                "summary": "List experimentgroups of one Experiment",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/ExperimentGroup"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "Id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "expid",
-                        "type": "integer",
-                        "description": "Id of the Experiment"
-                    }
-                ],
-                "tags": [
-                    "experiments"
-                ]
-            }
-        },
-        "/applications": {
-            "post": {
-                "summary": "Create new application",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/Application"
-                        },
-                        "description": "OK"
-                    }
-                },
-                "parameters": [
-                    {
-                        "schema": {
-                            "$ref": "#/definitions/NewApplication"
-                        },
-                        "in": "body",
-                        "name": "application",
-                        "required": true,
-                        "description": "Application to create"
-                    }
-                ],
-                "tags": [
-                    "application"
-                ]
-            },
-            "get": {
-                "summary": "Get all applications",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/Application"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
-                    }
-                },
-                "tags": [
-                    "application"
-                ]
-            }
-        },
-        "/applications/{appid}/exclusionconstraints": {
-            "post": {
-                "summary": "Create new exclusionconstraint to application",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/ExclusionConstraint"
-                        },
-                        "description": "OK"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "schema": {
-                            "$ref": "#/definitions/NewExclusionConstraint"
-                        },
-                        "in": "body",
-                        "name": "exclusionconstraint",
-                        "required": true,
-                        "description": "exclusionconstraint to create"
-                    }
-                ],
-                "tags": [
+        "/applications/{appid}/exclusionconstraints/{ecid}":{
+            "get":{
+                "tags":[
                     "exclusion-constraints"
-                ]
-            },
-            "get": {
-                "summary": "Get exclusionconstraints of one application",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/ExclusionConstraint"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
+                ],
+                "summary":"Get one exclusionconstraint",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"ecid",
+                        "type":"integer",
+                        "description":"id of the exclusionconstraint",
+                        "in":"path",
+                        "required":true
                     }
                 ],
-                "tags": [
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/ExclusionConstraint"
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            },
+            "delete":{
+                "tags":[
                     "exclusion-constraints"
-                ]
+                ],
+                "summary":"Delete one exclusionconstraint",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"ecid",
+                        "type":"integer",
+                        "description":"id of the exclusionconstraint",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK"
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
             }
         },
-        "/applications/{appid}/configurationkeys/{ckid}/rangeconstraints": {
-            "post": {
-                "summary": "Create new rangeconstraint",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/RangeConstraint"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "ckid",
-                        "type": "integer",
-                        "description": "id of the configurationkey"
-                    },
-                    {
-                        "schema": {
-                            "$ref": "#/definitions/NewRangeConstraint"
-                        },
-                        "in": "body",
-                        "name": "rangeconstraint",
-                        "required": true,
-                        "description": "Rangeconstraint to create"
-                    }
-                ],
-                "tags": [
-                    "range-constraints"
-                ]
-            },
-            "get": {
-                "summary": "Get rangeconstraints of one configurationkey",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/RangeConstraint"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "ckid",
-                        "type": "integer",
-                        "description": "id of the configurationkey"
-                    }
-                ],
-                "tags": [
-                    "range-constraints"
-                ]
-            },
-            "delete": {
-                "summary": "Delete all rangeconstraints of one configurationkey",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "ckid",
-                        "type": "integer",
-                        "description": "id of the configurationkey"
-                    }
-                ],
-                "tags": [
-                    "range-constraints"
-                ]
-            }
-        },
-        "/applications/{appid}/experiments/{expid}/clients": {
-            "get": {
-                "summary": "List all clients for one experiment",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/client"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "expid",
-                        "type": "integer",
-                        "description": "id of the experiment"
-                    }
-                ],
-                "tags": [
-                    "experiments"
-                ]
-            }
-        },
-        "/applications/{appid}/configurationkeys/{ckid}/rangeconstraints/{rcid}": {
-            "delete": {
-                "summary": "Delete one rangeconstraint",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "ckid",
-                        "type": "integer",
-                        "description": "id of the configurationkey"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "rcid",
-                        "type": "integer",
-                        "description": "id of the rangeconstraint"
-                    }
-                ],
-                "tags": [
-                    "range-constraints"
-                ]
-            }
-        },
-        "/applications/{appid}/configurationkeys/{ckid}": {
-            "put": {
-                "summary": "Modify excisting configuration key",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/ConfigurationKey"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "ckid",
-                        "type": "integer",
-                        "description": "id of the configurationkey"
-                    },
-                    {
-                        "schema": {
-                            "$ref": "#/definitions/ConfigurationKey"
-                        },
-                        "in": "body",
-                        "name": "configurationkey",
-                        "required": true,
-                        "description": "Configurationkey to modify"
-                    }
-                ],
-                "tags": [
+        "/applications/{id}/configurationkeys":{
+            "get":{
+                "tags":[
                     "configuration-keys"
-                ]
-            },
-            "get": {
-                "summary": "Get one configurationkey",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/ConfigurationKey"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
+                ],
+                "summary":"Get configurationkeys of one application",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
-                    },
-                    {
-                        "required": true,
-                        "in": "path",
-                        "name": "ckid",
-                        "type": "integer",
-                        "description": "id of the configurationkey"
+                        "name":"id",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
                     }
                 ],
-                "tags": [
-                    "configuration-keys"
-                ]
-            },
-            "delete": {
-                "summary": "Delete one configurationkey",
-                "responses": {
-                    "200": {
-                        "description": "OK"
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/ConfigurationKey"
+                            }
+                        }
                     },
-                    "400": {
-                        "description": "Bad Request"
+                    "400":{
+                        "description":"Bad Request"
                     }
-                },
-                "parameters": [
+                }
+            },
+            "post":{
+                "tags":[
+                    "configuration-keys"
+                ],
+                "summary":"Create new configuration-key",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
+                        "name":"id",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
                     },
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "ckid",
-                        "type": "integer",
-                        "description": "id of the configurationkey"
+                        "name":"configurationkey",
+                        "in":"body",
+                        "description":"Conf.key to create",
+                        "required":true,
+                        "schema":{
+                            "$ref":"#/definitions/NewConfigurationKey"
+                        }
                     }
                 ],
-                "tags": [
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/ConfigurationKey"
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            },
+            "delete":{
+                "tags":[
                     "configuration-keys"
-                ]
+                ],
+                "summary":"Delete all configuration-keys of one app",
+                "parameters":[
+                    {
+                        "name":"id",
+                        "type":"integer",
+                        "description":"id of the application",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK"
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
             }
         },
-        "/applications/{appid}/experiments": {
-            "post": {
-                "summary": "Create new experiment",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/Experiment"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
+        "/applications/{appid}/configurationkeys/{ckid}":{
+            "get":{
+                "tags":[
+                    "configuration-keys"
+                ],
+                "summary":"Get one configurationkey",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
                     },
                     {
-                        "schema": {
-                            "$ref": "#/definitions/NewExperiment"
-                        },
-                        "in": "body",
-                        "name": "experiment",
-                        "required": true,
-                        "description": "Experiment to create"
+                        "name":"ckid",
+                        "type":"integer",
+                        "description":"id of the configurationkey",
+                        "in":"path",
+                        "required":true
                     }
                 ],
-                "tags": [
-                    "experiments"
-                ]
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/ConfigurationKey"
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
             },
-            "get": {
-                "summary": "List all experiments",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/Experiment"
-                            },
-                            "type": "array"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
+            "put":{
+                "tags":[
+                    "configuration-keys"
+                ],
+                "summary":"Modify excisting configuration key",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"ckid",
+                        "type":"integer",
+                        "description":"id of the configurationkey",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"configurationkey",
+                        "in":"body",
+                        "description":"Configurationkey to modify",
+                        "required":true,
+                        "schema":{
+                            "$ref":"#/definitions/ConfigurationKey"
+                        }
                     }
                 ],
-                "tags": [
-                    "experiments"
-                ]
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/ConfigurationKey"
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            },
+            "delete":{
+                "tags":[
+                    "configuration-keys"
+                ],
+                "summary":"Delete one configurationkey",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"ckid",
+                        "type":"integer",
+                        "description":"id of the configurationkey",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK"
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
             }
         },
-        "/applications/{appid}/experiments/{expid}": {
-            "get": {
-                "summary": "Get one experiment",
-                "responses": {
-                    "200": {
-                        "schema": {
-                            "$ref": "#/definitions/Experiment"
-                        },
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
+        "/applications/{appid}/configurationkeys/{ckid}/rangeconstraints":{
+            "get":{
+                "tags":[
+                    "range-constraints"
+                ],
+                "summary":"Get rangeconstraints of one configurationkey",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
                     },
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "expid",
-                        "type": "integer",
-                        "description": "id of the experiment"
+                        "name":"ckid",
+                        "type":"integer",
+                        "description":"id of the configurationkey",
+                        "in":"path",
+                        "required":true
                     }
                 ],
-                "tags": [
-                    "experiments"
-                ]
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/RangeConstraint"
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
             },
-            "delete": {
-                "summary": "Delete one experiment",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                },
-                "parameters": [
+            "delete":{
+                "tags":[
+                    "range-constraints"
+                ],
+                "summary":"Delete all rangeconstraints of one configurationkey",
+                "parameters":[
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "appid",
-                        "type": "integer",
-                        "description": "id of the Application"
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
                     },
                     {
-                        "required": true,
-                        "in": "path",
-                        "name": "expid",
-                        "type": "integer",
-                        "description": "id of the experiment"
+                        "name":"ckid",
+                        "type":"integer",
+                        "description":"id of the configurationkey",
+                        "in":"path",
+                        "required":true
                     }
                 ],
-                "tags": [
+                "responses":{
+                    "200":{
+                        "description":"OK"
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            },
+            "post":{
+                "tags":[
+                    "range-constraints"
+                ],
+                "summary":"Create new rangeconstraint",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"ckid",
+                        "type":"integer",
+                        "description":"id of the configurationkey",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"rangeconstraint",
+                        "in":"body",
+                        "description":"Rangeconstraint to create",
+                        "required":true,
+                        "schema":{
+                            "$ref":"#/definitions/NewRangeConstraint"
+                        }
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/RangeConstraint"
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            }
+        },
+        "/applications/{appid}/configurationkeys/{ckid}/rangeconstraints/{rcid}":{
+            "delete":{
+                "tags":[
+                    "range-constraints"
+                ],
+                "summary":"Delete one rangeconstraint",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"ckid",
+                        "type":"integer",
+                        "description":"id of the configurationkey",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"rcid",
+                        "type":"integer",
+                        "description":"id of the rangeconstraint",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK"
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            }
+        },
+        "/applications/{appid}/experiments":{
+            "get":{
+                "tags":[
                     "experiments"
-                ]
+                ],
+                "summary":"List all experiments",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/Experiment"
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            },
+            "post":{
+                "tags":[
+                    "experiments"
+                ],
+                "summary":"Create new experiment",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"experiment",
+                        "in":"body",
+                        "description":"Experiment to create",
+                        "required":true,
+                        "schema":{
+                            "$ref":"#/definitions/NewExperiment"
+                        }
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/Experiment"
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            }
+        },
+        "/applications/{appid}/experiments/{expid}":{
+            "get":{
+                "tags":[
+                    "experiments"
+                ],
+                "summary":"Get one experiment",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"expid",
+                        "type":"integer",
+                        "description":"id of the experiment",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "$ref":"#/definitions/Experiment"
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            },
+            "delete":{
+                "tags":[
+                    "experiments"
+                ],
+                "summary":"Delete one experiment",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"expid",
+                        "type":"integer",
+                        "description":"id of the experiment",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK"
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            }
+        },
+        "/applications/{appid}/experiments/{expid}/clients":{
+            "get":{
+                "tags":[
+                    "experiments"
+                ],
+                "summary":"List all clients for one experiment",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"expid",
+                        "type":"integer",
+                        "description":"id of the experiment",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/client"
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            }
+        },
+        "/applications/{appid}/experiments/{expid}/experimentgroups":{
+            "get":{
+                "tags":[
+                    "experiments"
+                ],
+                "summary":"List experimentgroups of one Experiment",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"Id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"expid",
+                        "type":"integer",
+                        "description":"Id of the Experiment",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/ExperimentGroup"
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            }
+        },
+        "/applications/{appid}/experiments/{expid}/experimentgroups/{expgroupid}":{
+            "get":{
+                "tags":[
+                    "experiments"
+                ],
+                "summary":"Show one experimentgroup metadata. This is intended to be used as interface for analytic tools.",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"expid",
+                        "type":"integer",
+                        "description":"id of the experiment",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"expgroupid",
+                        "type":"integer",
+                        "description":"id of the experimentgroup",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "schema":{
+                            "type":"object",
+                            "properties":{
+                                "experimentgroup":{
+                                    "type":"object",
+                                    "items":{
+                                        "$ref":"#/definitions/ExperimentGroup"
+                                    }
+                                },
+                                "configurations":{
+                                    "type":"array",
+                                    "items":{
+                                        "$ref":"#/definitions/Configuration"
+                                    }
+                                },
+                                "clients":{
+                                    "type":"array",
+                                    "items":{
+                                        "$ref":"#/definitions/client"
+                                    }
+                                },
+                                "dataitems":{
+                                    "type":"array",
+                                    "items":{
+                                        "$ref":"#/definitions/DataItem"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
+            },
+            "delete":{
+                "tags":[
+                    "experiments"
+                ],
+                "summary":"Delete experimentgroup from one experiment",
+                "parameters":[
+                    {
+                        "name":"appid",
+                        "type":"integer",
+                        "description":"id of the Application",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"expid",
+                        "type":"integer",
+                        "description":"id of the experiment",
+                        "in":"path",
+                        "required":true
+                    },
+                    {
+                        "name":"expgroupid",
+                        "type":"integer",
+                        "description":"id of the experimentgroup",
+                        "in":"path",
+                        "required":true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK"
+                    },
+                    "400":{
+                        "description":"Bad Request"
+                    }
+                }
             }
         }
     },
-    "definitions": {
-        "RangeConstraint": {
-            "allOf": [
+    "definitions":{
+        "Application":{
+            "type":"object",
+            "allOf":[
                 {
-                    "$ref": "#/definitions/NewRangeConstraint"
+                    "$ref":"#/definitions/NewApplication"
                 }
             ],
-            "required": [
+            "required":[
                 "id"
             ],
-            "properties": {
-                "id": {
-                    "type": "integer"
+            "properties":{
+                "id":{
+                    "type":"integer"
+                },
+                "apikey":{
+                    "type":"string"
                 }
-            },
-            "type": "object"
+            }
         },
-        "Configuration": {
-            "required": [
+        "NewApplication":{
+            "type":"object",
+            "required":[
+                "name"
+            ],
+            "properties":{
+                "name":{
+                    "type":"string"
+                }
+            }
+        },
+        "ConfigurationKey":{
+            "type":"object",
+            "allOf":[
+                {
+                    "$ref":"#/definitions/NewConfigurationKey"
+                }
+            ],
+            "required":[
+                "id"
+            ],
+            "properties":{
+                "id":{
+                    "type":"integer"
+                }
+            }
+        },
+        "NewConfigurationKey":{
+            "type":"object",
+            "required":[
+                "name",
+                "type",
+                "application_id"
+            ],
+            "properties":{
+                "name":{
+                    "type":"string"
+                },
+                "type":{
+                    "type":"string"
+                },
+                "application_id":{
+                    "type":"integer"
+                }
+            }
+        },
+        "Configuration":{
+            "type":"object",
+            "required":[
                 "id",
                 "experimentgroup_id",
                 "key",
                 "value"
             ],
-            "properties": {
-                "id": {
-                    "type": "integer"
+            "properties":{
+                "id":{
+                    "type":"integer"
                 },
-                "experimentgroup_id": {
-                    "type": "integer"
+                "experimentgroup_id":{
+                    "type":"integer"
                 },
-                "key": {
-                    "type": "string"
+                "key":{
+                    "type":"string"
                 },
-                "value": {
-                    "type": [
+                "value":{
+                    "type":[
                         "integer",
                         "string",
                         "boolean"
                     ]
                 }
-            },
-            "type": "object"
+            }
         },
-        "NewConfigurationKey": {
-            "required": [
-                "name",
-                "type",
-                "application_id"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "application_id": {
-                    "type": "integer"
-                }
-            },
-            "type": "object"
-        },
-        "NewExclusionConstraint": {
-            "required": [
-                "first_operator_id",
-                "first_value_a",
-                "first_value_b",
-                "second_configurationkey_id",
-                "second_operator_id",
-                "second_value_a",
-                "second_value_b"
-            ],
-            "properties": {
-                "first_operator_id": {
-                    "type": "integer"
-                },
-                "second_value_b": {
-                    "x-nullable": true,
-                    "type": "string"
-                },
-                "second_operator_id": {
-                    "x-nullable": true,
-                    "type": "integer"
-                },
-                "second_value_a": {
-                    "x-nullable": true,
-                    "type": "string"
-                },
-                "first_value_b": {
-                    "x-nullable": true,
-                    "type": "string"
-                },
-                "first_value_a": {
-                    "x-nullable": true,
-                    "type": "string"
-                },
-                "second_configurationkey_id": {
-                    "type": "integer"
-                },
-                "first_configurationkey_id": {
-                    "type": "integer"
-                }
-            },
-            "type": "object"
-        },
-        "Operator": {
-            "required": [
+        "DataItem":{
+            "type":"object",
+            "required":[
                 "id"
             ],
-            "properties": {
-                "id": {
-                    "type": "integer"
+            "properties":{
+                "id":{
+                    "type":"integer"
                 },
-                "rangeconstraints": {
-                    "items": {
-                        "$ref": "#/definitions/RangeConstraint"
-                    },
-                    "type": "array"
+                "client_id":{
+                    "type":"integer"
                 },
-                "human_value": {
-                    "type": "string"
+                "key":{
+                    "type":"string"
                 },
-                "math_value": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "client": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/Newclient"
-                }
-            ],
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "experimentgroups": {
-                    "items": {
-                        "$ref": "#/definitions/ExperimentGroup"
-                    },
-                    "type": "array"
-                },
-                "dataitems": {
-                    "items": {
-                        "$ref": "#/definitions/DataItem"
-                    },
-                    "type": "array"
-                }
-            },
-            "type": "object"
-        },
-        "NewExperiment": {
-            "required": [
-                "name",
-                "application_id",
-                "startDatetime",
-                "endDatetime"
-            ],
-            "properties": {
-                "startDatetime": {
-                    "format": "date-time",
-                    "type": "string"
-                },
-                "endDatetime": {
-                    "format": "date-time",
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "application_id": {
-                    "type": "integer"
-                }
-            },
-            "type": "object"
-        },
-        "NewApplication": {
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "Experiment": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/NewExperiment"
-                }
-            ],
-            "required": [
-                "id",
-                "status"
-            ],
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "Newclient": {
-            "required": [
-                "clientname"
-            ],
-            "properties": {
-                "clientname": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "ConfigurationKey": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/NewConfigurationKey"
-                }
-            ],
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "integer"
-                }
-            },
-            "type": "object"
-        },
-        "NewRangeConstraint": {
-            "required": [
-                "value"
-            ],
-            "properties": {
-                "operator_id": {
-                    "type": "integer"
-                },
-                "configurationkey_id": {
-                    "type": "integer"
-                },
-                "value": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "Application": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/NewApplication"
-                }
-            ],
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "apikey": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "DataItem": {
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "value": {
-                    "type": [
+                "value":{
+                    "type":[
                         "integer",
                         "string",
                         "boolean"
                     ]
                 },
-                "key": {
-                    "type": "string"
+                "startDateTime":{
+                    "type":"string"
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "startDateTime": {
-                    "type": "string"
-                },
-                "endDateTime": {
-                    "type": "string"
-                },
-                "client_id": {
-                    "type": "integer"
+                "endDateTime":{
+                    "type":"string"
                 }
-            },
-            "type": "object"
+            }
         },
-        "ExclusionConstraint": {
-            "required": [
+        "ExclusionConstraint":{
+            "type":"object",
+            "required":[
                 "id",
                 "first_configurationkey_id",
                 "first_operator_id",
@@ -1462,126 +1372,259 @@
                 "second_value_a",
                 "second_value_b"
             ],
-            "properties": {
-                "first_operator_id": {
-                    "type": "integer"
+            "properties":{
+                "id":{
+                    "type":"integer"
                 },
-                "second_value_b": {
-                    "x-nullable": true,
-                    "type": [
+                "first_configurationkey_id":{
+                    "type":"integer"
+                },
+                "first_operator_id":{
+                    "type":"integer"
+                },
+                "first_value_a":{
+                    "type":[
                         "string"
-                    ]
+                    ],
+                    "x-nullable":true
                 },
-                "second_operator_id": {
-                    "x-nullable": true,
-                    "type": [
+                "first_value_b":{
+                    "type":[
+                        "string"
+                    ],
+                    "x-nullable":true
+                },
+                "second_configurationkey_id":{
+                    "type":"integer"
+                },
+                "second_operator_id":{
+                    "type":[
                         "integer"
-                    ]
+                    ],
+                    "x-nullable":true
                 },
-                "second_value_a": {
-                    "x-nullable": true,
-                    "type": [
+                "second_value_a":{
+                    "type":[
                         "string"
-                    ]
+                    ],
+                    "x-nullable":true
                 },
-                "first_value_b": {
-                    "x-nullable": true,
-                    "type": [
+                "second_value_b":{
+                    "type":[
                         "string"
-                    ]
-                },
-                "first_value_a": {
-                    "x-nullable": true,
-                    "type": [
-                        "string"
-                    ]
-                },
-                "second_configurationkey_id": {
-                    "type": "integer"
-                },
-                "first_configurationkey_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
+                    ],
+                    "x-nullable":true
                 }
-            },
-            "type": "object"
+            }
         },
-        "ExperimentGroup": {
-            "required": [
+        "NewExclusionConstraint":{
+            "type":"object",
+            "required":[
+                "first_operator_id",
+                "first_value_a",
+                "first_value_b",
+                "second_configurationkey_id",
+                "second_operator_id",
+                "second_value_a",
+                "second_value_b"
+            ],
+            "properties":{
+                "first_configurationkey_id":{
+                    "type":"integer"
+                },
+                "first_operator_id":{
+                    "type":"integer"
+                },
+                "first_value_a":{
+                    "type":"string",
+                    "x-nullable":true
+                },
+                "first_value_b":{
+                    "type":"string",
+                    "x-nullable":true
+                },
+                "second_configurationkey_id":{
+                    "type":"integer"
+                },
+                "second_operator_id":{
+                    "type":"integer",
+                    "x-nullable":true
+                },
+                "second_value_a":{
+                    "type":"string",
+                    "x-nullable":true
+                },
+                "second_value_b":{
+                    "type":"string",
+                    "x-nullable":true
+                }
+            }
+        },
+        "ExperimentGroup":{
+            "type":"object",
+            "required":[
                 "id"
             ],
-            "properties": {
-                "id": {
-                    "type": "integer"
+            "properties":{
+                "id":{
+                    "type":"integer"
                 },
-                "clients": {
-                    "type": "integer"
+                "experiment_id":{
+                    "type":"integer"
                 },
-                "name": {
-                    "type": "string"
+                "name":{
+                    "type":"string"
                 },
-                "experiment_id": {
-                    "type": "integer"
+                "configurations":{
+                    "type":"array",
+                    "items":{
+                        "$ref":"#/definitions/Configuration"
+                    }
                 },
-                "configurations": {
-                    "items": {
-                        "$ref": "#/definitions/Configuration"
-                    },
-                    "type": "array"
+                "clients":{
+                    "type":"integer"
                 }
-            },
-            "type": "object"
+            }
+        },
+        "Experiment":{
+            "type":"object",
+            "allOf":[
+                {
+                    "$ref":"#/definitions/NewExperiment"
+                }
+            ],
+            "required":[
+                "id",
+                "status"
+            ],
+            "properties":{
+                "id":{
+                    "type":"integer"
+                },
+                "status":{
+                    "type":"string"
+                }
+            }
+        },
+        "NewExperiment":{
+            "type":"object",
+            "required":[
+                "name",
+                "application_id",
+                "startDatetime",
+                "endDatetime"
+            ],
+            "properties":{
+                "application_id":{
+                    "type":"integer"
+                },
+                "name":{
+                    "type":"string"
+                },
+                "startDatetime":{
+                    "type":"string",
+                    "format":"date-time"
+                },
+                "endDatetime":{
+                    "type":"string",
+                    "format":"date-time"
+                }
+            }
+        },
+        "Operator":{
+            "type":"object",
+            "required":[
+                "id"
+            ],
+            "properties":{
+                "id":{
+                    "type":"integer"
+                },
+                "math_value":{
+                    "type":"string"
+                },
+                "human_value":{
+                    "type":"string"
+                },
+                "rangeconstraints":{
+                    "type":"array",
+                    "items":{
+                        "$ref":"#/definitions/RangeConstraint"
+                    }
+                }
+            }
+        },
+        "RangeConstraint":{
+            "type":"object",
+            "allOf":[
+                {
+                    "$ref":"#/definitions/NewRangeConstraint"
+                }
+            ],
+            "required":[
+                "id"
+            ],
+            "properties":{
+                "id":{
+                    "type":"integer"
+                }
+            }
+        },
+        "NewRangeConstraint":{
+            "type":"object",
+            "required":[
+                "value"
+            ],
+            "properties":{
+                "configurationkey_id":{
+                    "type":"integer"
+                },
+                "operator_id":{
+                    "type":"integer"
+                },
+                "value":{
+                    "type":"string"
+                }
+            }
+        },
+        "client":{
+            "type":"object",
+            "allOf":[
+                {
+                    "$ref":"#/definitions/Newclient"
+                }
+            ],
+            "required":[
+                "id"
+            ],
+            "properties":{
+                "id":{
+                    "type":"integer"
+                },
+                "dataitems":{
+                    "type":"array",
+                    "items":{
+                        "$ref":"#/definitions/DataItem"
+                    }
+                },
+                "experimentgroups":{
+                    "type":"array",
+                    "items":{
+                        "$ref":"#/definitions/ExperimentGroup"
+                    }
+                }
+            }
+        },
+        "Newclient":{
+            "type":"object",
+            "required":[
+                "clientname"
+            ],
+            "properties":{
+                "clientname":{
+                    "type":"string"
+                }
+            }
         }
-    },
-    "produces": [
-        "application/json"
-    ],
-    "consumes": [
-        "application/json"
-    ],
-    "info": {
-        "version": "2.2",
-        "license": {
-            "name": "MIT",
-            "url": "http://opensource.org/licenses/MIT"
-        },
-        "title": "Experiment server",
-        "description": "API for experiments"
-    },
-    "schemes": [
-        "http"
-    ],
-    "tags": [
-        {
-            "name": "client",
-            "description": "client-related routes"
-        },
-        {
-            "name": "application",
-            "description": "Application-related routes"
-        },
-        {
-            "name": "configuration-keys",
-            "description": "Configurations"
-        },
-        {
-            "name": "range-constraints",
-            "description": "Range-related routes"
-        },
-        {
-            "name": "exclusion-constraints",
-            "description": "Exclusion-related routes"
-        },
-        {
-            "name": "operators",
-            "description": "Operator-related routes"
-        },
-        {
-            "name": "experiments",
-            "description": "Experiment-related routes"
-        }
-    ],
-    "host": "experiment-server2016.herokuapp.com"
+    }
 }

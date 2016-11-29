@@ -83,6 +83,8 @@ class BaseTest(unittest.TestCase):
         expgroup2 = self.DB.create_experimentgroup(
             {'name': 'Group B'
              })
+        expgroup3 = ExperimentGroup(id=42, name='Group Ö')
+        ExperimentGroup.save(expgroup3)
 
         conf1 = self.DB.create_configuration(
             {'key': 'v1',
@@ -104,11 +106,18 @@ class BaseTest(unittest.TestCase):
              'value': False,
              'experimentgroup': expgroup2
              })
+        conf5 = Configuration(key='v9', value=False, experimentgroup_id=expgroup3.id)
+        Configuration.save(conf5)
 
         experiment = Experiment(name='Test experiment', application_id=1,
         startDatetime=datetime.datetime.strptime('2016-01-01 00:00:00', "%Y-%m-%d %H:%M:%S"),
         endDatetime=datetime.datetime.strptime('2017-01-01 00:00:00', "%Y-%m-%d %H:%M:%S"),
         experimentgroups=[expgroup1, expgroup2])
+
+        experiment = Experiment(name='Better Test Experiment', application_id=2,
+        startDatetime=datetime.datetime.strptime('2016-01-01 00:00:00', "%Y-%m-%d %H:%M:%S"),
+        endDatetime=datetime.datetime.strptime('2017-01-01 00:00:00', "%Y-%m-%d %H:%M:%S"),
+        experimentgroups=[expgroup3])
 
         client1 = self.DB.create_client(
             {'clientname': 'First client',

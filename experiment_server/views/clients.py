@@ -20,22 +20,49 @@ def assign_to_experiment(client, application):
         .filter(Application.id == application.id)
 
     running_experiments = list(filter(lambda _: _.get_status() == 'running', experiments))
-
-    return random.choice(running_experiments)
+    try:
+        return random.choice(running_experiments)
+    except IndexError as e:
+        print_log(datetime.datetime.now(), 'POST', '/configurations',
+            'Get client configurations',
+            'Failed: No running experiments on Application with id %s' % application.id)
+        return None
 
 def assign_to_experimentgroup(client, application):
     experiment = assign_to_experiment(client, application)
-    expgroup = random.choice(list(experiment.experimentgroups))
 
-    client.experimentgroups.append(expgroup)
-    Client.flush()
+    try:
+        expgroup = random.choice(list(experiment.experimentgroups))
+    except AttributeError as e:
+        # In this case, experiment is None, and has already been logged
+        return None
+    except IndexError as e:
+        print_log(datetime.datetime.now(), 'POST', '/configurations',
+            'Get client configurations',
+            'Failed: No ExperimentGoups on Experiment with id %s' % experiment.id)
+        return None
+
+    if expgroup not in client.experimentgroups:
+        client.experimentgroups.append(expgroup)
+        Client.flush()
 
     return expgroup
 
 def get_client_configurations(client, application):
     expgroup = assign_to_experimentgroup(client, application)
 
-    return expgroup.configurations
+    try:
+        configs =  list(map(lambda _: _.as_dict(), expgroup.configurations))
+    except AttributeError as e:
+        # In this case, experimentgroup is None, and has already been logged
+        return None
+    if len(configs) == 0:
+        print_log(datetime.datetime.now(), 'POST', '/configurations',
+            'Get client configurations',
+            'Failed: No Configurations on ExperimentGroup with id %s' % expgroup.id)
+        return None
+
+    return configs
 
 def get_client(name, application):
     client = Client.query()\
@@ -69,8 +96,7 @@ def application_by_apikey_from_header(headers):
     try:
         apikey = headers['authorization']
     except KeyError as e:
-        print(e)
-        pass
+        return None
 
     app = Application.get_by('apikey', apikey)
     return app
@@ -98,7 +124,7 @@ class Clients(WebUtils):
         res.headers.add('Access-Control-Allow-Methods', 'POST,GET,OPTIONS, DELETE, PUT')
         return res
 
-    @view_config(route_name='configuratins', request_method="OPTIONS")
+    @view_config(route_name='configurations', request_method="OPTIONS")
     def all_OPTIONS(self):
         res = Response()
         res.headers.add('Access-Control-Allow-Origins', '*')
@@ -143,7 +169,8 @@ class Clients(WebUtils):
         result = get_client_by_id_and_app(self.request.swagger_data)
 
         if not result:
-            print_log(datetime.datetime.now(), 'GET','applications/%s/clients/%s' % (self.request.swagger_data['appid'], self.request.swagger_data['clientid']),
+            print_log(datetime.datetime.now(), 'GET','applications/%s/clients/%s' \
+                % (self.request.swagger_data['appid'], self.request.swagger_data['clientid']),
                 'Get client', 'Failed')
             return self.createResponse(None, 400)
         return result.as_dict()
@@ -220,24 +247,25 @@ class Clients(WebUtils):
 
     @view_config(route_name='configurations', request_method="POST")
     def configurations_POST(self):
-        app = application_by_apikey_from_header(self.request.headers)
-        req_clientname = None
-
-        if app is None:
+        def print_error(message):
             print_log(datetime.datetime.now(), 'POST', '/configurations',
                 'Get client configurations',
-                'Unauthorized')
+                message)
+
+        app = application_by_apikey_from_header(self.request.headers)
+        if app is None:
+            print_error('Unauthorized')
             return self.createResponse(None, 401)
 
         try:
             req_clientname = self.request.swagger_data['clientname']
         except KeyError as e:
-            print_log(datetime.datetime.now(), 'POST', '/configurations',
-                'Get client configurations',
-                'Failed')
+            print_error('Missing parameters')
             return self.createResponse(None, 400)
 
         client = get_client(req_clientname, app)
-        configs = list(map(lambda _: _.as_dict(),get_client_configurations(client, app)))
-        
+        configs = get_client_configurations(client, app)
+        if configs is None:
+            return self.createResponse(None, 400)
+
         return configs
