@@ -19,30 +19,16 @@ class TestConfigurations(BaseTest):
         self.init_databaseData()
 
     def test_createConfiguration(self):
-        configurationsFromDB = self.dbsession.query(Configuration).all()
-        expgroup1 = self.dbsession.query(ExperimentGroup).filter_by(id=1).one()
-        expgroup2 = self.dbsession.query(ExperimentGroup).filter_by(id=2).one()
-        conf1 = {'key': 'v1',
-                 'value': 0.5,
-                 'experimentgroup': expgroup1
-                 }
-        conf2 = {'key': 'v2',
-                 'value': True,
-                 'experimentgroup': expgroup1
-                 }
-        conf3 = {'key': 'v1',
-                 'value': 1.0,
-                 'experimentgroup': expgroup2
-                 }
-        conf4 = {'key': 'v2',
-                 'value': False,
-                 'experimentgroup': expgroup2
-                 }
-        confs = [conf1, conf2, conf3, conf4]
+        expgroup1 = self.dbsession.query(ExperimentGroup).filter(ExperimentGroup.id == 1).one()
+        conf_count_before = Configuration.query().count()
 
-        for i in range(len(configurationsFromDB)):
-            for key in confs[i]:
-                assert getattr(configurationsFromDB[i], key) == confs[i][key]
+        conf = Configuration(id=87, key='v1', value=0.5, experimentgroup=expgroup1)
+        Configuration.save(conf)
+
+        conf_count_now = Configuration.query().count()
+
+        assert conf_count_now > conf_count_before
+        assert Configuration.get_by('id', 87) is not None
 
     def test_deleteConfiguration(self):
         conf1 = self.dbsession.query(Configuration).filter_by(id=1).one()

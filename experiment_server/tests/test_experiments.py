@@ -21,29 +21,41 @@ class TestExperiments(BaseTest):
     def test_createExperiment(self):
         experimentsFromDB = self.dbsession.query(Experiment).all()
         experimentgroups = self.dbsession.query(ExperimentGroup).all()
-        experiments = [
-            {'name': 'Test experiment',
-             'experimentgroups': [experimentgroups[0], experimentgroups[1]],
-             'startDatetime': strToDatetime('2016-01-01 00:00:00'),
-             'endDatetime': strToDatetime('2017-01-01 00:00:00')
-             }]
+        experiment_count_before = Experiment.query().count()
+        experiment = Experiment(name='Create Test Experiment',
+            experimentgroups=[experimentgroups[0], experimentgroups[1]],
+            startDatetime=strToDatetime('2016-01-01 00:00:00'),
+            endDatetime=strToDatetime('2017-01-01 00:00:00'))
 
-        for i in range(len(experimentsFromDB)):
-            for key in experiments[i]:
-                assert getattr(experimentsFromDB[i], key) == experiments[i][key]
+        Experiment.save(experiment)
+        experiment_count_now = Experiment.query().count()
+
+        assert experiment_count_now > experiment_count_before
+        assert Experiment.get_by('name', 'Create Test Experiment') is not None
 
     def test_deleteExperiment(self):
-        self.DB.delete_experiment(1)
-        experimentsFromDB = self.dbsession.query(Experiment).all()
-        experimentgroupsFromDB = self.dbsession.query(ExperimentGroup).all()
-        configurationsFromDB = self.dbsession.query(Configuration).all()
-        clientsFromDB = self.dbsession.query(Client).all()
+        size_before = Experiment.query().count()
+        Experiment.destroy(Experiment.get(1))
+        size_now = Experiment.query().count()
 
-        assert experimentsFromDB == []
-        assert experimentgroupsFromDB == []
-        assert configurationsFromDB == []
-        assert clientsFromDB[0].experimentgroups == []
-        assert clientsFromDB[1].experimentgroups == []
+        assert size_before > size_now
+
+    def test_deleteExperiment_configurations_are_deleted(self):
+        deleting = Experiment.get(1)
+        Experiment.destroy(deleting)
+
+        configurations = Configuration.query().join(ExperimentGroup).filter(ExperimentGroup.experiment_id == 1).all()
+
+        assert configurations == []
+
+    def test_deleteExperiment_experimentgroups_are_deleted(self):
+        deleting = Experiment.get(1)
+        Experiment.destroy(deleting)
+
+        experimentgroups = ExperimentGroup.query()\
+            .filter(ExperimentGroup.experiment_id == 1).all()
+
+        assert experimentgroups == []
 
     def test_getStatusForExperiment(self):
         status = self.DB.get_status_for_experiment(1)
@@ -92,12 +104,7 @@ class TestExperimentsREST(BaseTest):
                 endDatetime=datetime.datetime(2017, 1, 1, 0, 0, 0))}
         httpExperiments = Experiments(self.req)
         response = httpExperiments.experiments_POST()
-        experiment = {'id': 2,
-                      'application_id': 1,
-                      'name': 'Example Experiment',
-                      'startDatetime': '2016-01-01 00:00:00',
-                      'endDatetime': '2017-01-01 00:00:00',
-                      }
+        experiment = Experiment.get_by('name', 'Example Experiment').as_dict()
 
         assert response == experiment
 
