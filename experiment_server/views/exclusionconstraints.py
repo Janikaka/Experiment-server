@@ -134,8 +134,7 @@ class ExclusionConstraints(WebUtils):
             ExclusionConstraint.save(new_exconstraint)
         except Exception as e:
             print_log(datetime.datetime.now(), 'POST',
-                '/application/%s/configurationkeys/%s/exclusionconstraints'\
-                    % (app_id, first_config_id),
+                '/application/%s/exclusionconstraints' % (app_id),
                 'Create new exclusionconstraint for configurationkey', 'Failed')
             print_log(e)
             return self.createResponse({}, 400)

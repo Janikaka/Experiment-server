@@ -15,6 +15,15 @@ from fn import _
 from toolz import *
 
 # Helper functions
+def is_client_in_running_experiments(client):
+    experiments = Experiment.query()\
+        .join(ExperimentGroup)\
+        .join(ExperimentGroup.clients).filter(Client.id == client.id).all()
+
+    running_experiments = list(filter(lambda _: _.get_status() == 'running', experiments))
+
+    return len(running_experiments) > 0
+
 def assign_to_experiment(client, application):
     experiments = Experiment.query().join(Application)\
         .filter(Application.id == application.id)
@@ -128,6 +137,13 @@ class Clients(WebUtils):
         res.headers.add('Access-Control-Allow-Methods', 'POST')
         return res
 
+    @view_config(route_name='events', request_method="OPTIONS")
+    def all_Options(self):
+        res = Response()
+        res.headers.add('Access-Control-Allow-Origins', '*')
+        res.headers.add('Access-Control-Allow-Methods', 'POST')
+        return res
+
     # List application's clients
     @view_config(route_name='clients', request_method="GET", renderer='json')
     def clients_GET(self):
@@ -220,17 +236,30 @@ class Clients(WebUtils):
     # Save experiment data
     @view_config(route_name='events', request_method="POST")
     def events_POST(self):
+        app = application_by_apikey_from_header(self.request.headers)
+        if app is None:
+            print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data',
+                'Unauthorized')
+            return self.createResponse(None, 401)
+
         json = self.request.json_body
         value = json['value']
         key = json['key']
-        startDatetime = json['startDatetime']
-        endDatetime = json['endDatetime']
+        startDatetime = datetime.datetime.strptime(json['startDatetime'], "%Y-%m-%d %H:%M:%S")
+        endDatetime = datetime.datetime.strptime(json['endDatetime'], "%Y-%m-%d %H:%M:%S")
+
+
         clientname = self.request.headers['clientname']
         client = Client.get_by('clientname', clientname)
         if client is None:
             print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data',
-                'Failed')
+                'Failed: no client with name %s' % clientname)
             return self.createResponse(None, 400)
+        if not is_client_in_running_experiments(client):
+            print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data',
+                'Failed: client %s not in running experiments' % clientname)
+            return self.createResponse(None, 400)
+
         result = DataItem(
             client=client,
             value=value,

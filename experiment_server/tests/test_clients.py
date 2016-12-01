@@ -168,14 +168,15 @@ class TestClientsREST(BaseTest):
         json_body = {
             'key': 'key1',
             'value': 10,
-            'startDatetime': datetime.datetime(2016, 6, 6, 6, 6, 6),
-            'endDatetime': datetime.datetime(2016, 6, 7, 6, 6, 6),
+            'startDatetime': str(datetime.datetime(2016, 6, 6, 6, 6, 6)),
+            'endDatetime': str(datetime.datetime(2016, 6, 7, 6, 6, 6)),
         }
-        headers = {'clientname': 'First client', 
-            'authorization': Application.get(1).apikey
-        }
+
+        headers = {'clientname': 'First client'}
         self.req.json_body = json_body
         self.req.headers = headers
+        self.req.headers['authorization'] = Application.get(1).apikey
+
         httpclients = Clients(self.req)
         response = httpclients.events_POST()
         #result = response.json['data']
@@ -188,13 +189,57 @@ class TestClientsREST(BaseTest):
 
         assert response == dataitem
 
-    def tst_events_POST_nonexistent_client(self):
+    def test_events_POST_nonexistent_client(self):
         self.req.headers = {'clientname': 'fsdfdsf'}
+        self.req.headers['authorization'] = Application.get(1).apikey
         self.req.json_body = {
             'key': 'key1',
             'value': 10,
-            'startDatetime': datetime.datetime(2016, 6, 6, 6, 6, 6),
-            'endDatetime': datetime.datetime(2016, 6, 7, 6, 6, 6),
+            'startDatetime': str(datetime.datetime(2016, 6, 6, 6, 6, 6)),
+            'endDatetime': str(datetime.datetime(2016, 6, 7, 6, 6, 6)),
+        }
+        httpclients = Clients(self.req)
+        response = httpclients.events_POST()
+        assert response.status_code == 400
+
+    def test_events_POST_no_apikey(self):
+        self.req.headers['clientname'] = 'First client'
+        self.req.json_body = {
+            'key': 'key1',
+            'value': 10,
+            'startDatetime': str(datetime.datetime(2016, 6, 6, 6, 6, 6)),
+            'endDatetime': str(datetime.datetime(2016, 6, 7, 6, 6, 6)),
+        }
+        httpclients = Clients(self.req)
+        response = httpclients.events_POST()
+        assert response.status_code == 401
+
+    def test_events_POST_client_not_in_running_experiment(self):
+        client = Client(clientname='Wheatley')
+        Client.save(client)
+        client = Client.get_by('clientname', 'Wheatley')
+
+        expgroup = ExperimentGroup(name='Cake', id=59, clients=[client])
+        ExperimentGroup.save(expgroup)
+
+        app = Application.get(1)
+
+        start = get_datetime(-2, 0, 0, 0, 0, 0)
+        end = get_datetime(-1, 0, 0, 0, 0, 0)
+        experiment = Experiment(name='Non-running Test Experiment', application_id=5,
+        startDatetime=start,
+        endDatetime=end,
+        experimentgroups=[ExperimentGroup.get(59)],
+        application=app)
+        Experiment.save(experiment)
+
+        self.req.headers['clientname'] = 'Wheatley'
+        self.req.headers['authorization'] = app.apikey
+        self.req.json_body = {
+            'key': 'key1',
+            'value': 10,
+            'startDatetime': str(datetime.datetime(2016, 6, 6, 6, 6, 6)),
+            'endDatetime': str(datetime.datetime(2016, 6, 7, 6, 6, 6)),
         }
         httpclients = Clients(self.req)
         response = httpclients.events_POST()
