@@ -130,7 +130,7 @@ class ExclusionConstraints(WebUtils):
         )
 
         try:
-            self.is_valid_exclusionconstraint(self, exconstraint, app_id)
+            self.is_valid_exclusionconstraint(exconstraint, app_id)
             ExclusionConstraint.save(new_exconstraint)
         except Exception as e:
             print_log(datetime.datetime.now(), 'POST',
