@@ -64,11 +64,8 @@ def get_client_configurations(client, application):
 
     return configs
 
-def get_client(name, application):
-    client = Client.query()\
-        .join(Client.experimentgroups, Experiment, Application)\
-        .filter(Client.clientname == name, Application.id == application.id)\
-        .one_or_none()
+def get_client(name):
+    client = Client.query().filter(Client.clientname == name).one_or_none()
 
     if client is None and len(name) > 0:
         client = Client(clientname=name)
@@ -263,7 +260,7 @@ class Clients(WebUtils):
             print_error('Missing parameters')
             return self.createResponse(None, 400)
 
-        client = get_client(req_clientname, app)
+        client = get_client(req_clientname)
         configs = get_client_configurations(client, app)
         if configs is None:
             return self.createResponse(None, 400)

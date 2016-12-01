@@ -171,7 +171,9 @@ class TestClientsREST(BaseTest):
             'startDatetime': datetime.datetime(2016, 6, 6, 6, 6, 6),
             'endDatetime': datetime.datetime(2016, 6, 7, 6, 6, 6),
         }
-        headers = {'clientname': 'First client'}
+        headers = {'clientname': 'First client', 
+            'authorization': Application.get(1).apikey
+        }
         self.req.json_body = json_body
         self.req.headers = headers
         httpclients = Clients(self.req)
@@ -185,8 +187,15 @@ class TestClientsREST(BaseTest):
                     'client_id': 1}
 
         assert response == dataitem
-        headers = {'clientname': 'fsdfdsf'}
-        self.req.headers = headers
+
+    def tst_events_POST_nonexistent_client(self):
+        self.req.headers = {'clientname': 'fsdfdsf'}
+        self.req.json_body = {
+            'key': 'key1',
+            'value': 10,
+            'startDatetime': datetime.datetime(2016, 6, 6, 6, 6, 6),
+            'endDatetime': datetime.datetime(2016, 6, 7, 6, 6, 6),
+        }
         httpclients = Clients(self.req)
         response = httpclients.events_POST()
         assert response.status_code == 400
