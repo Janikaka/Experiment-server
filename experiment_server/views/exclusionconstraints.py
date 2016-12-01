@@ -120,13 +120,13 @@ class ExclusionConstraints(WebUtils):
         new_exconstraint = ExclusionConstraint(
             first_configurationkey_id=exconstraint.first_configurationkey_id,
             first_operator_id=exconstraint.first_operator_id,
-            first_value_a=exconstraint.first_value_a,
-            first_value_b=exconstraint.first_value_b,
+            first_value_a=None if len(exconstraint.first_value) == 0 else exconstraint.first_value[0],
+            first_value_b=None if len(exconstraint.first_value) <= 1 else exconstraint.first_value[1],
 
             second_configurationkey_id=exconstraint.second_configurationkey_id,
             second_operator_id=exconstraint.second_operator_id,
-            second_value_a=exconstraint.second_value_a,
-            second_value_b=exconstraint.second_value_b
+            second_value_a=None if len(exconstraint.second_value) == 0 else exconstraint.second_value[0],
+            second_value_b=None if len(exconstraint.second_value) <= 1 else exconstraint.second_value[1]
         )
 
         try:

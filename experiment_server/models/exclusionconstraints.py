@@ -18,13 +18,13 @@ class ExclusionConstraint(Base):
     id = Column(Integer, primary_key=True)
     first_configurationkey_id = Column(Integer, ForeignKey('configurationkeys.id'))
     first_operator_id = Column(Integer, ForeignKey('operators.id'))
-    first_value_a = Column(JSONType())
-    first_value_b = Column(JSONType())
+    first_value_a = Column(Text)
+    first_value_b = Column(Text)
 
     second_configurationkey_id = Column(Integer, ForeignKey('configurationkeys.id'))
     second_operator_id = Column(Integer, ForeignKey('operators.id'))
-    second_value_a = Column(JSONType())
-    second_value_b = Column(JSONType())
+    second_value_a = Column(Text)
+    second_value_b = Column(Text)
 
     first_configurationkey = relationship("ConfigurationKey", foreign_keys=[first_configurationkey_id])
     first_operator = relationship("Operator", foreign_keys=[first_operator_id])
@@ -33,4 +33,12 @@ class ExclusionConstraint(Base):
 
     def as_dict(self):
         """ transfer data to dictionary """
-        return {col.name: getattr(self, col.name) for col in self.__table__.columns}  # col.name means data from column
+        new_dict = {'id': getattr(self, 'id'),
+                    'first_configurationkey_id': getattr(self, 'first_configurationkey_id'),
+                    'first_operator_id': getattr(self, 'first_operator_id'),
+                    'first_value': [getattr(self, 'first_value_a'), getattr(self, 'first_value_b')],
+                    'second_configurationkey_id': getattr(self, 'second_configurationkey_id'),
+                    'second_operator_id': getattr(self, 'second_operator_id'),
+                    'second_value': [getattr(self, 'second_value_a'), getattr(self, 'second_value_b')]}
+        #return {col.name: getattr(self, col.name) for col in self.__table__.columns}  # col.name means data from column
+        return new_dict

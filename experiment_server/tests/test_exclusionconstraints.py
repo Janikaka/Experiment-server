@@ -32,27 +32,27 @@ class TestExclusionConstraints(BaseTest):
 # ---------------------------------------------------------------------------------
 
 exconst = {'id': 1, 'first_configurationkey_id': 1, 'first_operator_id': 3,
-           'first_value_a': None, 'first_value_b': None,
+           'first_value': [None, None],
            'second_configurationkey_id': 2, 'second_operator_id': None,
-           'second_value_a': None, 'second_value_b': None}
+           'second_value': [2, None]}
 
 exconst2 = {'id': 2, 'first_configurationkey_id': 1, 'first_operator_id': 3,
-            'first_value_a': None, 'first_value_b': None,
+            'first_value': [1, 3],
             'second_configurationkey_id': 2, 'second_operator_id': 2,
-            'second_value_a': '2', 'second_value_b': None}
+            'second_value': ['2', None]}
 exconstraints = [exconst, exconst2]
 
 class TestExclusionConstraintsREST(BaseTest):
 
     exconst = {'id':1, 'first_configurationkey_id': 1, 'first_operator_id': 3,
-               'first_value_a': None, 'first_value_b': None,
+               'first_value': [None, None],
                'second_configurationkey_id': 2, 'second_operator_id': None,
-               'second_value_a': None, 'second_value_b': None}
+               'second_value': [None, None]}
 
     exconst2 = {'id':2, 'first_configurationkey_id': 1, 'first_operator_id': 3,
-               'first_value_a': None, 'first_value_b': None,
+                'first_value': [None, None],
                'second_configurationkey_id': 2, 'second_operator_id': 2,
-               'second_value_a': '2', 'second_value_b': None}
+                'second_value': ['2', None]}
 
     def setUp(self):
         super(TestExclusionConstraintsREST, self).setUp()
@@ -78,21 +78,3 @@ class TestExclusionConstraintsREST(BaseTest):
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_DELETE_one()
         assert response == {}
-
-    def test_exclusionconstraints_DELETE_one_nonexistent_configurationkey(self):
-        self.req.swagger_data = {'appid': 1, 'ecid': 3}
-        httpEcs = ExclusionConstraints(self.req)
-        response = httpEcs.exclusionconstraints_DELETE_one()
-        assert response.status_code == 400
-
-    def test_exclusionconstraints_for_confkey_GET_1(self):
-        self.req.swagger_data = {'appid': 1}
-        httpEcs = ExclusionConstraints(self.req)
-        response = httpEcs.exclusionconstraints_GET()
-        assert response == exconstraints
-
-    def test_exclusionconstraints_for_confkey_GET_2(self):
-        self.req.swagger_data = {'appid': 1}
-        httpEcs = ExclusionConstraints(self.req)
-        response = httpEcs.exclusionconstraints_GET()
-        assert response == exconstraints
