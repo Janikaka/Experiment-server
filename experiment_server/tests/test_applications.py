@@ -190,7 +190,7 @@ class TestApplicationsREST(BaseTest):
         httpApps = Applications(self.req)
         response = httpApps.applications_PUT()
 
-        assert response == app
+        assert response == app.as_dict()
 
     def test_applications_PUT_ids_must_match(self):
         app = Application.get(1)
