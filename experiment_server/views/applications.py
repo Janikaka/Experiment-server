@@ -70,7 +70,7 @@ class Applications(WebUtils):
     @view_config(route_name='application', request_method="GET")
     def applications_GET_one(self):
         """ Find and return one application by id with GET method """
-        app_id = self.request.swagger_data['id']
+        app_id = self.request.swagger_data['appid']
         app = Application.get(app_id)
         if app is None:
             print_log(datetime.datetime.now(), 'GET', '/applications/' + str(app_id), 'Get one application', None)
@@ -103,7 +103,7 @@ class Applications(WebUtils):
     @view_config(route_name='application', request_method="DELETE")
     def applications_DELETE_one(self):
         """ Find and delete one application by id with delete method """
-        app_id = self.request.swagger_data['id']
+        app_id = self.request.swagger_data['appid']
         app = Application.get(app_id)
         if not app:
             print_log(datetime.datetime.now(), 'DELETE', '/applications/' + str(app_id), 'Delete application', 'Failed')
@@ -117,7 +117,7 @@ class Applications(WebUtils):
         """ List all configurationkeys and rangeconstraints of specific application.
             Returns application with configurationkeys, rangeconstraints and exclusionconstraints
         """
-        app_id = self.request.swagger_data['id']
+        app_id = self.request.swagger_data['appid']
         app = Application.get(app_id)
         if app is None:
             print_log(datetime.datetime.now(), 'GET', '/applications/' + str(id) + '/rangeconstraints',
