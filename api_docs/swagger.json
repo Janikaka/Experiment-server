@@ -203,7 +203,7 @@
         }
       }
     },
-    "/applications/{id}": {
+    "/applications/{appid}": {
       "get": {
         "tags": [
           "application"
@@ -211,7 +211,7 @@
         "summary": "Get one application",
         "parameters": [
           {
-            "name": "id",
+            "name": "appid",
             "type": "integer",
             "description": "id of the application",
             "in": "path",
@@ -237,7 +237,7 @@
         "summary": "Delete one application",
         "parameters": [
           {
-            "name": "id",
+            "name": "appid",
             "type": "integer",
             "description": "id of the application",
             "in": "path",
@@ -260,7 +260,7 @@
         "summary": "Update one Application. So far, only changeable field is name",
         "parameters": [
           {
-            "name": "id",
+            "name": "appid",
             "type": "integer",
             "description": "id of the Application",
             "in": "path",
