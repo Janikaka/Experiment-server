@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "2.3.3",
+    "version": "2.3.4",
     "title": "Experiment server",
     "description": "API for experiments",
     "license": {
