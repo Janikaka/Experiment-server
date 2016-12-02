@@ -142,12 +142,12 @@ class Applications(WebUtils):
         req_app_id = self.request.swagger_data['id']
         updated = Application.get(req_app_id)
 
-        if req_app_id != req_app['id'] or updated is None:
+        if req_app_id != req_app.id or updated is None:
             print_log(datetime.datetime.now(), 'PUT', '/applications/',
                       'Update Application', 'Failed: no such Application with id %s or ids didn\'t match' % req_app_id)
             return self.createResponse(None, 400)
 
-        Application.update(updated.id, "name", req_app['name'])
+        Application.update(updated.id, "name", req_app.name)
         updated = Application.get(updated.id)
 
         return updated.as_dict()

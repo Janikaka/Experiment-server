@@ -185,7 +185,7 @@ class TestApplicationsREST(BaseTest):
         assert self.req.route_url('applications') == 'http://example.com/applications'
 
     def test_applications_PUT_exists(self):
-        app = Application.get(1).as_dict()
+        app = Application.get(1)
         self.req.swagger_data = {'id': 1, 'application': app}
         httpApps = Applications(self.req)
         response = httpApps.applications_PUT()
@@ -193,7 +193,7 @@ class TestApplicationsREST(BaseTest):
         assert response == app
 
     def test_applications_PUT_ids_must_match(self):
-        app = Application.get(1).as_dict()
+        app = Application.get(1)
         self.req.swagger_data = {'id': 42, 'application': app}
         httpApps = Applications(self.req)
         response = httpApps.applications_PUT()
@@ -201,7 +201,7 @@ class TestApplicationsREST(BaseTest):
         assert response.status_code == 400
 
     def test_applications_PUT_application_must_exist(self):
-        app = Application(id=42, name='Apperture Science').as_dict()
+        app = Application(id=42, name='Apperture Science')
         self.req.swagger_data = {'id': 42, 'application': app}
         httpApps = Applications(self.req)
         response = httpApps.applications_PUT()
@@ -209,9 +209,9 @@ class TestApplicationsREST(BaseTest):
         assert response.status_code == 400
 
     def test_applications_PUT(self):
-        app = Application.get(1).as_dict()
+        app = Application.get(1)
         expected_app_name = 'It is now changed'
-        app['name'] = expected_app_name
+        app.name = expected_app_name
 
         self.req.swagger_data = {'id': 1, 'application': app}
         httpApps = Applications(self.req)
