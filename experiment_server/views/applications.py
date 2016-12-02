@@ -147,7 +147,7 @@ class Applications(WebUtils):
                       'Update Application', 'Failed: no such Application with id %s or ids didn\'t match' % req_app_id)
             return self.createResponse(None, 400)
 
-        updated.name = req_app['name']
-        Application.save(updated)
+        Application.update(updated.id, "name", req_app['name'])
+        updated = Application.get(updated.id)
 
         return updated.as_dict()
