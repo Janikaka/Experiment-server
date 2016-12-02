@@ -1,9 +1,12 @@
-from experiment_server.models.applications import Application
+from experiment_server.models import (Application, Client, DataItem, Experiment, ExperimentGroup)
 from experiment_server.models.rangeconstraints import RangeConstraint
 from experiment_server.views.applications import Applications
 from .base_test import BaseTest
+import datetime
 import uuid
 
+def strToDatetime(date):
+    return datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
 
 # ---------------------------------------------------------------------------------
 #                                DatabaseInterface
@@ -54,6 +57,27 @@ class TestApplications(BaseTest):
         app2 = Application.get(2)
         assert appsFromDB == [app2]
         assert len(appsFromDB) == 1
+
+    def test_destroy_app_does_not_delete_dataitems(self):
+        Application.save(Application(id=47, name='App to delete'))
+        app = Application.get(47)
+        Experiment.save(Experiment(id=78, application=app, name='Apperture'))
+        exp = Experiment.get(78)
+        ExperimentGroup.save(ExperimentGroup(id=67, name='GlaDos', experiment=exp))
+        eg = ExperimentGroup.get(67)
+        Client.save(Client(id=76, clientname='Chell', experimentgroups=[eg]))
+        client = Client.get(76)
+        DataItem.save(DataItem(key='key1',
+               value=10,
+               startDatetime=strToDatetime('2016-01-01 00:00:00'),
+               endDatetime=strToDatetime('2016-01-01 01:01:01'),
+               client=client))
+
+        dataitem_count_before = DataItem.query().count()
+        Application.destroy(app)
+        dataitem_count_now = DataItem.query().count()
+
+        assert dataitem_count_before == dataitem_count_now
 
     def test_get_confkeys_of_app(self):
         assert len(Application.get(1).configurationkeys) == 2
