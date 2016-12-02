@@ -119,14 +119,14 @@ class TestApplicationsREST(BaseTest):
         self.req = self.dummy_request()
 
     def test_applications_GET_one(self):
-        self.req.swagger_data = {'appid': 1}
+        self.req.swagger_data = {'id': 1}
         httpApps = Applications(self.req)
         response = httpApps.applications_GET_one()
         expected = Application.get(1).as_dict()
         assert response == expected
 
     def test_applications_GET_one_apikey_not_none(self):
-        self.req.swagger_data = {'appid': 1}
+        self.req.swagger_data = {'id': 1}
         httpApps = Applications(self.req)
         response = httpApps.applications_GET_one()
         assert response['apikey'] != None
@@ -138,12 +138,12 @@ class TestApplicationsREST(BaseTest):
         assert response == expected
 
     def test_applications_DELETE_one(self):
-        self.req.swagger_data = {'appid': 1}
+        self.req.swagger_data = {'id': 1}
         httpApps = Applications(self.req)
         response = httpApps.applications_DELETE_one()
         assert response == {}
 
-        self.req.swagger_data = {'appid': 3}
+        self.req.swagger_data = {'id': 3}
         response = httpApps.applications_DELETE_one()
         assert response.status_code == 400
 
@@ -165,7 +165,7 @@ class TestApplicationsREST(BaseTest):
 
     def test_data_for_app_GET(self):
         from toolz import assoc, concat
-        self.req.swagger_data = {'appid': 1}
+        self.req.swagger_data = {'id': 1}
         httpApps = Applications(self.req)
         response = httpApps.data_for_app_GET()
 
