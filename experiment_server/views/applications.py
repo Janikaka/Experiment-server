@@ -115,7 +115,7 @@ class Applications(WebUtils):
     @view_config(route_name='app_data', request_method="GET")
     def data_for_app_GET(self):
         """ List all configurationkeys and rangeconstraints of specific application.
-            Returns application with configurationkeys and rangeconstraints of conf.keys
+            Returns application with configurationkeys, rangeconstraints and exclusionconstraints
         """
         app_id = self.request.swagger_data['id']
         app = Application.get(app_id)
@@ -135,3 +135,19 @@ class Applications(WebUtils):
         app_data = assoc(app_data, 'exclusionconstraints', list(map(lambda _: _.as_dict(), exclusions)))
 
         return app_data
+
+    @view_config(route_name='application', request_method="PUT")
+    def applications_PUT(self):
+        req_app = self.request.swagger_data['application']
+        req_app_id = self.request.swagger_data['appid']
+        updated = Application.get(req_app_id)
+
+        if req_app_id != req_app['id'] or updated is None:
+            print_log(datetime.datetime.now(), 'PUT', '/applications/',
+                      'Update Application', 'Failed: no such Application with id %s or ids didn\'t match' % req_app_id)
+            return self.createResponse(None, 400)
+
+        updated.name = req_app['name']
+        Application.save(updated)
+
+        return updated.as_dict()

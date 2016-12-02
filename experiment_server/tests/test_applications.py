@@ -1,5 +1,4 @@
 from experiment_server.models import (Application, Client, DataItem, Experiment, ExperimentGroup)
-from experiment_server.models.rangeconstraints import RangeConstraint
 from experiment_server.views.applications import Applications
 from .base_test import BaseTest
 import datetime
@@ -184,3 +183,38 @@ class TestApplicationsREST(BaseTest):
     def test_application_routes(self):
         assert self.req.route_url('application', id=1) == 'http://example.com/applications/1'
         assert self.req.route_url('applications') == 'http://example.com/applications'
+
+    def test_applications_PUT_exists(self):
+        app = Application.get(1).as_dict()
+        self.req.swagger_data = {'appid': 1, 'application': app}
+        httpApps = Applications(self.req)
+        response = httpApps.applications_PUT()
+
+        assert response == app
+
+    def test_applications_PUT_ids_must_match(self):
+        app = Application.get(1).as_dict()
+        self.req.swagger_data = {'appid': 42, 'application': app}
+        httpApps = Applications(self.req)
+        response = httpApps.applications_PUT()
+
+        assert response.status_code == 400
+
+    def test_applications_PUT_application_must_exist(self):
+        app = Application(id=42, name='Apperture Science').as_dict()
+        self.req.swagger_data = {'appid': 42, 'application': app}
+        httpApps = Applications(self.req)
+        response = httpApps.applications_PUT()
+
+        assert response.status_code == 400
+
+    def test_applications_PUT(self):
+        app = Application.get(1).as_dict()
+        expected_app_name = 'It is now changed'
+        app['name'] = expected_app_name
+
+        self.req.swagger_data = {'appid': 1, 'application': app}
+        httpApps = Applications(self.req)
+        response = httpApps.applications_PUT()
+
+        assert Application.get(1).name == expected_app_name
