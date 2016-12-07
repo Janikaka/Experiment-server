@@ -163,6 +163,16 @@ class TestApplicationsREST(BaseTest):
         expected = Application.get_by('name', 'App 3').as_dict()
         assert expected['apikey'] is not None
 
+    def test_application_POST_name_is_not_empty(self):
+        expected_count = Application.query().count()
+
+        self.req.swagger_data = {'application': Application(name='')}
+        httpApps = Applications(self.req)
+        response = httpApps.applications_POST()
+
+        count_now = Application.query().count()
+        assert expected_count == count_now
+
     def test_data_for_app_GET(self):
         from toolz import assoc, concat
         self.req.swagger_data = {'id': 1}

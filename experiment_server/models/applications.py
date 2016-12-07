@@ -14,7 +14,7 @@ class Application(Base):
     """ This is definition of class Application """
     __tablename__ = 'applications'
     id = Column(Integer, primary_key=True)
-    name = Column(Text)
+    name = Column(Text, nullable=False)
     apikey = Column(Text, unique=True)
     experiments = relationship("Experiment", backref="application", cascade="delete")
     configurationkeys = relationship("ConfigurationKey", backref="application", cascade="delete")
