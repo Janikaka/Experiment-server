@@ -827,7 +827,7 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request: Invalid ConfigurationKey"
           }
         }
       },

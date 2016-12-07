@@ -23,6 +23,12 @@ def get_conf_key_by_appid_and_ckid(app_id, confkey_id):
 def is_valid_name(ck):
     return ck.name is not None and len(ck.name) > 0
 
+def get_valid_types():
+    return ["boolean", "string", "integer", "float"]
+
+def is_valid_type(ck):
+    return ck.type is not None and len(ck.type) > 0 and ck.type in get_valid_types()
+
 @view_defaults(renderer='json')
 class ConfigurationKeys(WebUtils):
     def __init__(self, request):
@@ -31,8 +37,12 @@ class ConfigurationKeys(WebUtils):
     """
         Helper functions which are exported with ConfigurationKeys-class
     """
+
+    def valid_types(self):
+        return get_valid_types()
+
     def is_valid_configurationkey(self, ck):
-        if not (is_valid_name(ck)):
+        if not (is_valid_name(ck) and is_valid_type(ck)):
             return False
         return True
 
@@ -89,7 +99,7 @@ class ConfigurationKeys(WebUtils):
             return updated.as_dict()
 
         print_log(datetime.datetime.now(), 'PUT', 'applications/%s/configurationkeys/%s' % (app_id, confkey_id),
-                  'Updatre ConfigurationKey', 'Failed: Invalid Configurationkey')
+                  'Update ConfigurationKey', 'Failed: Invalid Configurationkey')
         return self.createResponse('Bad Request: invalid ConfigurationKey', 400)
 
     @view_config(route_name='configurationkey', request_method="DELETE")

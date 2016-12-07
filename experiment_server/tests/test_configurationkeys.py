@@ -177,10 +177,10 @@ class TestConfigurationKeysREST(BaseTest):
     def test_configurationkeys_POST(self):
         self.req.swagger_data = {
             'id': 1,
-            'configurationkey': ConfigurationKey(application_id=1, name='test name', type='test type')}
+            'configurationkey': ConfigurationKey(application_id=1, name='test name', type='boolean')}
         httpCkeys = ConfigurationKeys(self.req)
         response = httpCkeys.configurationkeys_POST()
-        ckey = {'id': 3, 'application_id': 1, 'type': 'test type', 'name': 'test name'}
+        ckey = {'id': 3, 'application_id': 1, 'type': 'boolean', 'name': 'test name'}
         assert response == ckey
 
         self.req.swagger_data = {
@@ -200,6 +200,35 @@ class TestConfigurationKeysREST(BaseTest):
 
         count_now = ConfigurationKey.query().count()
         assert count_now == expected_count
+
+    def test_configurationkeys_POST_type_is_not_empty(self):
+        expected_count = ConfigurationKey.query().count()
+
+        self.req.swagger_data = {
+            'id': 1,
+            'configurationkey': ConfigurationKey(application_id=1, name='Space', type='')}
+        httpCkeys = ConfigurationKeys(self.req)
+        response = httpCkeys.configurationkeys_POST()
+
+        count_now = ConfigurationKey.query().count()
+        expected_status = 400
+        assert count_now == expected_count
+        assert response.status_code == expected_status
+
+    def test_configurationskeys_POST_type_is_valid(self):
+        """Defined types are listed at views/configurationkeys by get_valid_types()-function"""
+        expected_count = ConfigurationKey.query().count()
+
+        self.req.swagger_data = {
+            'id': 1,
+            'configurationkey': ConfigurationKey(application_id=1, name='Space', type='Äriäri')}
+        httpCkeys = ConfigurationKeys(self.req)
+        response = httpCkeys.configurationkeys_POST()
+
+        count_now = ConfigurationKey.query().count()
+        expected_status = 400
+        assert count_now == expected_count
+        assert response.status_code == expected_status
 
     def test_configurationkeys_for_application_DELETE(self):
         self.req.swagger_data = {'id': 1}
