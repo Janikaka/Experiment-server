@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "2.3.4",
+    "version": "2.3.5",
     "title": "Experiment server",
     "description": "API for experiments",
     "license": {
@@ -199,6 +199,12 @@
             "schema": {
               "$ref": "#/definitions/Application"
             }
+          },
+          "400": {
+            "description": "Bad Request: Invalid Application",
+            "schema": {
+              "$ref": "#/definitions/Application"
+            }
           }
         }
       }
@@ -284,7 +290,7 @@
             }
           },
           "400": {
-            "description": "Bad Request. Either ids didn't match between given application and path, or application does not exist with given id"
+            "description": "Bad Request. Either ids didn't match between given application and path, application does not exist with given id or given Application was invalid"
           }
         }
       }

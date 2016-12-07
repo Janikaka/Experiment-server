@@ -228,3 +228,19 @@ class TestApplicationsREST(BaseTest):
         response = httpApps.applications_PUT()
 
         assert Application.get(1).name == expected_app_name
+
+    def test_applications_PUT(self):
+        expected_name = 'Veri specil'
+
+        self.req.swagger_data = {'application': Application(name=expected_name)}
+        httpApps = Applications(self.req)
+        httpApps.applications_POST()
+
+        app = Application.get_by('name', expected_name)
+        apikey = app.apikey
+        id = app.id
+        self.req.swagger_data = {'id': app.id, 'application': Application(name='', apikey=apikey, id=id)}
+        httpApps.applications_PUT()
+
+        name_now = Application.get(id).name
+        assert name_now == expected_name

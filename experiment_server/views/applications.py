@@ -50,6 +50,9 @@ class Applications(WebUtils):
 
         return Application.get(app_id)
 
+    def is_valid_application(self, app):
+        return app.name is not None and len(app.name) > 0
+
     def get_app_exclusionconstraints(self, app_id):
         from experiment_server.models.exclusionconstraints import ExclusionConstraint
         from experiment_server.models.configurationkeys import ConfigurationKey
@@ -91,14 +94,17 @@ class Applications(WebUtils):
     def applications_POST(self):
         """ Create new application with POST method """
         req_app = self.request.swagger_data['application']
-
         app = Application(
             name=req_app.name,
             apikey=self.get_unused_apikey()
         )
-        Application.save(app)
-        print_log(req_app.name, 'POST', '/applications', 'Create new application', app)
-        return app.as_dict()
+        if self.is_valid_application(req_app):
+            Application.save(app)
+            print_log(req_app.name, 'POST', '/applications', 'Create new application', app)
+            return app.as_dict()
+
+        print_log(req_app.name, 'POST', '/applications', 'Create new application', 'Failed: Invalid Application')
+        return self.createResponse('Bad Request: invalid Application', 400)
 
     @view_config(route_name='application', request_method="DELETE")
     def applications_DELETE_one(self):
@@ -142,7 +148,7 @@ class Applications(WebUtils):
         req_app_id = self.request.swagger_data['id']
         updated = Application.get(req_app_id)
 
-        if req_app_id != req_app.id or updated is None:
+        if req_app_id != req_app.id or updated is None or not self.is_valid_application(req_app):
             print_log(datetime.datetime.now(), 'PUT', '/applications/',
                       'Update Application', 'Failed: no such Application with id %s or ids didn\'t match' % req_app_id)
             return self.createResponse(None, 400)
