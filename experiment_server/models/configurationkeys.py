@@ -15,7 +15,7 @@ class ConfigurationKey(Base):
     __tablename__ = 'configurationkeys'
     id = Column(Integer, primary_key=True)
     application_id = Column(Integer, ForeignKey('applications.id'))
-    name = Column(Text)
+    name = Column(Text, nullable=False)
     type = Column(Text)
     rangeconstraints = relationship("RangeConstraint", backref="configurationkey", cascade="delete")
     exclusionconstraints = relationship("ExclusionConstraint",

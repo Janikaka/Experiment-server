@@ -130,22 +130,36 @@ class TestConfigurationKeysREST(BaseTest):
         assert response == confkeys
 
     def test_configurationkeys_PUT_one(self):
-        self.req.swagger_data = {'id': 1}
+        self.req.swagger_data = {'ckid': 1, 'appid': 1}
         httpCkeys = ConfigurationKeys(self.req)
         response = ConfigurationKey.get(1)
         assert response.id == 1
         assert response.name == 'highscore'
 
         self.req.swagger_data = {
-            'id': 1,
+            'appid': 1,
+            'ckid': 1,
             'configurationkey': ConfigurationKey(id=1, application_id=1, name='test name', type='boolean')}
         response = httpCkeys.configurationkeys_PUT_one()
         assert response != self.confkey
 
-        self.req.swagger_data = {'id': 1}
+        self.req.swagger_data = {'ckid': 1, 'appid': 1}
         response = ConfigurationKey.get(1)
         assert response.id == 1
         assert response.name == 'test name'
+
+    def test_configurationkeys_PUT_one_name_is_not_empty(self):
+        expected_name = ConfigurationKey.get(1).name
+        self.req.swagger_data = {
+            'ckid': 1, 'appid': 1,
+            'configurationkey': ConfigurationKey(id=1, application_id=1, name='', type='boolean')}
+        httpCkeys = ConfigurationKeys(self.req)
+        response = httpCkeys.configurationkeys_PUT_one()
+
+        expected_status = 400
+        name_now = ConfigurationKey.get(1).name
+        assert response.status_code == expected_status
+        assert name_now == expected_name
 
 
     def test_configurationkeys_DELETE_one_with_correct_values(self):
@@ -174,6 +188,18 @@ class TestConfigurationKeysREST(BaseTest):
             'configurationkey': ConfigurationKey(application_id=1, name='test name', type='test type')}
         response = httpCkeys.configurationkeys_POST()
         assert response.status_code == 400
+
+    def test_configurationkeys_POST_name_is_not_empty(self):
+        expected_count = ConfigurationKey.query().count()
+
+        self.req.swagger_data = {
+            'id': 1,
+            'configurationkey': ConfigurationKey(application_id=1, name='', type='test type')}
+        httpCkeys = ConfigurationKeys(self.req)
+        response = httpCkeys.configurationkeys_POST()
+
+        count_now = ConfigurationKey.query().count()
+        assert count_now == expected_count
 
     def test_configurationkeys_for_application_DELETE(self):
         self.req.swagger_data = {'id': 1}

@@ -167,10 +167,6 @@ class TestExperimentsREST(BaseTest):
         assert response.status_code == 400
         assert response.json == None
 
-    def test_experiment_data_GET(self):
-        # TODO
-        assert 1 == 1
-
     def test_experimentgroup_GET(self):
         self.req.swagger_data = {'appid': 1, 'expid': 1}
         httpExperiments = Experiments(self.req)

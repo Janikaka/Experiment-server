@@ -7,7 +7,7 @@ from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.applications import Application
 
 """
-Helper functions
+    Helper functions
 """
 def get_conf_key_by_appid_and_ckid(app_id, confkey_id):
     try:
@@ -20,11 +20,21 @@ def get_conf_key_by_appid_and_ckid(app_id, confkey_id):
         print_log(e)
         return None
 
+def is_valid_name(ck):
+    return ck.name is not None and len(ck.name) > 0
+
 @view_defaults(renderer='json')
 class ConfigurationKeys(WebUtils):
     def __init__(self, request):
         self.request = request
 
+    """
+        Helper functions which are exported with ConfigurationKeys-class
+    """
+    def is_valid_configurationkey(self, ck):
+        if not (is_valid_name(ck)):
+            return False
+        return True
 
     """
         CORS-options
@@ -70,10 +80,17 @@ class ConfigurationKeys(WebUtils):
     @view_config(route_name='configurationkey', request_method="PUT")
     def configurationkeys_PUT_one(self):
         """ Updates only the name of configurationkey"""
+        app_id = self.request.swagger_data['appid']
+        confkey_id = self.request.swagger_data['ckid']
         configkey_req = self.request.swagger_data['configurationkey']
-        ConfigurationKey.update(configkey_req.id, "name", configkey_req.name)
-        updated = ConfigurationKey.get(configkey_req.id)
-        return updated.as_dict()
+        if self.is_valid_configurationkey(configkey_req):
+            ConfigurationKey.update(configkey_req.id, "name", configkey_req.name)
+            updated = ConfigurationKey.get(configkey_req.id)
+            return updated.as_dict()
+
+        print_log(datetime.datetime.now(), 'PUT', 'applications/%s/configurationkeys/%s' % (app_id, confkey_id),
+                  'Updatre ConfigurationKey', 'Failed: Invalid Configurationkey')
+        return self.createResponse('Bad Request: invalid ConfigurationKey', 400)
 
     @view_config(route_name='configurationkey', request_method="DELETE")
     def configurationkeys_DELETE_one(self):
@@ -101,7 +118,7 @@ class ConfigurationKeys(WebUtils):
         application = Application.get(app_id)
         if application is None:
             print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/configurationkeys',
-                      'Create new configurationkey for application', 'Failed')
+                      'Create new configurationkey for application', 'Failed: No Application with id %s' % app_id)
             return self.createResponse({}, 400)
         new_confkey = self.request.swagger_data['configurationkey']
         name = new_confkey.name
@@ -111,10 +128,16 @@ class ConfigurationKeys(WebUtils):
             name=name,
             type=type
         )
-        ConfigurationKey.save(configurationkey)
+
+        if self.is_valid_configurationkey(configurationkey):
+            ConfigurationKey.save(configurationkey)
+            print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/configurationkeys',
+                      'Create new configurationkey', 'Succeeded')
+            return configurationkey.as_dict()
+
         print_log(datetime.datetime.now(), 'POST', '/applications/' + str(app_id) + '/configurationkeys',
-                  'Create new configurationkey', 'Succeeded')
-        return configurationkey.as_dict()
+                  'Create new configurationkey for application', 'Failed: Invalid ConfigurationKey')
+        return self.createResponse({}, 400)
 
     @view_config(route_name='configurationkeys_for_app', request_method="DELETE")
     def configurationkeys_for_application_DELETE(self):
