@@ -16,7 +16,7 @@ class Experiment(Base):
     __tablename__ = 'experiments'
     id = Column(Integer, primary_key=True)
     application_id = Column(Integer, ForeignKey('applications.id'))
-    name = Column(Text, unique=True, index=True)
+    name = Column(Text, unique=True, index=True, nullable=False)
     startDatetime = Column(DateTime)
     endDatetime = Column(DateTime)
     experimentgroups = relationship("ExperimentGroup", backref="experiment", cascade="delete")
