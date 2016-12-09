@@ -27,10 +27,19 @@ def is_values_valid_to_configurationkeys(exconstraint):
     from experiment_server.utils.configuration_tools import is_valid_type_operator
     from experiment_server.utils.configuration_tools import is_valid_type_values
 
-    return is_valid_type_operator(ConfigurationKey.get(exconstraint.first_configurationkey_id).type, exconstraint.first_operator) \
-           and is_valid_type_operator(ConfigurationKey.get(exconstraint.second_configurationkey_id).type, exconstraint.second_operator) \
-           and is_valid_type_values(ConfigurationKey.get(exconstraint.first_configurationkey_id).type, exconstraint.first_operator, [exconstraint.first_value_a, exconstraint.first_value_a]) \
-           and is_valid_type_values(ConfigurationKey.get(exconstraint.second_configurationkey_id).type, exconstraint.second_operator, [exconstraint.second_value_a, exconstraint.second_value_b])
+    first_ckey_type = ConfigurationKey.get(exconstraint.first_configurationkey_id).type
+    second_ckey_type = ConfigurationKey.get(exconstraint.second_configurationkey_id).type
+
+    return is_valid_type_operator(first_ckey_type,
+                                  exconstraint.first_operator) \
+           and is_valid_type_operator(second_ckey_type,
+                                      exconstraint.second_operator) \
+           and is_valid_type_values(first_ckey_type,
+                                    exconstraint.first_operator,
+                                    [exconstraint.first_value_a, exconstraint.first_value_a]) \
+           and is_valid_type_values(second_ckey_type,
+                                    exconstraint.second_operator,
+                                    [exconstraint.second_value_a, exconstraint.second_value_b])
 
 @view_defaults(renderer='json')
 class ExclusionConstraints(WebUtils):
@@ -145,7 +154,8 @@ class ExclusionConstraints(WebUtils):
         if not self.is_valid_exclusionconstraint(new_exconstraint, app_id):
             print_log(datetime.datetime.now(), 'POST',
                       '/application/%s/exclusionconstraints' % (app_id),
-                      'Create new exclusionconstraint for configurationkey', 'Failed')
+                      'Create new exclusionconstraint for configurationkey', 'Failed: ExclusionConstraint is not valid: %s'
+                      % (new_exconstraint.as_dict()))
 
             return self.createResponse({}, 400)
 

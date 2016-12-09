@@ -87,9 +87,6 @@ class TestExclusionConstraintsREST(BaseTest):
         ConfigurationKey.save(ckey1)
         ckey2 = ConfigurationKey(id=468, application_id=1, name='elämän tarkoitus', type='integer')
         ConfigurationKey.save(ckey2)
-        #
-        #exclusion = ExclusionConstraint(first_configurationkey_id=467, first_operator_id=1, first_value_a=wrong_type_value_to_first,
-        #                                second_configurationkey_id=468, second_operator_id=1, second_value_a=correct_type_value_to_second)
 
         exclusion = {'id': 467, 'first_configurationkey_id': 467, 'first_operator_id': 1,
                'first_value': [wrong_type_value_to_first, None],

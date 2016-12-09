@@ -29,9 +29,11 @@ def get_operators():
 
     return Operator.all()
 
-def is_valid_type_operator(type, operator_id):
+def is_valid_type_operator(type, operator):
+    if operator is None:
+        return True
     if type == "boolean" or type == "string":
-        return operator_id == 1 or operator_id == 6 or operator_id == 9 or operator_id == 10
+        return operator.id == 1 or operator.id == 6 or operator.id == 9 or operator.id == 10
 
     return type == "integer" or type == "float"
 
@@ -39,18 +41,20 @@ def is_valid_type_value(type, value):
     if value is None:
         return True
 
-    if type == "boolean":
-        return isinstance(bool(value), bool)
-    elif type == "string":
-        return isinstance(value, str)
-    elif type == "integer":
-        return isinstance(int(value), int)
-    elif type == "float":
-        return isinstance(float(value), float)
-    return False
+    try:
+        if type == "boolean":
+            bool(value)
+        elif type == "string":
+            str(value)
+        elif type == "integer":
+            int(value)
+        elif type == "float":
+            float(value)
+    except ValueError:
+        return False
 
-def is_valid_type_values(type, operator_id, values):
-    if (operator_id == 7 or operator_id == 8) and (len(values) < 2 or values[1] is None):
+def is_valid_type_values(type, operator, values):
+    if operator is not None and (operator.id == 7 or operator.id == 8) and (len(values) < 2 or values[1] is None):
         return False
 
     for value in values:
