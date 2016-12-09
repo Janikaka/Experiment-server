@@ -1,10 +1,13 @@
-from pyramid.view import view_config, view_defaults
-from pyramid.response import Response
 import datetime
-from experiment_server.utils.log import print_log
-from .webutils import WebUtils
-from experiment_server.models.configurationkeys import ConfigurationKey
+
+from pyramid.response import Response
+from pyramid.view import view_config, view_defaults
+
 from experiment_server.models.applications import Application
+from experiment_server.models.configurationkeys import ConfigurationKey
+from experiment_server.utils.log import print_log
+from experiment_server.utils.configuration_tools import get_valid_types
+from .webutils import WebUtils
 
 """
     Helper functions
@@ -22,9 +25,6 @@ def get_conf_key_by_appid_and_ckid(app_id, confkey_id):
 
 def is_valid_name(ck):
     return ck.name is not None and len(ck.name) > 0
-
-def get_valid_types():
-    return ["boolean", "string", "integer", "float"]
 
 def is_valid_type(ck):
     return ck.type is not None and len(ck.type) > 0 and ck.type in get_valid_types()

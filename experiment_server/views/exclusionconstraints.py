@@ -9,6 +9,29 @@ from experiment_server.models.exclusionconstraints import ExclusionConstraint
 from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.applications import Application
 
+def has_all_ids(exconstraint, app_id):
+    return not (exconstraint.first_configurationkey_id is None) or \
+        (exconstraint.second_configurationkey_id is None) or \
+        (exconstraint is None or app_id is None)
+
+def is_configurationkeys_from_same_app(exconstraint, app_id):
+    if not ConfigurationKey.get(exconstraint.first_configurationkey_id).application_id == app_id:
+        return False
+
+    elif not ConfigurationKey.get(exconstraint.second_configurationkey_id).application_id == app_id:
+        return False
+
+    return True
+
+def is_values_valid_to_configurationkeys(exconstraint):
+    from experiment_server.utils.configuration_tools import is_valid_type_operator
+    from experiment_server.utils.configuration_tools import is_valid_type_values
+
+    return is_valid_type_operator(ConfigurationKey.get(exconstraint.first_configurationkey_id).type, exconstraint.first_operator) \
+           and is_valid_type_operator(ConfigurationKey.get(exconstraint.second_configurationkey_id).type, exconstraint.second_operator) \
+           and is_valid_type_values(ConfigurationKey.get(exconstraint.first_configurationkey_id).type, exconstraint.first_operator, [exconstraint.first_value_a, exconstraint.first_value_a]) \
+           and is_valid_type_values(ConfigurationKey.get(exconstraint.second_configurationkey_id).type, exconstraint.second_operator, [exconstraint.second_value_a, exconstraint.second_value_b])
+
 @view_defaults(renderer='json')
 class ExclusionConstraints(WebUtils):
     def __init__(self, request):
@@ -49,18 +72,8 @@ class ExclusionConstraints(WebUtils):
             return None
 
     def is_valid_exclusionconstraint(self, exconstraint, app_id):
-        if (exconstraint.first_configurationkey_id is None) or \
-        (exconstraint.second_configurationkey_id is None) or \
-        (exconstraint is None or app_id is None):
-            raise Exception('Missing parameters')
-
-        elif not ConfigurationKey.get(exconstraint.first_configurationkey_id).application_id == app_id:
-            raise Exception('Application with id %s does not have ConfigurationKey with id %s'\
-                % (app_id, exconstraint.first_configurationkey_id))
-
-        elif not ConfigurationKey.get(exconstraint.second_configurationkey_id).application_id == app_id:
-            raise Exception('Application with id %s does not have ConfigurationKey with id %s'\
-                % (app_id, exconstraint.second_configurationkey_id))
+        return has_all_ids(exconstraint, app_id) and is_configurationkeys_from_same_app(exconstraint, app_id) \
+               and is_values_valid_to_configurationkeys(exconstraint)
 
     """
         Route listeners
@@ -113,30 +126,29 @@ class ExclusionConstraints(WebUtils):
         return {}
 
     @view_config(route_name='exconstraints_for_configurationkey', request_method="POST")
-    def exclusionconstraints_for_confkey_POST(self):
+    def exclusionconstraints_POST(self):
         app_id = self.request.swagger_data['appid']
         exconstraint = self.request.swagger_data['exclusionconstraint']
 
         new_exconstraint = ExclusionConstraint(
-            first_configurationkey_id=exconstraint.first_configurationkey_id,
-            first_operator_id=exconstraint.first_operator_id,
-            first_value_a=None if len(exconstraint.first_value) == 0 else exconstraint.first_value[0],
-            first_value_b=None if len(exconstraint.first_value) <= 1 else exconstraint.first_value[1],
+            first_configurationkey_id=exconstraint['first_configurationkey_id'],
+            first_operator_id=exconstraint['first_operator_id'],
+            first_value_a=None if len(exconstraint['first_value']) == 0 else exconstraint['first_value'][0],
+            first_value_b=None if len(exconstraint['first_value']) <= 1 else exconstraint['first_value'][1],
 
-            second_configurationkey_id=exconstraint.second_configurationkey_id,
-            second_operator_id=exconstraint.second_operator_id,
-            second_value_a=None if len(exconstraint.second_value) == 0 else exconstraint.second_value[0],
-            second_value_b=None if len(exconstraint.second_value) <= 1 else exconstraint.second_value[1]
+            second_configurationkey_id=exconstraint['second_configurationkey_id'],
+            second_operator_id=exconstraint['second_operator_id'],
+            second_value_a=None if len(exconstraint['second_value']) == 0 else exconstraint['second_value'][0],
+            second_value_b=None if len(exconstraint['second_value']) <= 1 else exconstraint['second_value'][1]
         )
 
-        try:
-            self.is_valid_exclusionconstraint(exconstraint, app_id)
-            ExclusionConstraint.save(new_exconstraint)
-        except Exception as e:
+        if not self.is_valid_exclusionconstraint(new_exconstraint, app_id):
             print_log(datetime.datetime.now(), 'POST',
-                '/application/%s/exclusionconstraints' % (app_id),
-                'Create new exclusionconstraint for configurationkey', 'Failed')
-            print_log(e)
+                      '/application/%s/exclusionconstraints' % (app_id),
+                      'Create new exclusionconstraint for configurationkey', 'Failed')
+
             return self.createResponse({}, 400)
+
+        ExclusionConstraint.save(new_exconstraint)
 
         return new_exconstraint.as_dict()

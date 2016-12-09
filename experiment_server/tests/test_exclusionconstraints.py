@@ -1,3 +1,4 @@
+from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.exclusionconstraints import ExclusionConstraint
 from experiment_server.views.exclusionconstraints import ExclusionConstraints
 from .base_test import BaseTest
@@ -78,3 +79,25 @@ class TestExclusionConstraintsREST(BaseTest):
         httpEcs = ExclusionConstraints(self.req)
         response = httpEcs.exclusionconstraints_DELETE_one()
         assert response == {}
+
+    def test_exclusionconstraints_POST_configurationkey_type_is_valid(self):
+        wrong_type_value_to_first = 42
+        correct_type_value_to_second = wrong_type_value_to_first
+        ckey1 = ConfigurationKey(id=467, application_id=1, name='tosi juttu', type='boolean')
+        ConfigurationKey.save(ckey1)
+        ckey2 = ConfigurationKey(id=468, application_id=1, name='elämän tarkoitus', type='integer')
+        ConfigurationKey.save(ckey2)
+        #
+        #exclusion = ExclusionConstraint(first_configurationkey_id=467, first_operator_id=1, first_value_a=wrong_type_value_to_first,
+        #                                second_configurationkey_id=468, second_operator_id=1, second_value_a=correct_type_value_to_second)
+
+        exclusion = {'id': 467, 'first_configurationkey_id': 467, 'first_operator_id': 1,
+               'first_value': [wrong_type_value_to_first, None],
+               'second_configurationkey_id': 468, 'second_operator_id': 1,
+               'second_value': [correct_type_value_to_second, None]}
+        self.req.swagger_data = {'appid': 1, 'exclusionconstraint': exclusion}
+        httpEcs = ExclusionConstraints(self.req)
+        response = httpEcs.exclusionconstraints_POST()
+        expected_status = 400
+
+        assert response.status_code == expected_status
