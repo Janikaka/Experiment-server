@@ -63,15 +63,45 @@ class TestRangeConstraintsREST(BaseTest):
         self.req.swagger_data = {
             'appid': 1,
             'ckid': 2,
-            'rangeconstraint': RangeConstraint(operator_id=1, value=10)}
+            'rangeconstraint': RangeConstraint(operator_id=4, value=10)}
         httpCkeys = RangeConstraints(self.req)
         response = httpCkeys.rangecontraints_POST()
         rc = RangeConstraint.query()\
-            .filter(RangeConstraint.configurationkey_id == 2, \
-                RangeConstraint.operator_id==1, \
+            .filter(RangeConstraint.configurationkey_id == 2,
+                RangeConstraint.operator_id==4,
                 RangeConstraint.value==10)\
             .one().as_dict()
         assert response == rc
+
+    def test_rangeconstraints_POST_is_valid_operator(self):
+        expected_count = RangeConstraint.query().count()
+        self.req.swagger_data = {
+            'appid': 1,
+            'ckid': 2,
+            'rangeconstraint': RangeConstraint(operator_id=1, value=10)}
+        httpCkeys = RangeConstraints(self.req)
+        response = httpCkeys.rangecontraints_POST()
+
+        expected_status = 400
+        count_now = RangeConstraint.query().count()
+
+        assert count_now == expected_count
+        assert response.status_code == expected_status
+
+    def test_rangeconstraints_POST_is_valid_value(self):
+        expected_count = RangeConstraint.query().count()
+        self.req.swagger_data = {
+            'appid': 1,
+            'ckid': 2,
+            'rangeconstraint': RangeConstraint(operator_id=2, value=True)}
+        httpCkeys = RangeConstraints(self.req)
+        response = httpCkeys.rangecontraints_POST()
+
+        expected_status = 400
+        count_now = RangeConstraint.query().count()
+
+        assert count_now == expected_count
+        assert response.status_code == expected_status
 
     def test_rangeconstraints_for_configuratinkey_DELETE(self):
         self.req.swagger_data = {'appid':1, 'ckid': 2}

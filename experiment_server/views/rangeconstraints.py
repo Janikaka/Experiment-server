@@ -7,6 +7,49 @@ from experiment_server.models.rangeconstraints import RangeConstraint
 from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.applications import Application
 
+###
+# Range Constraint validation
+###
+def is_valid_value(rconst):
+    """
+    Is value-type valid. Expects either integer or float
+    :param rconst: RangoConstraint to be validated
+    :return: is value-type valid
+    """
+    from experiment_server.utils.configuration_tools import is_valid_type_value
+    return is_valid_type_value('integer', rconst.value) or is_valid_type_value('float', rconst.value)
+
+
+def is_valid_operator(rconst):
+    """
+    Accepts following operators: <=, <, >=, >
+    :param rconst: RangeConstraint to be validated
+    :return: is valid operator
+    """
+    return rconst.operator_id >= 2 and rconst.operator_id <= 5
+
+
+def exists_app_and_ck(app_id, configkey_id):
+    """
+    Checks connection between Application and ConfigurationKey
+    :param app_id:
+    :param configkey_id:
+    :return: Does ConfigurationKey exist in given Application
+    """
+    return ConfigurationKey.get(configkey_id).application_id == app_id
+
+
+def is_valid_rangeconstraint(app_id, configkey_id, rconst):
+    """
+    Range Constraint validation. Only this function should be called during validation.
+    :param app_id: Application in which configurationkey belongs to
+    :param configkey_id: Configurationkey on range is being set
+    :param rconst: RangeConstraint to be validated
+    :return: True: RangeConstraint is valid, False: RangeConstraint is not valid
+    """
+    return exists_app_and_ck(app_id, configkey_id) and is_valid_operator(rconst) and is_valid_value(rconst)
+
+
 @view_defaults(renderer='json')
 class RangeConstraints(WebUtils):
     def __init__(self, request):
@@ -85,15 +128,14 @@ class RangeConstraints(WebUtils):
 
         try:
             # Checks if Configuration with such connection to Application exists
-            if ConfigurationKey.get(configkey_id).application_id != app_id:
+            if not is_valid_rangeconstraint(app_id, configkey_id, rconstraint):
                 raise Exception('Application with id %s does not have' % app_id +
                     ' ConfigurationKey with id %s' % configkey_id)
             RangeConstraint.save(rconstraint)
-        except:
-            print(e)
+        except Exception as e:
             print_log(datetime.datetime.now(), 'POST', '/applications/%s/' % app_id +
-                'configurationkeys/%s/rangeconstraints' % confkey_id,
-                'Create new rangeconstraint for configurationkey', 'Failed')
+                'configurationkeys/%s/rangeconstraints' % configkey_id,
+                'Create new rangeconstraint for configurationkey', 'Failed: %s' % e)
             return self.createResponse({}, 400)
 
         print_log(datetime.datetime.now(), 'POST', '/applications/%s' % app_id +
