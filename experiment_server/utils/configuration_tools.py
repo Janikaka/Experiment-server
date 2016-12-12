@@ -45,7 +45,8 @@ def is_valid_type_value(type, value):
         if type == "boolean":
             bool(value)
             if (value > 1 or value < 0):
-                raise ValueError("If integer is something else besides 0 or 1, it will not be considered as boolean in this case.")
+                raise ValueError("If integer is something else besides 0 or 1,",
+                                 " it will not be considered as boolean in this case.")
         elif type == "string":
             str(value)
         elif type == "integer":
