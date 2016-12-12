@@ -17,6 +17,7 @@ def is_valid_value(rconst):
     :return: is value-type valid
     """
     from experiment_server.utils.configuration_tools import is_valid_type_value
+
     return is_valid_type_value('integer', rconst.value) or is_valid_type_value('float', rconst.value)
 
 

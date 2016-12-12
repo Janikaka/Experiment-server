@@ -50,8 +50,10 @@ def is_valid_type_value(type, value):
             int(value)
         elif type == "float":
             float(value)
-    except ValueError:
+    except ValueError as e:
         return False
+
+    return True
 
 def is_valid_type_values(type, operator, values):
     if operator is not None and (operator.id == 7 or operator.id == 8) and (len(values) < 2 or values[1] is None):
