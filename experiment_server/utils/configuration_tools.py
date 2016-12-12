@@ -30,6 +30,12 @@ def get_operators():
     return Operator.all()
 
 def is_valid_type_operator(type, operator):
+    """
+    Validates type that it can be used with given operator
+    :param type: Type to be validated
+    :param operator: Operator to be used with given type
+    :return: is type valid with given operator
+    """
     if operator is None:
         return True
     if type == "boolean" or type == "string":
@@ -38,13 +44,19 @@ def is_valid_type_operator(type, operator):
     return type == "integer" or type == "float"
 
 def is_valid_type_value(type, value):
+    """
+    Validates value's type to be equal with given type
+    :param type: Desired type
+    :param value: Value to be validated. Can be None since ExclusionConstraint can hold None values
+    :return: Is value Valid to given Type
+    """
     if value is None:
         return True
 
     try:
         if type == "boolean":
             bool(value)
-            if (value > 1 or value < 0):
+            if (isinstance(value, str) or value > 1 or value < 0):
                 raise ValueError("If integer is something else besides 0 or 1,",
                                  " it will not be considered as boolean in this case.")
         elif type == "string":
@@ -58,7 +70,15 @@ def is_valid_type_value(type, value):
 
     return True
 
+
 def is_valid_type_values(type, operator, values):
+    """
+    Validates multiple values' type and operators.
+    :param type: Desired Type
+    :param operator: Desired Operator
+    :param values: Value to be validated
+    :return: Are given values Valid
+    """
     if operator is not None and (operator.id == 7 or operator.id == 8) and (len(values) < 2 or values[1] is None):
         return False
 
@@ -67,4 +87,26 @@ def is_valid_type_values(type, operator, values):
             return False
 
     return True
+
+
+def is_in_range(app_id, configkey, value):
+    """
+
+    :param app_id:
+    :param configkey:
+    :param value:
+    :return:
+    """
+    return False
+
+
+def is_not_in_exclusion(app_id, configkey, value):
+    """
+
+    :param app_id:
+    :param configkey:
+    :param value:
+    :return:
+    """
+    return False
 

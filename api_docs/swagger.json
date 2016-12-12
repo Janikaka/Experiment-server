@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "2.3.5",
+    "version": "2.4",
     "title": "Experiment server",
     "description": "API for experiments",
     "license": {
@@ -1322,6 +1322,146 @@
           }
         }
       }
+    },
+    "/applications/{appid}/experiments/{expid}/experimentgroups/{expgroupid}/configurations": {
+      "get": {
+        "tags": [
+          "experiments",
+          "configurations"
+        ],
+        "summary": "Get ExperimentGroup configurations",
+        "parameters": [
+          {
+            "name": "appid",
+            "type": "integer",
+            "description": "id of the Application",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "expid",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "expgroupid",
+            "type": "integer",
+            "description": "id of the experimentgroup",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Configuration"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "experiments",
+          "configurations"
+        ],
+        "summary": "Create configuration to ExperimentGroup",
+        "parameters": [
+          {
+            "name": "appid",
+            "type": "integer",
+            "description": "id of the Application",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "expid",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "expgroupid",
+            "type": "integer",
+            "description": "id of the experimentgroup",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "configuration",
+            "in": "body",
+            "description": "Configuration to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Configuration"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/applications/{appid}/experiments/{expid}/experimentgroups/{expgroupid}/configurations/{confid}": {
+      "delete": {
+        "tags": [
+          "experiments",
+          "configurations"
+        ],
+        "summary": "Delete Configuration from ExperimentGroup",
+        "parameters": [
+          {
+            "name": "appid",
+            "type": "integer",
+            "description": "id of the Application",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "expid",
+            "type": "integer",
+            "description": "id of the experiment",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "expgroupid",
+            "type": "integer",
+            "description": "id of the experimentgroup",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "confid",
+            "type": "integer",
+            "description": "id of the configuration to be deleted",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -1400,7 +1540,8 @@
       ],
       "properties": {
         "id": {
-          "type": "integer"
+          "type": "integer",
+          "required": false
         },
         "experimentgroup_id": {
           "type": "integer"

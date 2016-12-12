@@ -15,10 +15,10 @@ from .webutils import WebUtils
 def get_conf_key_by_appid_and_ckid(app_id, confkey_id):
     try:
         return ConfigurationKey.query()\
-        .filter(ConfigurationKey.id == confkey_id)\
-        .join(Application)\
-        .filter(Application.id == app_id)\
-        .one()
+            .filter(ConfigurationKey.id == confkey_id)\
+            .join(Application)\
+            .filter(Application.id == app_id)\
+            .one()
     except Exception as e:
         print_log(e)
         return None

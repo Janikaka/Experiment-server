@@ -33,3 +33,5 @@ def includeme(config):
     config.add_route('clients_for_experiment', '/applications/{appid}/experiments/{expid}/clients')
     config.add_route('experimentgroups', '/applications/{appid}/experiments/{expid}/experimentgroups')
     config.add_route('experimentgroup', '/applications/{appid}/experiments/{expid}/experimentgroups/{expgroupid}')
+    config.add_route('experimentgroup_configurations', '/applications/{appid}/experiments/{expid}/experimentgroups/{expgroupid}/configurations')
+    config.add_route('experimentgroup_configuration', '/applications/{appid}/experiments/{expid}/experimentgroups/{expgroupid}/configurations/{confid}')

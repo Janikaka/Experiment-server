@@ -7,6 +7,8 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.schema import UniqueConstraint
+
 from .meta import Base
 
 
@@ -21,6 +23,7 @@ class ConfigurationKey(Base):
     exclusionconstraints = relationship("ExclusionConstraint",
                                         primaryjoin="or_(ConfigurationKey.id==ExclusionConstraint.first_configurationkey_id,ConfigurationKey.id==ExclusionConstraint.second_configurationkey_id)",
                                         cascade="delete")
+    UniqueConstraint('name', 'application_id')
 
 
     def as_dict(self):
