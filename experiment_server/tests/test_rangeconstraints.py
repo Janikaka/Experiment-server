@@ -93,7 +93,7 @@ class TestRangeConstraintsREST(BaseTest):
         self.req.swagger_data = {
             'appid': 1,
             'ckid': 2,
-            'rangeconstraint': RangeConstraint(operator_id=2, value=True)}
+            'rangeconstraint': RangeConstraint(operator_id=2, value="Herpiderp")}
         httpCkeys = RangeConstraints(self.req)
         response = httpCkeys.rangecontraints_POST()
 
