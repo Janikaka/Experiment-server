@@ -260,6 +260,7 @@ class TestConfigurationsREST(BaseTest):
         # If highscore is True, then difficulty is greater than 3
         exconst = ExclusionConstraint(first_configurationkey_id=hscore.id, first_operator_id=1, first_value_a=True,
                                       second_configurationkey_id=diff.id, second_operator_id=5, second_value_a=3)
+        ExclusionConstraint.save(exconst)
 
         valid_conf = Configuration(experimentgroup_id=expgrp.id, key=hscore.name, value=True)
         self.req.swagger_data = {'appid': app.id, 'expid': exp.id, 'expgroupid': expgrp.id,
@@ -271,7 +272,7 @@ class TestConfigurationsREST(BaseTest):
         count_before = Configuration.query().count()
 
         # Attempting to set value less than 3
-        invalid_conf = Configuration(experimentgroup_id=expgrp.id, key=diff.name, value=1)
+        invalid_conf = Configuration(experimentgroup_id=expgrp.id, key=diff.name, value=2)
         self.req.swagger_data = {'appid': app.id, 'expid': exp.id, 'expgroupid': expgrp.id,
                                  'configuration': invalid_conf}
         httpConfs = Configurations(self.req)

@@ -31,6 +31,17 @@ def exists_app_and_ck(app_id, configkey_id):
     return ConfigurationKey.get(configkey_id).application_id == app_id
 
 
+def is_valid_operator(rconst):
+    """
+    Checks that operator is one of the following: 1 - equals, 2 - less or equal than, 3 - less than,
+    4 - greater or equal than, 5 - greater than, 6 - not equal
+    :param rconst: RangeConstraint to be validated
+    :return: Is valid operator
+    """
+    return rconst.operator_id <= 6
+
+
+
 def is_valid_rangeconstraint(app_id, configkey_id, rconst):
     """
     Range Constraint validation. Only this function should be called during validation.
@@ -39,7 +50,7 @@ def is_valid_rangeconstraint(app_id, configkey_id, rconst):
     :param rconst: RangeConstraint to be validated
     :return: True: RangeConstraint is valid, False: RangeConstraint is not valid
     """
-    return exists_app_and_ck(app_id, configkey_id) and is_valid_value(rconst)
+    return exists_app_and_ck(app_id, configkey_id) and is_valid_value(rconst) and is_valid_operator(rconst)
 
 
 @view_defaults(renderer='json')

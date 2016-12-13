@@ -40,6 +40,7 @@ def is_valid_type_operator(type, operator):
     :return: is type valid with given operator
     """
     if operator is None:
+        # Some tests get broken, since operator is not always set in them.
         return True
     if type == "boolean" or type == "string":
         return operator.id == 1 or operator.id == 6 or operator.id == 9 or operator.id == 10
@@ -157,40 +158,67 @@ def is_in_range(configkey, value):
     return True
 
 
+def evaluate_exclusion(exclusion, ckey_a, ckey_b, config_a, config_b):
+    """
+    Helper function for @is_valid_exclusion
+    :param exclusion: ExclusionConstraint to check
+    :param ckey_a: first ConfigurationKey
+    :param ckey_b: Second ConfigurationKey
+    :param config_a: First Configuration
+    :param config_b: Second Configuration
+    :return: is ExclusionConstraint fulfilled
+    """
+    if config_a is None or config_b is None:
+        return True  # Either of values is not set. Nothing to validate
+
+    op_a = Operator.get(exclusion.first_operator_id)
+    type_a = ckey_a.type
+    value_a = get_value_as_correct_type(config_a.value, type_a)
+    argument_a = evaluate_value_operator(op_a, value_a, exclusion.first_value_a, exclusion.first_value_b)
+
+    op_b = Operator.get(exclusion.second_operator_id)
+    type_b = ckey_b.type
+    value_b = get_value_as_correct_type(config_b.value, type_b)
+    argument_b = evaluate_value_operator(op_b, value_b, exclusion.second_value_a, exclusion.second_value_b)
+
+    if not (not argument_a or argument_b):
+        return False  # ExclusionConstraint is violated
+
+
 def is_valid_exclusion(configkey, configuration):
     """
-    Checks ExclusionConstraints on given value. It checks if value would break any argument "if a then b", when given
-    value is in argument b. Only case this function needs to check, is that "a is false and b is true" does not happen.
-    Assumes that Application- and ConfigurationKey-connection is already checked.
-    :param configkey:
-    :param configuration:
-    :return:
+    Checks ExclusionConstraints on given value. It checks logical argument "not A or B", where given configuration is in
+    B. This means that if A is defined and true, B can not be false. Given Configuration is validated in places of A and
+    B.
+    :param configkey: ConfigurationKey which is checked if it is as second or first ConfigurationKey in any
+    ExclusionConstraint
+    :param configuration: Configuration which is being validated
+    :return: is given configuration allowed by exclusion constraints.
     """
-    exclusionconstraints = ExclusionConstraint.query().join(ConfigurationKey,
-                                                            ExclusionConstraint.second_configurationkey)\
-        .filter(ConfigurationKey.id == configkey.id)
+    exclusions_conf_as_a = ExclusionConstraint.query() \
+        .join(ConfigurationKey, ConfigurationKey.id == ExclusionConstraint.first_configurationkey_id) \
+        .filter(ConfigurationKey.id == configkey.id).all()
+    exclusions_conf_as_b = ExclusionConstraint.query()\
+        .join(ConfigurationKey, ConfigurationKey.id == ExclusionConstraint.second_configurationkey_id)\
+        .filter(ConfigurationKey.id == configkey.id).all()
 
-    for exc in exclusionconstraints:
-        ck_a = ConfigurationKey.get(exc.first_configurationkey_id).one_or_none()
+    for exc in exclusions_conf_as_a:
+        ck_b = ConfigurationKey.get(exc.second_configurationkey_id)
+
+        config_b = Configuration().query().filter(Configuration.experimentgroup_id == configuration.experimentgroup_id,
+                                                  Configuration.key == ck_b.name).one_or_none()
+
+        if not evaluate_exclusion(exc, configkey, ck_b, configuration, config_b):
+            return False
+
+    for exc in exclusions_conf_as_b:
+        ck_a = ConfigurationKey.get(exc.first_configurationkey_id)
 
         config_a = Configuration().query().filter(Configuration.experimentgroup_id == configuration.experimentgroup_id,
                                                  Configuration.key == ck_a.name).one_or_none()
 
-        if config_a is None:
-            return True
-
-        op_a = Operator.get(exc.first_operator_id)
-        type_a = ck_a.type
-        value_a = get_value_as_correct_type(config_a.value, type_a)
-        argument_a = evaluate_value_operator(op_a, value_a, exc.first_value_a, exc.first_value_b)
-
-        op_b = Operator.get(exc.second_operator_id)
-        type_b = configkey.type
-        value_b = get_value_as_correct_type(configuration.value, type_b)
-        argument_b = evaluate_value_operator(op_b, value_b, exc.second_value_a, exc.second_value_b)
-
-        if not argument_a and argument_b:
+        if not evaluate_exclusion(exc, ck_a, configkey, config_a, configuration):
             return False
 
-    return True
+    return True  # No ExclusionConstraints set or configuration is valid on all ExclusionConstraints
 
