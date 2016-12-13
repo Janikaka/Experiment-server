@@ -68,8 +68,8 @@ class TestConfigurationKeys(BaseTest):
         assert ck.name == ('new name')
 
     def test_get_rangecontraints_of_configurationkey(self):
-        assert len(ConfigurationKey.get(1).rangeconstraints) == 0
-        assert len(ConfigurationKey.get(2).rangeconstraints) == 2
+        assert len(ConfigurationKey.get(1).rangeconstraints) == 1
+        assert len(ConfigurationKey.get(2).rangeconstraints) == 1
 
     def test_get_exlusioncontraints_of_configurationkey(self):
         assert len(ConfigurationKey.get(1).exclusionconstraints) == 2
@@ -83,9 +83,10 @@ class TestConfigurationKeys(BaseTest):
 
     def test_cascade_of_destroy_configurationkey_and_rangeconstraints(self):
         assert len(RangeConstraint.all()) == 2
+        # print(list(map(lambda _: _.as_dict(), RangeConstraint.all())))
         ck = ConfigurationKey.get(2)
         ConfigurationKey.destroy(ck)
-        assert len(RangeConstraint.all()) == 0
+        assert len(RangeConstraint.all()) == 1
 
     def test_cascade_of_destroy_configurationkey_and_exclusionconstraints(self):
         assert len(ExclusionConstraint.all()) == 2

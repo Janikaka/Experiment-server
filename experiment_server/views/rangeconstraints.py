@@ -21,15 +21,6 @@ def is_valid_value(rconst):
     return is_valid_type_value('integer', rconst.value) or is_valid_type_value('float', rconst.value)
 
 
-def is_valid_operator(rconst):
-    """
-    Accepts following operators: <=, <, >=, >
-    :param rconst: RangeConstraint to be validated
-    :return: is valid operator
-    """
-    return rconst.operator_id >= 2 and rconst.operator_id <= 5
-
-
 def exists_app_and_ck(app_id, configkey_id):
     """
     Checks connection between Application and ConfigurationKey
@@ -48,7 +39,7 @@ def is_valid_rangeconstraint(app_id, configkey_id, rconst):
     :param rconst: RangeConstraint to be validated
     :return: True: RangeConstraint is valid, False: RangeConstraint is not valid
     """
-    return exists_app_and_ck(app_id, configkey_id) and is_valid_operator(rconst) and is_valid_value(rconst)
+    return exists_app_and_ck(app_id, configkey_id) and is_valid_value(rconst)
 
 
 @view_defaults(renderer='json')

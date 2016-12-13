@@ -1,4 +1,7 @@
-from experiment_server.models.operators import Operator
+from experiment_server.models import (Configuration, ConfigurationKey, ExclusionConstraint, Operator, RangeConstraint)
+import _operator
+
+# TODO: Return descriptive error messages on failure, so it can be passed from backend to frontend
 
 def get_valid_types():
     return ["boolean", "string", "integer", "float"]
@@ -89,24 +92,105 @@ def is_valid_type_values(type, operator, values):
     return True
 
 
-def is_in_range(app_id, configkey, value):
-    """
+def get_value_as_correct_type(value, type):
+    if value is None:
+        return None
+    if type == "string":
+        return str(value)
+    elif type == "integer":
+        return int(value)
+    elif type == "float":
+        return float(value)
+    elif type == "boolean":
+        return bool(value)
 
-    :param app_id:
-    :param configkey:
-    :param value:
+def evaluate_value_operator(operator, given_value, value1, value2):
+    """
+    Validates given_value by comparing it with operator to value1 and value 2. If operator with id less than 6 is given,
+     only value1 is needed. Expects values to be in correct type.
+    :param operator:
+    :param given_value:
+    :param value1:
+    :param value2:
     :return:
     """
+    ops = {'=': _operator.eq,
+           '<=': _operator.le,
+           '<': _operator.lt,
+           '>=': _operator.ge,
+           '>': _operator.gt,
+           '!=': _operator.ne,
+           }
+
+    if operator.math_value == '[]' or operator.math_value == '()':
+        if value1 is None or value2 is None:
+            return False
+        if operator.math_value == '[]':
+            return value1 <= given_value <= value2
+        elif operator.math_value == '()':
+            return value1 < given_value < value2
+    elif operator.math_value == 'def':
+        return given_value is not None
+    elif operator.math_value == 'ndef':
+        return given_value is None
+    elif operator.math_value is not None:
+        return ops[operator.math_value](given_value, value1)
+
     return False
 
 
-def is_not_in_exclusion(app_id, configkey, value):
+def is_in_range(configkey, value):
     """
+    Checks RangeConstraints on given value. Assumes that Application- and ConfigurationKey-connection is already
+    checked.
+    :param configkey: Given ConfigurationKey
+    :param value: Value to validate
+    :return: Is given value approved by RangeConstraints
+    """
+    rangeconstraints = RangeConstraint.query().join(ConfigurationKey).filter(ConfigurationKey.id == configkey.id)
 
-    :param app_id:
+    for rc in rangeconstraints:
+        if not evaluate_value_operator(Operator.get(rc.operator_id), get_value_as_correct_type(value, configkey.type),
+                                       get_value_as_correct_type(rc.value, configkey.type), None):
+            return False
+
+    return True
+
+
+def is_valid_exclusion(configkey, configuration):
+    """
+    Checks ExclusionConstraints on given value. It checks if value would break any argument "if a then b", when given
+    value is in argument b. Only case this function needs to check, is that "a is false and b is true" does not happen.
+    Assumes that Application- and ConfigurationKey-connection is already checked.
     :param configkey:
-    :param value:
+    :param configuration:
     :return:
     """
-    return False
+    exclusionconstraints = ExclusionConstraint.query().join(ConfigurationKey,
+                                                            ExclusionConstraint.second_configurationkey)\
+        .filter(ConfigurationKey.id == configkey.id)
+
+    for exc in exclusionconstraints:
+        ck_a = ConfigurationKey.get(exc.first_configurationkey_id).one_or_none()
+
+        config_a = Configuration().query().filter(Configuration.experimentgroup_id == configuration.experimentgroup_id,
+                                                 Configuration.key == ck_a.name).one_or_none()
+
+        if config_a is None:
+            return True
+
+        op_a = Operator.get(exc.first_operator_id)
+        type_a = ck_a.type
+        value_a = get_value_as_correct_type(config_a.value, type_a)
+        argument_a = evaluate_value_operator(op_a, value_a, exc.first_value_a, exc.first_value_b)
+
+        op_b = Operator.get(exc.second_operator_id)
+        type_b = configkey.type
+        value_b = get_value_as_correct_type(configuration.value, type_b)
+        argument_b = evaluate_value_operator(op_b, value_b, exc.second_value_a, exc.second_value_b)
+
+        if not argument_a and argument_b:
+            return False
+
+    return True
 

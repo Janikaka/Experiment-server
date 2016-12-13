@@ -1,6 +1,6 @@
 import datetime
 from .base_test import BaseTest
-from ..models import (Application, Configuration, ConfigurationKey, Experiment, ExperimentGroup)
+from ..models import (Application, Configuration, ConfigurationKey, ExclusionConstraint, Experiment, ExperimentGroup, RangeConstraint)
 from ..views.configurations import Configurations
 
 
@@ -116,7 +116,7 @@ class TestConfigurationsREST(BaseTest):
 
         confkey = ConfigurationKey.get(1)
         #print(confkey.as_dict())
-        expected_result = Configuration(experimentgroup_id=exp_id, key=confkey.name, value=False)
+        expected_result = Configuration(experimentgroup_id=exp_id, key=confkey.name, value=True)
         count_before = Configuration.query().count()
 
         self.req.swagger_data = {'appid': app_id, 'expid': exp_id, 'expgroupid': expgroup_id,
@@ -136,7 +136,7 @@ class TestConfigurationsREST(BaseTest):
 
         confkey = ConfigurationKey.get(1)
         #print(confkey.as_dict())
-        configuration = Configuration(experimentgroup_id=exp_id, key=confkey.name, value=False)
+        configuration = Configuration(experimentgroup_id=exp_id, key=confkey.name, value=True)
         count_before = Configuration.query().count()
 
         self.req.swagger_data = {'appid': app_id, 'expid': exp_id, 'expgroupid': expgroup_id,
@@ -157,7 +157,7 @@ class TestConfigurationsREST(BaseTest):
 
         confkey = ConfigurationKey.get(1)
         #print(confkey.as_dict())
-        configuration = Configuration(experimentgroup_id=exp_id, key=confkey.name, value=False)
+        configuration = Configuration(experimentgroup_id=exp_id, key=confkey.name, value=True)
         count_before = Configuration.query().count()
 
         self.req.swagger_data = {'appid': app_id, 'expid': exp_id, 'expgroupid': expgroup_id,
@@ -175,7 +175,7 @@ class TestConfigurationsREST(BaseTest):
         exp_id = 1
         app_id = 1
 
-        expected_result = Configuration(experimentgroup_id=exp_id, key='nonexistent key', value=False)
+        expected_result = Configuration(experimentgroup_id=exp_id, key='nonexistent key', value=True)
         count_before = Configuration.query().count()
 
         self.req.swagger_data = {'appid': app_id, 'expid': exp_id, 'expgroupid': expgroup_id,
@@ -195,13 +195,88 @@ class TestConfigurationsREST(BaseTest):
 
         confkey = ConfigurationKey.get(1)
         # print(confkey.as_dict())
-        expected_result = Configuration(experimentgroup_id=exp_id, key=confkey.name, value='Lentävä puliukko')
+        invalid_conf = Configuration(experimentgroup_id=exp_id, key=confkey.name, value='Lentävä puliukko')
         count_before = Configuration.query().count()
 
         self.req.swagger_data = {'appid': app_id, 'expid': exp_id, 'expgroupid': expgroup_id,
-                                 'configuration': expected_result}
+                                 'configuration': invalid_conf}
         httpConfs = Configurations(self.req)
         response = httpConfs.configurations_POST()
+        count_now = Configuration.query().count()
+        expected_status = 400
+
+        assert response.status_code == expected_status
+        assert count_now == count_before
+
+    def test_configurations_POST_value_is_in_range(self):
+        expgroup_id = 1
+        exp_id = 1
+        app_id = 1
+
+        confkey = ConfigurationKey.get(2)
+        #print(confkey.as_dict())
+
+        #print(RangeConstraint.get(2).as_dict())
+
+        invalid_conf = Configuration(experimentgroup_id=exp_id, key=confkey.name, value=6)
+        count_before = Configuration.query().count()
+
+        self.req.swagger_data = {'appid': app_id, 'expid': exp_id, 'expgroupid': expgroup_id,
+                                 'configuration': invalid_conf}
+        httpConfs = Configurations(self.req)
+        response = httpConfs.configurations_POST()
+        count_now = Configuration.query().count()
+        expected_status = 400
+
+        assert response.status_code == expected_status
+        assert count_now == count_before
+
+    def test_configurations_POST_exclusion_is_valid(self):
+        # Preparing environment so old tests will not be broken
+        app = Application(name='Hard Geim')
+        Application.save(app)
+        app = Application.get_by('name', 'Hard Geim')
+
+        hscore = ConfigurationKey(name='highscore', type='boolean', application_id = app.id)
+        ConfigurationKey.save(hscore)
+        hscore = ConfigurationKey.query().join(Application).filter(Application.id == app.id,
+                                                                   ConfigurationKey.name == 'highscore').one_or_none()
+
+        diff = ConfigurationKey(name='difficulty', type='integer', application_id=app.id)
+        ConfigurationKey.save(diff)
+        diff = ConfigurationKey.query().join(Application).filter(Application.id == app.id,
+                                                                 ConfigurationKey.name == 'difficulty').one_or_none()
+
+        exp = Experiment(application_id=app.id, name='is hard')
+        Experiment.save(exp)
+        exp = Experiment.query().join(Application).filter(Application.id == app.id, Experiment.name == 'is hard')\
+            .one_or_none()
+
+        expgrp = ExperimentGroup(name='hihii', experiment_id=exp.id)
+        ExperimentGroup.save(expgrp)
+        expgrp = ExperimentGroup.query().join(Experiment).filter(Experiment.id == exp.id,
+                                                                 ExperimentGroup.name == 'hihii').one_or_none()
+
+        # If highscore is True, then difficulty is greater than 3
+        exconst = ExclusionConstraint(first_configurationkey_id=hscore.id, first_operator_id=1, first_value_a=True,
+                                      second_configurationkey_id=diff.id, second_operator_id=5, second_value_a=3)
+
+        valid_conf = Configuration(experimentgroup_id=expgrp.id, key=hscore.name, value=True)
+        self.req.swagger_data = {'appid': app.id, 'expid': exp.id, 'expgroupid': expgrp.id,
+                                 'configuration': valid_conf}
+        httpConfs = Configurations(self.req)
+        response = httpConfs.configurations_POST()
+
+        # The actual test:
+        count_before = Configuration.query().count()
+
+        # Attempting to set value less than 3
+        invalid_conf = Configuration(experimentgroup_id=expgrp.id, key=diff.name, value=1)
+        self.req.swagger_data = {'appid': app.id, 'expid': exp.id, 'expgroupid': expgrp.id,
+                                 'configuration': invalid_conf}
+        httpConfs = Configurations(self.req)
+        response = httpConfs.configurations_POST()
+
         count_now = Configuration.query().count()
         expected_status = 400
 

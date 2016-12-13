@@ -26,14 +26,14 @@ def is_valid_value(app_id, configuration):
     :param configuration: Configuration to be validated
     :return: Is configuration's value valid
     """
-    from experiment_server.utils.configuration_tools import (is_valid_type_value, is_in_range, is_not_in_exclusion)
+    from experiment_server.utils.configuration_tools import (is_valid_type_value, is_in_range, is_valid_exclusion)
 
     confkey = get_configurationkey(app_id, configuration)
     value = configuration.value
 
     if confkey is not None:
         return is_valid_type_value(confkey.type, configuration.value) \
-               and is_in_range(app_id, confkey, value) and is_not_in_exclusion(app_id, confkey, value)
+               and is_in_range(confkey, value) and is_valid_exclusion(confkey, configuration)
 
     return False
 

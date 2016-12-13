@@ -16,7 +16,7 @@ class TestRangeConstraints(BaseTest):
 
     def test_get_rangeconstraint(self):
         rc = RangeConstraint.get(1)
-        assert rc.id == 1 and rc.configurationkey_id == 2 and rc.operator_id == 2 and rc.value == 1
+        assert rc.id == 1 and rc.configurationkey_id == 1 and rc.operator_id == 1 and rc.value == 1
 
     def test_get_all_rangeconstraints(self):
         rcsFromDB = RangeConstraint.all()
@@ -41,14 +41,16 @@ class TestRangeConstraintsREST(BaseTest):
 
     def test_rangeconstraints_GET(self):
         httpRcs = RangeConstraints(self.req)
+        self.req.swagger_data = {'appid': 1, 'ckid': 2}
         response = httpRcs.rangeconstraints_GET()
-        rc1 = {'id': 1, 'configurationkey_id': 2, 'operator_id': 2, 'value': 1}
-        rc2 = {'id': 2, 'configurationkey_id': 2, 'operator_id': 1, 'value': 5}
-        rcs = [rc1, rc2]
-        assert response == rcs
+
+        expected = RangeConstraint.query().filter(RangeConstraint.configurationkey_id == 2)
+        expected = list(map(lambda _: _.as_dict(), expected))
+
+        assert response == expected
 
     def test_rangecontraints_DELETE_one(self):
-        self.req.swagger_data = {'appid':1, 'ckid':2, 'rcid': 1}
+        self.req.swagger_data = {'appid':1, 'ckid':1, 'rcid': 1}
         httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangecontraints_DELETE_one()
         assert response == {}
@@ -72,21 +74,6 @@ class TestRangeConstraintsREST(BaseTest):
                 RangeConstraint.value==10)\
             .one().as_dict()
         assert response == rc
-
-    def test_rangeconstraints_POST_is_valid_operator(self):
-        expected_count = RangeConstraint.query().count()
-        self.req.swagger_data = {
-            'appid': 1,
-            'ckid': 2,
-            'rangeconstraint': RangeConstraint(operator_id=1, value=10)}
-        httpCkeys = RangeConstraints(self.req)
-        response = httpCkeys.rangecontraints_POST()
-
-        expected_status = 400
-        count_now = RangeConstraint.query().count()
-
-        assert count_now == expected_count
-        assert response.status_code == expected_status
 
     def test_rangeconstraints_POST_is_valid_value(self):
         expected_count = RangeConstraint.query().count()
@@ -116,17 +103,8 @@ class TestRangeConstraintsREST(BaseTest):
         assert response.status_code == 400
 
     def test_rangeconstraints_GET_with_incorrect_confkeyid(self):
-        self.req.swagger_data = {'appid': 1, 'ckid': 1}
+        self.req.swagger_data = {'appid': 1, 'ckid': 42}
         httpRcs = RangeConstraints(self.req)
         response = httpRcs.rangeconstraints_GET()
         assert response == []
 
-    def test_rangeconstraints_GET(self):
-        httpRcs = RangeConstraints(self.req)
-        self.req.swagger_data = {'appid': 1, 'ckid': 2}
-        response = httpRcs.rangeconstraints_GET()
-
-        expected = RangeConstraint.query().filter(RangeConstraint.configurationkey_id == 2)
-        expected = list(map(lambda _: _.as_dict(), expected))
-
-        assert response == expected

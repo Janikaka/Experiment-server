@@ -50,19 +50,32 @@ class BaseTest(unittest.TestCase):
         confk2 = ConfigurationKey(application=app1, name='difficulty', type='integer')
         ConfigurationKey.save(confk2)
 
-        op1 = Operator(math_value='<=', human_value='less or equal than')
+        op1 = Operator(id=1, math_value='=', human_value='equals')
+        op2 = Operator(id=2, math_value='<=', human_value='less or equal than')
+        op3 = Operator(id=3, math_value='<', human_value='less than')
+        op4 = Operator(id=4, math_value='>=', human_value='greater or equal than')
+        op5 = Operator(id=5, math_value='>', human_value='greater than')
+        op6 = Operator(id=6, math_value='!=', human_value='not equal')
+        op7 = Operator(id=7, math_value='[]', human_value='inclusive')
+        op8 = Operator(id=8, math_value='()', human_value='exclusive')
+        op9 = Operator(id=9, math_value='def', human_value='must define')
+        op10 = Operator(id=10, math_value='ndef', human_value='must not define')
+
         Operator.save(op1)
-
-        op2 = Operator(math_value='>=', human_value='greater or equal than')
         Operator.save(op2)
-
-        op3 = Operator(math_value='def', human_value='must define')
         Operator.save(op3)
+        Operator.save(op4)
+        Operator.save(op5)
+        Operator.save(op6)
+        Operator.save(op7)
+        Operator.save(op8)
+        Operator.save(op9)
+        Operator.save(op10)
 
-        rc1 = RangeConstraint(configurationkey=confk2, operator=op2, value=1)
+        rc1 = RangeConstraint(configurationkey=confk1, operator=op1, value=True)
         RangeConstraint.save(rc1)
 
-        rc2 = RangeConstraint(configurationkey=confk2, operator=op1, value=5)
+        rc2 = RangeConstraint(configurationkey=confk2, operator=op3, value=5)
         RangeConstraint.save(rc2)
 
         exc1 = ExclusionConstraint(first_configurationkey=confk1, first_operator=op3,
