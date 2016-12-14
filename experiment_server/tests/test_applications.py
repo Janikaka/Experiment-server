@@ -107,6 +107,31 @@ class TestApplications(BaseTest):
 
         assert not was_added
 
+    def test_experimentdistribution_exists(self):
+        experiment_distribution_exists = False
+
+        app = Application(name='Banana')
+        Application.save(app)
+        app = Application.get_by('name', 'Banana')
+
+        try:
+            experiment_distribution = app.experiment_distribution
+            experiment_distribution_exists = True
+        except Exception as e:
+            pass
+
+        assert experiment_distribution_exists
+
+    def test_experimentdistribution_can_be_set(self):
+        app = Application(name='Banana', experiment_distribution='one_random')
+
+        try:
+            Application.save(app)
+        except Exception as e:
+            pass
+
+        assert Application.get_by('name', 'Banana') is not None
+
 # ---------------------------------------------------------------------------------
 #                                  REST-Inteface
 # ---------------------------------------------------------------------------------
