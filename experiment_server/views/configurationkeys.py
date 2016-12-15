@@ -132,11 +132,11 @@ class ConfigurationKeys(WebUtils):
             return self.createResponse({}, 400)
         new_confkey = self.request.swagger_data['configurationkey']
         name = new_confkey.name
-        type = new_confkey.type
+        type = new_confkey.type.lower()
         configurationkey = ConfigurationKey(
             application=application,
             name=name,
-            type=type.lower()
+            type=type
         )
 
         if self.is_valid_configurationkey(configurationkey):
