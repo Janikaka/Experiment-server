@@ -95,7 +95,7 @@ class Configurations(WebUtils):
         res.headers.add('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
         return res
 
-    @view_config(route_name='configurations', request_method="GET")
+    @view_config(route_name='experimentgroup_configurations', request_method="GET")
     def configurations_GET(self):
         """
         Get all Configurations for a ExperimentGroup. Requires Application's id, Experiment's id and
@@ -112,7 +112,7 @@ class Configurations(WebUtils):
 
         return list(map(lambda _: _.as_dict(), configurations))
 
-    @view_config(route_name='configurations', request_method="POST")
+    @view_config(route_name='experimentgroup_configurations', request_method="POST")
     def configurations_POST(self):
         """
         Create new Configuration to ExperimentGroup. Requires Application's id, Experiment's id, ExperimentGroup's id
