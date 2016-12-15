@@ -136,7 +136,7 @@ class ConfigurationKeys(WebUtils):
         configurationkey = ConfigurationKey(
             application=application,
             name=name,
-            type=type
+            type=type.lower()
         )
 
         if self.is_valid_configurationkey(configurationkey):
