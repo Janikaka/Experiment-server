@@ -9,7 +9,7 @@ class ExperimentLogicSelector(AbstractExperimentLogic):
     """
     def __init__(self):
         """
-        Remember to add new ExperimentLogics to logics attribute! Default logic is assigned to default.
+        Remember to add new ExperimentLogics to logics attribute! OneRandom logic is assigned as default.
         """
         random = OneRandomExperiment()
         self.logics = {random.get_name(): random.get_experiments}
