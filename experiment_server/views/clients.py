@@ -25,17 +25,10 @@ def is_client_in_running_experiments(client):
     return len(running_experiments) > 0
 
 def assign_to_experiment(client, application):
-    experiments = Experiment.query().join(Application)\
-        .filter(Application.id == application.id)
+    from ..experiment_logic.experiment_logic_selector import ExperimentLogicSelector
+    experiment = ExperimentLogicSelector().get_experiments(application)
 
-    running_experiments = list(filter(lambda _: _.get_status() == 'running', experiments))
-    try:
-        return random.choice(running_experiments)
-    except IndexError as e:
-        print_log(datetime.datetime.now(), 'POST', '/configurations',
-            'Get client configurations',
-            'Failed: No running experiments on Application with id %s' % application.id)
-        return None
+    return experiment
 
 def assign_to_experimentgroup(client, application):
     experiment = assign_to_experiment(client, application)
