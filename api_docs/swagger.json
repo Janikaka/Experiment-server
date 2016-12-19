@@ -1,7 +1,7 @@
 {
   "swagger":"2.0",
   "info":{
-    "version":"2.4",
+    "version":"2.5.0",
     "title":"Experiment server",
     "description":"API for experiments",
     "license":{
@@ -50,6 +50,25 @@
     }
   ],
   "paths":{
+    "/logic":{
+      "get":{
+        "tags":[
+          "experiments"
+        ],
+        "summary": "Get all valid experiment distribution strategies",
+        "responses":{
+          "200":{
+            "description":"OK. Should contain at least one strategy",
+            "schema":{
+              "type": "array",
+              "items":{
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "/operators":{
       "get":{
         "tags":[
@@ -1491,6 +1510,9 @@
       ],
       "properties":{
         "name":{
+          "type":"string"
+        },
+        "experiment_distribution":{
           "type":"string"
         }
       }

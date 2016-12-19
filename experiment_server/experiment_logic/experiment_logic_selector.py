@@ -39,7 +39,7 @@ class ExperimentLogicSelector(AbstractExperimentLogic):
         Return all current experiment distributin strategies.
         :return: Names of valid ExperimentLogics
         """
-        return self.logics.keys()
+        return list(self.logics.keys())
 
     def is_valid_experiment_logic(self, logic_name):
         """
@@ -47,4 +47,4 @@ class ExperimentLogicSelector(AbstractExperimentLogic):
         :param logic_name:
         :return: True: such logic exists, False: given logic_name is invalid
         """
-        return logic_name in self.logics.keys()
+        return logic_name in self.logics.keys() or logic_name is None

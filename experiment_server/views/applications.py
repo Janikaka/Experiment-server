@@ -51,7 +51,9 @@ class Applications(WebUtils):
         return Application.get(app_id)
 
     def is_valid_application(self, app):
-        return app.name is not None and len(app.name) > 0
+        from ..experiment_logic.experiment_logic_selector import ExperimentLogicSelector
+        return app.name is not None and len(app.name) > 0 and \
+               ExperimentLogicSelector().is_valid_experiment_logic(app.experiment_distribution)
 
     def get_app_exclusionconstraints(self, app_id):
         from experiment_server.models.exclusionconstraints import ExclusionConstraint
@@ -96,7 +98,8 @@ class Applications(WebUtils):
         req_app = self.request.swagger_data['application']
         app = Application(
             name=req_app.name,
-            apikey=self.get_unused_apikey()
+            apikey=self.get_unused_apikey(),
+            experiment_distribution=req_app.experiment_distribution
         )
         if self.is_valid_application(req_app):
             Application.save(app)
@@ -154,6 +157,7 @@ class Applications(WebUtils):
             return self.createResponse(None, 400)
 
         Application.update(updated.id, "name", req_app.name)
+        Application.update(updated.id, "experiment_distribution", req_app.experiment_distribution)
         updated = Application.get(updated.id)
 
         return updated.as_dict()
