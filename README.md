@@ -6,83 +6,77 @@
 
 A simple REST API server for providing runtime configurations for applications and receiving usage-related event data.
 
-See the current API documentation from [here](https://app.swaggerhub.com/api/SoftwareFactory/experiment-server/). Remember to check the newest (highest) version.
+See the current API documentation from [here](https://app.swaggerhub.com/api/SoftwareFactory/experiment-server/). 
+Remember to check the newest (highest) version.
 
-The live API will live at heroku: [https://experiment-server2016.herokuapp.com/experiments](https://experiment-server2016.herokuapp.com/experiments). It will be autoupdated everytime master branch is updated at GitHub.
+The live API will live at heroku: 
+[https://experiment-server2016.herokuapp.com](https://experiment-server2016.herokuapp.com). It will be autoupdated everytime master branch is updated at GitHub.
 
-Backlog [here](https://trello.com/b/aRdMndWJ/backlog)
+**Please view TODO-section at the bottom before developing anything else**
 
-###Environment setup
+##Environment setup
 
-We use virtualenv to virtualize the python installation. This will create need for a venv-directory which should be located at project root.
+We use virtualenv to virtualize the python installation. This will create need for a venv-directory which should be 
+located at project root.
 
 Deactivating virtualenv
 
 `deactivate`
 
-### Dependencies
+###Dependencies
 
 - PostgresSQL for production `brew install postgresql`
 
 - sqlite for development
 
 ###Getting Started
----------------
 
-Clone this repository
+1. Clone this repository
 
-- Install projects only external dependency
+2. Install projects only external dependency
 `pip install virtualenv`
 
-- Setup the environment (from the project root folder):
+3. Setup the environment (from the project root folder):
 `./scripts/setup-environment.sh`
 
-- Start virtualenv
+4. Start virtualenv
 `source venv/bin/activate`
 
-- Install dependencies to virtual env (venv-fold)
+5. Install dependencies to virtual env (venv-fold)
 `pip install -r requirements.txt`
 
-- Running the next command might be required in some cases
+6. Running the next command might be required in some cases
 `python setup.py develop`
 
-- Initialize database:
+7. Initialize database:
 `initialize_Experiment-server_db development.ini`
 
-- Start the local server:
+8. Start the local server:
 `pserve development.ini`
 
-- Install hooks (from the project root folder):
+9. (Optional but still recommended) Install hooks (from the project root folder):
 `./scripts/install-precommit-hooks.sh`
+    - this scripts causes tests to be ran after committing: `git commit -m 'message'`
 
 
-Run tests:
+###Run tests:
 
-`pytest experiment_server/tests`
+- `pytest experiment_server/tests`
+    - This can only be done when virtual-environment is activated
 
-###Publishing to production
+##Publishing to production
 
-In case there are no shcema changes:
-- Push to GitHub and to this projects master branch. The rest will be automatic
+In case there are no database-schema changes:
+1. Push to GitHub and to this projects master branch. The rest will be automatic
+    - Notice that in case some tests fail, master branch will not be pushed to Heroku
 
 In case the database schema has changed
-- `initialize_Experiment-server_db production.ini sqlalchemy.url=DATABASE_URL`. This will establish new via `/experiment_server/scripts/initializedb.py`. Remember to first clean the production database or it will not make modifications to it.
+1. Reset production/staging database in Heroku
+2. `initialize_Experiment-server_db production.ini sqlalchemy.url=DATABASE_URL`
+    - This will establish new via `/experiment_server/scripts/initializedb.py`
+    - Remember to first clean the production database or it will not make modifications to it.
 
-
-###Work flow
-
-- Take a task from Trello (card)
-- Create a new branch for it `git branch <task_name>`
-- Start working only that branch
-- Rebase often with the master `git checkout master` `git pull` `git checkout <task_name>` `git rebase master`
-- Fix all the conflicts
-- TEST!
-- When rebasing is done. Save your work globally `git push origin <task_name>`
-- When you feel that you would like the whole team get your code: Make a pull-request
-- Assign somebody to code review your work
-- When the code review is done merge the branch to master via GitHub.com
-
-####Tips on editing API
+##Tips on editing API
 
 Since swagger_pyramid is included in this project, additionally to Python Pyramid's
 documentation on adding new API paths, keeping api_docs/swagger.json up to date is
@@ -90,3 +84,20 @@ essential. Adding a new path to routes.py is not enough to make application work
 Added path must be added to swagger.json and specify values it returns. Please keep
 [Swagger API]((https://app.swaggerhub.com/api/SoftwareFactory/experiment-server/))
 updated.
+
+##TODO
+
+- December 20th 2016:
+    - POST experimentgroup: create new experimentgroup
+        - now there is no way creating an ExperimentGroup. Perform this before doing anything else!
+        - also consider creating a ExperimentGroup by default when creating an Experiment. This property was 
+        accidentally deleted during refactoring
+    - Consider hard-coding operators instead of saving them database-table
+        - operators in a database brings no benefits
+    - Configuration:
+        - DELETE: delete configuration
+        - PUT: edit configuration
+    - Consider removing Swagger-dependency from the project
+        - While Swagger is involved, developing this project has proved to be overly complicated
+        - If decision is made to move away from Swagger, don't forget to make API-tests to cover API-addresses which Swagger 
+        used to do
