@@ -36,7 +36,7 @@ class ExperimentLogicSelector(AbstractExperimentLogic):
 
     def get_valid_experiment_logics(self):
         """
-        Return all current experiment distributin strategies.
+        Return all current experiment distributing strategies.
         :return: Names of valid ExperimentLogics
         """
         return list(self.logics.keys())

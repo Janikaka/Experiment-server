@@ -11,7 +11,7 @@ class ORM:
     @classmethod
     def query(cls):
         """
-        Builder for custom queries
+        Builder for custom queries. Queries done use SQLAlchemy's syntax
         Example: <modelT>.query().join(<modelT2>).all()
         """
         return DBSession.query(cls)
@@ -28,6 +28,7 @@ class ORM:
     def get_by(cls, field, value):
         """
         Get object by its field.
+        Example: Application.get_by('name', 'Cake Simulator')
         :param field: field to run query on
         :param value: value that the field must match
         """
@@ -79,4 +80,7 @@ class ORM:
 
     @classmethod
     def flush(cls):
+        """
+        Method to manually flush current DBSession.
+        """
         DBSession.flush()

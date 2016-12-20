@@ -1,4 +1,4 @@
-""" This is a schema """
+""" This is a database-schema """
 from sqlalchemy import (
     Column,
     Integer,
@@ -12,7 +12,12 @@ from .clients_experimentgroups import clients_experimentgroups
 
 
 class Client(Base):
-    """ This is definition of class client. """
+    """
+    This is definition of class client.
+    Client is a class to identify testers in some Application which is under experimentation in Experiment-Server.
+    Clientname is defined by application which client is using. With existing Client, tester can send DataItems to
+    Experiment-Server-service.
+    """
     __tablename__ = 'clients'
     id = Column(Integer, primary_key=True)
     clientname = Column(Text, unique=True, index=True)

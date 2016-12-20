@@ -1,4 +1,4 @@
-""" This is a schema """
+""" This is a database-schema """
 from sqlalchemy import (
     Column,
     Integer,
@@ -9,7 +9,10 @@ from .meta import Base
 from .extension_types.sqltypes import JSONType
 
 class RangeConstraint(Base):
-    """ This is definition of a RangeConstraints class """
+    """
+    This is definition of a RangeConstraints class
+    RangeConstraint defines what kind of Configurations are allowed to be created in ExperimentGroup.
+    """
     __tablename__ = 'rangeconstraints'
     id = Column(Integer, primary_key=True)
     configurationkey_id = Column(Integer, ForeignKey('configurationkeys.id'))

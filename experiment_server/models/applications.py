@@ -1,4 +1,4 @@
-""" This is a schema """
+""" This is a database-schema """
 from sqlalchemy import (
     Column,
     Integer,
@@ -12,13 +12,15 @@ from .meta import Base
 
 class Application(Base):
     """
-    This is definition of class Application
+    This is definition of class Application.
+    Application is the core of Experiment-Server. Application-class represents Application which is under
+    experimentation in Experiment-Server-service.
     id: identifies an Application
     name: name of the Application
     apikey: identifier to Application, which is required when Client is accessing via Api
     experimentDistribution: strategy on how Clients are distributed in Experiments
     experiments: Application's experiments
-    Configurationkeys: ConfigurationKeys which are allowed to be used in experiments
+    configurationkeys: ConfigurationKeys which are allowed to be used in experiments
     """
     __tablename__ = 'applications'
     id = Column(Integer, primary_key=True)

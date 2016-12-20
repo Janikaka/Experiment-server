@@ -1,4 +1,4 @@
-""" This is a schema """
+""" This is a database-schema """
 from sqlalchemy import (
     Column,
     Integer,
@@ -12,7 +12,11 @@ from .clients_experimentgroups import clients_experimentgroups
 
 
 class ExperimentGroup(Base):
-    """ This is definition of class ExperimentGroup. """
+    """
+    This is definition of class ExperimentGroup.
+    ExperimentGroups hold information of Experiments' Clients and Configurations. Through this object Clients receive
+    their Configurations to participating Clients.
+    """
     __tablename__ = 'experimentgroups'
     id = Column(Integer, primary_key=True)
     name = Column(Text)

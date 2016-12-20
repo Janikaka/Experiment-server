@@ -1,4 +1,4 @@
-""" This is a schema """
+""" This is a database-schema """
 from sqlalchemy import (
     Column,
     Integer,
@@ -13,7 +13,14 @@ from .extension_types.sqltypes import JSONType
 
 
 class ExclusionConstraint(Base):
-    """ This is definition of exclusion constraints class """
+    """
+    This is definition of exclusion constraints class.
+    ExclusionConstraint defines what kind of Configurations can be set on ExperimentGroup. If either argument, first or
+    second is true, then the other must be true. When creating Configuration which tries to violate an
+    ExclusionConstraint, creating it will be prevented.
+    First and second value both have a- and b-values. They are required for Operators 'inclusive' and 'exclusive'. In
+    all other cases b-values can be disregarded.
+    """
     __tablename__ = 'exclusionconstraints'
     id = Column(Integer, primary_key=True)
     first_configurationkey_id = Column(Integer, ForeignKey('configurationkeys.id'))

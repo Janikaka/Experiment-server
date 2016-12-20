@@ -1,4 +1,7 @@
-""" This is a schema """
+"""
+This is a database-schema.
+Required to many-to-many relationship between Client and ExperimentGroup
+"""
 from sqlalchemy import (
     Column,
     Integer,

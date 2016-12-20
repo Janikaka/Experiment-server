@@ -1,4 +1,4 @@
-""" This is a schema """
+""" This is a database-schema """
 from sqlalchemy import (
     Column,
     Integer,
@@ -13,7 +13,11 @@ from .meta import Base
 
 
 class ConfigurationKey(Base):
-    """ This is definition of Configurationkey class """
+    """
+    This is definition of ConfigurationKey class.
+    ConfigurationKey defines what Configurations ExperimentGroup has. Created Configuration's key must be equal to some
+    existing ConfigurationKey's name. Both Configuration and ConfigurationKey must belong to same Application.
+    """
     __tablename__ = 'configurationkeys'
     id = Column(Integer, primary_key=True)
     application_id = Column(Integer, ForeignKey('applications.id'))

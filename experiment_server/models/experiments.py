@@ -1,4 +1,4 @@
-""" This is a schema """
+""" This is a database-schema """
 from sqlalchemy import (
     Column,
     Integer,
@@ -12,7 +12,11 @@ from sqlalchemy.orm import relationship
 from experiment_server.models.meta import Base
 
 class Experiment(Base):
-    """ This is definition of class Experiment. """
+    """
+    This is definition of class Experiment.
+    Experiment-object defines how long an experiment on Application is being run. On same Experiment, many
+    ExperimentGroups can be set.
+    """
     __tablename__ = 'experiments'
     id = Column(Integer, primary_key=True)
     application_id = Column(Integer, ForeignKey('applications.id'))

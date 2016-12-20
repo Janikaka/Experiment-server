@@ -5,7 +5,7 @@ import logging
 
 class AbstractExperimentLogic(object):
     """
-    Abstract class for ExperimentLogic. This should not be imported outside ExperimentLogics
+    Abstract class for ExperimentLogic. This should not be imported outside experiment_logic folder
     """
     __metaclass__ = abc.ABCMeta
     log = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class AbstractExperimentLogic(object):
     @abc.abstractmethod
     def get_experiments(self, application):
         """
-        Returns Experiment(s)
+        Returns Experiment(s) according the class which has implemented this function
         :param application: Applications where experiments are fetched from
         :return: One or more Experiments depending on ExperimentLogic
         """

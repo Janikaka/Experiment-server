@@ -1,4 +1,3 @@
-""" Imports """
 import datetime
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
@@ -14,6 +13,8 @@ from toolz import assoc, concat
 
 @view_defaults(renderer='json')
 class Experiments(WebUtils):
+    #TODO: POST experimentgroups: create new experimentgroup
+
     def __init__(self, request):
         self.request = request
 
