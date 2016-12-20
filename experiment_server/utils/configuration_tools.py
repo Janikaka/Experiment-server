@@ -1,10 +1,15 @@
 from experiment_server.models import (Configuration, ConfigurationKey, ExclusionConstraint, Operator, RangeConstraint)
 import _operator
 
+"""
+Tools, helper-functions and validations which are used in multiple views
+"""
 # TODO: Return descriptive error messages on failure, so it can be passed from backend to frontend
+
 
 def get_valid_types():
     return ["boolean", "string", "integer", "float"]
+
 
 def get_operators():
     if Operator.query().count == 0:
@@ -31,6 +36,7 @@ def get_operators():
         Operator.save(op10)
 
     return Operator.all()
+
 
 def is_valid_type_operator(type, operator):
     """

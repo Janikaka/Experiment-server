@@ -8,7 +8,7 @@ from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.applications import Application
 
 ###
-# Range Constraint validation
+# Range Constraint validation functions
 ###
 def is_valid_value(rconst):
     """
@@ -52,7 +52,9 @@ def is_valid_rangeconstraint(app_id, configkey_id, rconst):
     """
     return exists_app_and_ck(app_id, configkey_id) and is_valid_value(rconst) and is_valid_operator(rconst)
 
-
+###
+# RangeConstraint controller-functions
+###
 @view_defaults(renderer='json')
 class RangeConstraints(WebUtils):
     def __init__(self, request):
@@ -146,11 +148,13 @@ class RangeConstraints(WebUtils):
             'Create new rangeconstraint for configurationkey', 'Succeeded')
         return rconstraint.as_dict()
 
-    # To include all the database connection checks which
-    # rangecontraints_DELETE_one contains, it is included in this function
     @view_config(route_name='rangeconstraints', request_method="DELETE")
     def rangeconstraints_for_configuratinkey_DELETE(self):
-        """ Delete all rangeconstraints of one specific configurationkey"""
+        """
+            Delete all rangeconstraints of one specific configurationkey
+            To include all the database connection checks which rangecontraints_DELETE_one contains, it is used in this
+            function.
+        """
         configkey_id = self.request.swagger_data['ckid']
         app_id = self.request.swagger_data['appid']
         configurationkey = ConfigurationKey.get(configkey_id)

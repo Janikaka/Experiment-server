@@ -142,10 +142,12 @@ class Experiments(WebUtils):
 
         return list(map(lambda _: _.as_dict(), experimentgroups))
 
-
     @view_config(route_name='experimentgroup', request_method="GET")
     def experimentgroup_GET_one(self):
-        """ Show specific experiment group metadata """
+        """
+            Show specific experiment group metadata
+            Metadata includes ExperimentGroup's configurations, Clients and DataItems
+        """
         app_id = self.request.swagger_data['appid']
         expid = self.request.swagger_data['expid']
         expgroupid = self.request.swagger_data['expgroupid']

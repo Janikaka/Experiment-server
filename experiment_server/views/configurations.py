@@ -5,6 +5,10 @@ from experiment_server.utils.log import print_log
 from .webutils import WebUtils
 import datetime
 
+###
+# Helper-functions
+###
+
 
 def get_configurationkey(app_id, configuration):
     """
@@ -63,6 +67,10 @@ def is_valid_connections(app_id, exp_id, expgroup_id):
 
     return expgroup is not None
 
+###
+# Controller-class and -functions
+###
+
 
 @view_defaults(renderer='json')
 class Configurations(WebUtils):
@@ -117,7 +125,8 @@ class Configurations(WebUtils):
         """
         Create new Configuration to ExperimentGroup. Requires Application's id, Experiment's id, ExperimentGroup's id
         and Configuration to be created. This will fail if Configuration, or given ids are not valid.
-        :return: If successfully created, returns created Configuration. If it fails, returns response with HTTP code 400
+        :return: If successfully created, returns created Configuration. If it fails, returns response with HTTP code
+        400
         """
         app_id = self.request.swagger_data['appid']
         exp_id = self.request.swagger_data['expid']

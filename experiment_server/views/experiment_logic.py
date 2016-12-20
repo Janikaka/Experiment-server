@@ -13,5 +13,5 @@ class Logic(WebUtils):
 
     @view_config(route_name='logic', request_method="GET")
     def GET_all_logic(self):
-        """Returns all experiment distribution strategies as a list"""
+        """ Returns all experiment distribution strategies as a list """
         return ExperimentLogicSelector().get_valid_experiment_logics()

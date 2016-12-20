@@ -9,12 +9,30 @@ from experiment_server.models.exclusionconstraints import ExclusionConstraint
 from experiment_server.models.configurationkeys import ConfigurationKey
 from experiment_server.models.applications import Application
 
+###
+# Validation- and helper-functions
+###
+
+
 def has_all_ids(exconstraint, app_id):
+    """
+    Validates that given ExclusionConstraint's foreign keys are given
+    :param exconstraint: ExclusionConstraint to Validate
+    :param app_id: ExclusionConstraint's Application
+    :return: ExclusionConstraint's foreign keys are not None
+    """
     return not (exconstraint.first_configurationkey_id is None) or \
         (exconstraint.second_configurationkey_id is None) or \
         (exconstraint is None or app_id is None)
 
+
 def is_configurationkeys_from_same_app(exconstraint, app_id):
+    """
+    Validates that ExclusionConstraint's ConfigurationKeys belong to same Application
+    :param exconstraint: ExclusionConstraint to validate
+    :param app_id: ExclusionConstraint's Application
+    :return: Are COnfigurationKeys in Application
+    """
     if not ConfigurationKey.get(exconstraint.first_configurationkey_id).application_id == app_id:
         return False
 
@@ -23,7 +41,13 @@ def is_configurationkeys_from_same_app(exconstraint, app_id):
 
     return True
 
+
 def is_values_valid_to_configurationkeys(exconstraint):
+    """
+    Validates ExclusionConstraints values, types and operators
+    :param exconstraint: ExclusionConstraint to validate
+    :return: is ExclusionConstraint valid
+    """
     from experiment_server.utils.configuration_tools import is_valid_type_operator
     from experiment_server.utils.configuration_tools import is_valid_type_values
 
@@ -41,6 +65,9 @@ def is_values_valid_to_configurationkeys(exconstraint):
                                     exconstraint.second_operator,
                                     [exconstraint.second_value_a, exconstraint.second_value_b])
 
+###
+# Controller functions
+###
 @view_defaults(renderer='json')
 class ExclusionConstraints(WebUtils):
     def __init__(self, request):
@@ -64,7 +91,7 @@ class ExclusionConstraints(WebUtils):
         return res
 
     """
-        Helper functions
+        Helper-functions
     """
     def get_exclusionconstraint(self, app_id, exconst_id):
         try:
@@ -85,7 +112,7 @@ class ExclusionConstraints(WebUtils):
                and is_values_valid_to_configurationkeys(exconstraint)
 
     """
-        Route listeners
+        Controller-functions
     """
     @view_config(route_name='exconstraints_for_configurationkey', request_method="GET")
     def exclusionconstraints_GET(self):

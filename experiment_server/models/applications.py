@@ -18,7 +18,8 @@ class Application(Base):
     id: identifies an Application
     name: name of the Application
     apikey: identifier to Application, which is required when Client is accessing via Api
-    experimentDistribution: strategy on how Clients are distributed in Experiments
+    experimentDistribution: strategy on how Clients are distributed in Experiments. Valid experiment distribution
+    strategies can be found at experiment_server/experiment_logic
     experiments: Application's experiments
     configurationkeys: ConfigurationKeys which are allowed to be used in experiments
     """

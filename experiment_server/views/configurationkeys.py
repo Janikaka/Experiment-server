@@ -9,9 +9,11 @@ from experiment_server.utils.log import print_log
 from experiment_server.utils.configuration_tools import get_valid_types
 from .webutils import WebUtils
 
-"""
-    Helper functions
-"""
+###
+# Helper-functions and validations
+###
+
+
 def get_conf_key_by_appid_and_ckid(app_id, confkey_id):
     try:
         return ConfigurationKey.query()\
@@ -23,11 +25,18 @@ def get_conf_key_by_appid_and_ckid(app_id, confkey_id):
         print_log(e)
         return None
 
+
 def is_valid_name(ck):
     return ck.name is not None and len(ck.name) > 0
 
+
 def is_valid_type(ck):
     return ck.type is not None and len(ck.type) > 0 and ck.type in get_valid_types()
+
+###
+# Controller-class and -functions
+###
+
 
 @view_defaults(renderer='json')
 class ConfigurationKeys(WebUtils):
@@ -35,7 +44,7 @@ class ConfigurationKeys(WebUtils):
         self.request = request
 
     """
-        Helper functions which are exported with ConfigurationKeys-class
+        Helper-functions which are exported with ConfigurationKeys-class
     """
 
     def valid_types(self):
@@ -121,7 +130,8 @@ class ConfigurationKeys(WebUtils):
 
     @view_config(route_name='configurationkeys_for_app', request_method="POST")
     def configurationkeys_POST(self):
-        """ Create new configurationkey to application.
+        """
+            Create new configurationkey to application.
             request.swagger_data['id'] takes the id and Application.get(app_id) returns the application by id.
         """
         app_id = self.request.swagger_data['id']

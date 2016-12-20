@@ -14,7 +14,11 @@ from experiment_server.models.experimentgroups import ExperimentGroup
 from fn import _
 from toolz import *
 
+###
 # Helper functions
+###
+
+
 def is_client_in_running_experiments(client):
     experiments = Experiment.query()\
         .join(ExperimentGroup)\
@@ -24,11 +28,13 @@ def is_client_in_running_experiments(client):
 
     return len(running_experiments) > 0
 
+
 def assign_to_experiment(client, application):
     from ..experiment_logic.experiment_logic_selector import ExperimentLogicSelector
     experiment = ExperimentLogicSelector().get_experiments(application)
 
     return experiment
+
 
 def assign_to_experimentgroup(client, application):
     experiment = assign_to_experiment(client, application)
@@ -50,6 +56,7 @@ def assign_to_experimentgroup(client, application):
 
     return expgroup
 
+
 def get_client_configurations(client, application):
     expgroup = assign_to_experimentgroup(client, application)
 
@@ -66,6 +73,7 @@ def get_client_configurations(client, application):
 
     return configs
 
+
 def get_client(name):
     client = Client.query().filter(Client.clientname == name).one_or_none()
 
@@ -74,6 +82,7 @@ def get_client(name):
         Client.save(client)
 
     return client
+
 
 def get_client_by_id_and_app(data):
     try:
@@ -90,6 +99,7 @@ def get_client_by_id_and_app(data):
     .filter(Client.id == client_id)\
     .one_or_none()
 
+
 def application_by_apikey_from_header(headers):
     apikey = None
     try:
@@ -100,11 +110,15 @@ def application_by_apikey_from_header(headers):
     app = Application.get_by('apikey', apikey)
     return app
 
+###
+# Controller-class and -functions
+###
+
+
 @view_defaults(renderer='json')
 class Clients(WebUtils):
     def __init__(self, request):
         self.request = request
-
 
     """
         CORS-options
@@ -159,7 +173,7 @@ class Clients(WebUtils):
 
         return list(map(lambda _: _.as_dict(), clients))
 
-    # Create new client
+    # Create new client. Should not be used
     @view_config(route_name='clients', request_method="POST", renderer='json')
     def create_client(self):
         req_client = self.request.swagger_data['client']
@@ -217,18 +231,31 @@ class Clients(WebUtils):
             return self.createResponse(None, 400)
 
         experiments = Experiment.query()\
-        .filter(Experiment.application_id == app_id)\
-        .join(ExperimentGroup)\
-        .join(ExperimentGroup.clients)\
-        .filter(Client.id == client.id)
+            .filter(Experiment.application_id == app_id)\
+            .join(ExperimentGroup)\
+            .join(ExperimentGroup.clients)\
+            .filter(Client.id == client.id)
 
         print(experiments)
         result = map(lambda _: _.as_dict(), experiments)
         return list(result)
 
-    # Save experiment data
+    ###
+    # API-requests used ONLY by the Clients. Clients should not use any other requests.
+    ###
+
     @view_config(route_name='events', request_method="POST")
     def events_POST(self):
+        """
+        Single API-gateway used by Clients to submit experiment-data. Should be used after successful POST
+        /configurations. After successful POST /configurations, should be used until response with HTTP-status 400 is
+        returned.
+        :return:    200 with posted data if request was successful
+                    401 if apikey was incorrect
+                    400 if
+                        - Client does not exist or
+                        - Client not in any running experiments
+        """
         app = application_by_apikey_from_header(self.request.headers)
         if app is None:
             print_log(datetime.datetime.now(), 'POST', '/events', 'Save experiment data',
@@ -240,7 +267,6 @@ class Clients(WebUtils):
         key = json['key']
         startDatetime = datetime.datetime.strptime(json['startDatetime'], "%Y-%m-%d %H:%M:%S")
         endDatetime = datetime.datetime.strptime(json['endDatetime'], "%Y-%m-%d %H:%M:%S")
-
 
         clientname = self.request.headers['clientname']
         client = Client.get_by('clientname', clientname)
@@ -266,6 +292,22 @@ class Clients(WebUtils):
 
     @view_config(route_name='configurations', request_method="POST")
     def configurations_POST(self):
+        """
+        Single API gateway to be used by Clients to receive Configurations. After successful request, it should NOT be
+        used by same Client again until POST /events returns HTTP-code 400. It has following parts:
+            1. Check API-key. Must be existing Application's apikey
+            2. Does Client exist? If not, new Client will be created
+            3. Is Client in any running Application's Experiment? If not, Client will be assigned to new running
+            Experiment and to some ExperimentGroup in the Experiment
+            4. Get Configurations
+        :return:    200 with Configurations if successful
+                    401 if incorrect apikey
+                    400 if
+                        - missing parameters or
+                        - no running Experiments or
+                        - no ExperimentGroups in Experiment or
+                        - no Configurations in ExperimentGroup
+        """
         def print_error(message):
             print_log(datetime.datetime.now(), 'POST', '/configurations',
                 'Get client configurations',
