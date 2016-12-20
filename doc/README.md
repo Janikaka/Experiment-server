@@ -5,23 +5,23 @@
 
 ## Experiment-server
 
-API for general experiment-data usage (see [domain documentation](Prototype for Continuous Experimentation Server.pdf)). The current project for API-client lives [here](https://github.com/TheSoftwareFactory/experiment-server-ui).
+API for general (outdated) experiment-data usage (see [domain documentation](Prototype for Continuous Experimentation Server.pdf)). The current project for API-client lives [here](https://github.com/TheSoftwareFactory/experiment-server-ui).
 
 ## Domain overview
 
-[see](database_diagrams/database.png). 
+![alt text](database_diagrams/database.png "database-diagram"). 
 
 
 ## Architecture overview
 
-[see](component_diagrams/Component_diagram.png)
+![alt text](component_diagrams/Component_diagram.png "component-diagram")
 
 
 ## Code overview
 
 - `database/` contains the ORM-model definitions
 - `models/` containts all model-definitions which mirror the database tables
-- `views/` contains all controllers for route-handling
+- `views/` contains all controllers for route-handling and helper-methods 
 - `routes.py` contains the route-mappings
 
 These are the most common directories/files to work on with. Usually the workflow to create new path for API goes like this:
