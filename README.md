@@ -26,8 +26,8 @@ Deactivating virtualenv
 ###Dependencies
 
 - PostgresSQL for production `brew install postgresql`
-
 - sqlite for development
+- pip
 
 ###Getting Started
 
@@ -67,10 +67,12 @@ Deactivating virtualenv
 ##Publishing to production
 
 In case there are no database-schema changes:
+
 1. Push to GitHub and to this projects master branch. The rest will be automatic
     - Notice that in case some tests fail, master branch will not be pushed to Heroku
 
 In case the database schema has changed
+
 1. Reset production/staging database in Heroku
 2. `initialize_Experiment-server_db production.ini sqlalchemy.url=DATABASE_URL`
     - This will establish new via `/experiment_server/scripts/initializedb.py`

@@ -1,20 +1,20 @@
 # Documentation
 
-
-**Warning**: Some of these diagrams in this folder may not be up to date (18.10.2016). Use only as a overview of the current application and how the application has developed since. So check the modification dates.
-
 ## Experiment-server
 
 API for general (outdated) experiment-data usage (see [domain documentation](Prototype for Continuous Experimentation Server.pdf)). The current project for API-client lives [here](https://github.com/TheSoftwareFactory/experiment-server-ui).
 
+###20th December 2016
+Even if outdated, the domain documentation still gives a good general idea of the current structure.
+
 ## Domain overview
 
-![alt text](database_diagrams/database.png "database-diagram"). 
+![alt text](database_diagrams/database.png "database diagram")
 
 
 ## Architecture overview
 
-![alt text](component_diagrams/Component_diagram.png "component-diagram")
+![alt text](component_diagrams/Component_diagram.png "component diagram")
 
 
 ## Code overview
@@ -28,11 +28,55 @@ These are the most common directories/files to work on with. Usually the workflo
 
 1. Add a path to `routes.py`
 2. Make a controller for it
-3. Use models to handle data changes
-
+3. Use models to handle data interaction
+4. Update swagger.json according to `routes.py` and controller-method created
+    1. Also update API-docs: Create new version
+    2. Paste swagger.json to editor
+    3. Let Editor validate it, re-do part 4 if needed
+5. Run server and test it locally. Swagger UI can be downloaded and ran locally    
+6. Test newly added path via Swagger UI with staging-version at Heroku
 
 The precise logic should always be at views and the more general should be in models. 
 
+## Status 20.12.2016
+
+Project was heavily refactored. New UI was created
+
+- Front-end
+    - Front-end was completely reworked, abandoning old UI completely
+    - Focus was on creating a solid ground so it could be easily continued
+    - Clear, clean coded, documented, correctly used and up to date React.js front-end including examples
+    - Does not yet have all the back-end functionalities implemented
+    - More information at [experiment-server-ui-v2](https://github.com/TheSoftwareFactory/experiment-server-ui-v2)
+- Back-end
+    - API-rework
+        - API now represents structure of Experiment-Server
+    - Refactored back-end heavily as progressing
+    - Removed dependencies to db.py
+        - now exists only at tests
+    - Backend validation
+        - All POST and PUT methods
+    - Renamed User to Client
+    - Clients' API rework
+        - now require new Application's api-key
+        - /configurations
+            - requests configurations for Client
+        - /events
+            - relatively same functionality as before
+            - now returns 400 if Experiment has ended
+    - Experiment Logic Interface
+        - Added an abstract class for distribution of Clients to Experiments
+        - Added OneRandom distribution strategy
+    - Notes:
+        - Tests have been updated if something related to them was updated. Old tests are extremely error prone to 
+        changes, and do NOT necessary test what their names implicate. Also many tests seem to test different things 
+        they should test one thing per method
+        - If problems arise, feel free to contact @ArktinenSieni on GitHub
+    - TODO:
+        - ExperimentGroups POST, create ExperimentGroup
+            - This must be done before proceeding
+        - Configurations DELETE, PUT
+        - new experiment logic
 
 ## Status 18.10.2016
 
