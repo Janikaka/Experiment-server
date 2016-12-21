@@ -1147,7 +1147,7 @@
 									"height": 13,
 									"autoResize": false,
 									"underline": false,
-									"text": "ExclusinConstraints",
+									"text": "ExclusionConstraints",
 									"horizontalAlignment": 2,
 									"verticalAlignment": 5,
 									"wordWrap": false
@@ -3719,7 +3719,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFLzntJC6EktCk="
 					},
-					"name": "ExclusinConstraints",
+					"name": "ExclusionConstraints",
 					"documentation": "Constraint on Configurations which define a relationship between two ConfigurationKeys. If either of the arguments is true, then other argument must also be true in order to create a Configuration of the other ConfigurationKey",
 					"columns": [
 						{
