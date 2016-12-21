@@ -11,6 +11,16 @@ Even if outdated, the domain documentation still gives a good general idea of th
 
 ![alt text](database_diagrams/database.png "database diagram")
 
+Disregard Operators-table. It is only used by RangeConstraints and ExclusionConstraints. The core of the 
+Experiment-Server is **Applications**-table. Viewing of the database should begin from there. 
+
+Configurations are given to Client and they define how Client's application should be set up for corresponding 
+Experiment. Even it is not visible in the database-schema, *Configurations are limited and validated by 
+ConfigurationKeys, RangeConstraints and ExclusionConstraints*. ConfigurationKeys' name define Configurations-table's key 
+values. If Configuration with some key-value does not refer to another ConfigurationKey's name, its creation will be 
+prevented. RangeConstraints and ExclusionConstraints restrict what values Configurations can have. RangeConstraints 
+defines one Configuration's possible values. ExclusionConstraints creates restrictions based on two different 
+Configurations.
 
 ## Architecture overview
 
